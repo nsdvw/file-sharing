@@ -1,3 +1,0 @@
-conn = "mysql:host=localhost;dbname=file_sharing;charset=utf8"
-user = "root"
-pass = ""

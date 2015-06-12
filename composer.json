@@ -1,7 +1,0 @@
-{
-    "require": {
-        "slim/slim": "~2.0",
-        "smarty/smarty": "^3.1",
-        "slim/views": "^0.1.3"
-    }
-}

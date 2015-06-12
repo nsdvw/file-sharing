@@ -1,5 +1,5 @@
 <?php
-$loader = require __DIR__ . '/protected/vendor/autoload.php';
+$loader = require '../protected/vendor/autoload.php';
 
 $app = new \Slim\Slim( array(
     'view' => new \Slim\Views\Smarty(),
@@ -7,7 +7,7 @@ $app = new \Slim\Slim( array(
 
 $app->get('/', function () use ($app) {
     $app->render(
-    	__DIR__ . '/protected/views/index.tpl',
+    	'../protected/views/index.tpl',
     	array('noticeMessage'=>'', 'errorMessage'=>'')
    	);
 });
@@ -21,7 +21,7 @@ $app->post('/', function () use ($app) {
 						? $_POST['description'] : null;
 	if($error){
 		$app->render(
-    		__DIR__ . '/protected/views/index.tpl',
+    		'../protected/views/index.tpl',
     		array(
 				'noticeMessage'=>'',
 				'errorMessage'=>"Файл не был загружен. Код ошибки: $error",
@@ -32,7 +32,7 @@ $app->post('/', function () use ($app) {
 		$model->save($name, null, $description);
 		move_uploaded_file($tmp_name, __DIR__ . '/upload/'.$model->id.'_'.$name);
 		$app->render(
-			__DIR__ . '/protected/views/index.tpl',
+			'../protected/views/index.tpl',
 			array(
 				'noticeMessage'=>'Файл был успешно загружен на сервер.',
 				'errorMessage'=>''
@@ -44,7 +44,7 @@ $app->post('/', function () use ($app) {
 $app->get('/view', function () use ($app) {
 	$model = new \Model\File\Mapper();
 	$list = $model->find();
-    $app->render(__DIR__ . '/protected/views/list.tpl', array('list'=>$list));
+    $app->render('../protected/views/list.tpl', array('list'=>$list));
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
@@ -53,9 +53,9 @@ $app->get('/view/:id', function ($id) use ($app) {
 	$finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime = $finfo->file(__DIR__ . '/upload/'.$file[0]['id'].'_'.$file[0]['name']);
     if(in_array($mime, array('image/jpeg', 'image/gif', 'image/png'))){
-    	$app->render(__DIR__ . '/protected/views/image_view.tpl', array('file'=>$file));
+    	$app->render('../protected/views/image_view.tpl', array('file'=>$file));
     }else{
-    	$app->render(__DIR__ . '/protected/views/detail_view.tpl', array('file'=>$file));
+    	$app->render('../protected/views/detail_view.tpl', array('file'=>$file));
     }
 });
 

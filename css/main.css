@@ -35,3 +35,9 @@ html, body {
 .preview {
 	width: 240px;
 }
+.notice {
+	color: #4c4;
+}
+.error {
+	color: indianred;
+}

@@ -12,7 +12,7 @@ CREATE TABLE file (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL,
 	upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	description VARCHAR(255) COMMENT 'short author`s description',
+	description VARCHAR(255) COMMENT 'short author\'s description of the file',
 	author_id INT UNSIGNED,
 	FOREIGN KEY (author_id) REFERENCES user (id),
 	PRIMARY KEY (id)

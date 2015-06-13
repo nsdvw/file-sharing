@@ -5,6 +5,15 @@ $app = new \Slim\Slim( array(
     'view' => new \Slim\Views\Smarty(),
 ));
 
+$app->container->singleton('connection', function(){
+	$db_config = parse_ini_file('config.txt');
+	return new \PDO(
+					$db_config['conn'],
+					$db_config['user'],
+					$db_config['pass']
+				);
+});
+
 $app->get('/', function () use ($app) {
     $app->render(
     	'../protected/views/index.tpl',
@@ -28,7 +37,7 @@ $app->post('/', function () use ($app) {
 			)
    		);
 	}else{
-		$model = new \Model\File\Mapper();
+		$model = new \Model\File\Mapper($app->connection);
 		$model->save($name, null, $description);
 		move_uploaded_file($tmp_name, __DIR__ . '/upload/'.$model->id.'_'.$name);
 		$app->render(
@@ -42,13 +51,13 @@ $app->post('/', function () use ($app) {
 });
 
 $app->get('/view', function () use ($app) {
-	$model = new \Model\File\Mapper();
+	$model = new \Model\File\Mapper($app->connection);
 	$list = $model->find();
     $app->render('../protected/views/list.tpl', array('list'=>$list));
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
-	$model = new \Model\File\Mapper();
+	$model = new \Model\File\Mapper($app->connection);
 	$file = $model->find($id);
 	$finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime = $finfo->file(__DIR__ . '/upload/'.$file[0]['id'].'_'.$file[0]['name']);

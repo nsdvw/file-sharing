@@ -14,6 +14,6 @@ CREATE TABLE file (
 	upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	description VARCHAR(255) COMMENT 'short author\'s description of the file',
 	author_id INT UNSIGNED,
-	FOREIGN KEY (author_id) REFERENCES user (id),
+	FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY (id)
 );

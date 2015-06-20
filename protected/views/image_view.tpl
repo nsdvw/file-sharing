@@ -8,17 +8,17 @@
 <body>
 	<div id="wrapper">
 		<h3>Описание файла</h3>
-		<p class="row">Название: {$file[0]['name']}</p>
+		<p class="row">Название: {$file['name']}</p>
 		{if $file[0]['description']}
-		<p class="row">Комментарий автора: {$file[0]['description']}</p>
+		<p class="row">Комментарий автора: {$file['description']}</p>
 		{/if}
 		<p class="row">Ссылка для скачивания: 
-			<a href="../download/{$file[0]['id']}/{$file[0]['name']}">скачать</a>
+			<a href="../download/{$file[0]['id']}/{$file['name']}">скачать</a>
 		</p>
-		<p class="row">Тип: {$file[0]['mime_type']}</p>
-		<p class="row">Размер: {$file[0]['size']}</p>
-		<p class="row">Дата загрузки: {$file[0]['upload_time']}</p>
-		<img class="preview" src="../upload/{$file[0]['id']}_{$file[0]['name']}.txt"
+		<p class="row">Тип: {$file['mime_type']}</p>
+		<p class="row">Размер: {$file['size']}</p>
+		<p class="row">Дата загрузки: {$file['upload_time']}</p>
+		<img class="preview" src="../upload/{$file['id']}_{$file['name']}.txt"
 			alt="image">
 	</div>
 </body>

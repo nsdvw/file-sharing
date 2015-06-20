@@ -26,22 +26,26 @@ class Mapper
 		return $this->connection->lastInsertId();
 	}
 
-	public function find($id = null, $limit = 100)
+	public function findAll($limit = 100, $offset = 0)
 	{
-		if(!$id){
-			$sql = "SELECT id, name, upload_time, description,
-					author_id, size, mime_type 
-					FROM file ORDER BY upload_time DESC LIMIT :limit";
-			$sth = $this->connection->prepare($sql);
-			$sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
-		}else{
-			$sql = "SELECT id, name, upload_time, description,
-					author_id, size, mime_type
-					FROM file WHERE id=:id";
-			$sth = $this->connection->prepare($sql);
-			$sth->bindParam(':id', $id, \PDO::PARAM_INT);
-		}
+		$sql = "SELECT id, name, upload_time, description,
+				author_id, size, mime_type 
+				FROM file ORDER BY upload_time DESC LIMIT :offset, :limit";
+		$sth = $this->connection->prepare($sql);
+		$sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
+		$sth->bindParam(':offset', $offset, \PDO::PARAM_INT);
 		$sth->execute();
-		return $sth->fetchAll();
+		return $sth->fetchAll(\PDO::FETCH_ASSOC);
+	}
+
+	public function findById($id)
+	{
+		$sql = "SELECT id, name, upload_time, description,
+				author_id, size, mime_type
+				FROM file WHERE id=:id";
+		$sth = $this->connection->prepare($sql);
+		$sth->bindParam(':id', $id, \PDO::PARAM_INT);
+		$sth->execute();
+		return $sth->fetch(\PDO::FETCH_ASSOC);
 	}
 }

@@ -5,6 +5,7 @@ $app = new \Slim\Slim( array(
     'view' => new \Slim\Views\Smarty(),
 ));
 
+/* Соединение с бд в синглтон, там же разбираем конфиги */
 $app->container->singleton('connection', function(){
 	$db_config = parse_ini_file('../protected/config.txt');
 	return new \PDO(
@@ -22,8 +23,8 @@ $app->get('/', function() use ($app) {
 });
 
 $app->post('/', function() use ($app) {
+	/* Собираем данные из FILES и POST */
 	$error = $_FILES['upload']['error']['file1'];
-	$type = $_FILES['upload']['type']['file1'];
 	$name = $_FILES['upload']['name']['file1'];
 	$tmp_name = $_FILES['upload']['tmp_name']['file1'];
 	$description = (isset($_POST['description']) and $_POST['description']!=='') 
@@ -71,18 +72,29 @@ $app->post('/', function() use ($app) {
 
 $app->get('/view', function() use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
-	$list = $mapper->find();
+	$list = $mapper->findAll();
     $app->render('../protected/views/list.tpl', array('list'=>$list));
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
-	$file = $mapper->find($id);
-	$finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = $finfo->file(__DIR__ . "/upload/{$file[0]['id']}_{$file[0]['name']}.txt");
-    if(in_array($mime, array('image/jpeg', 'image/gif', 'image/png'))){
+	$file = $mapper->findById($id);
+	/* Форматирование сырых данных перед выводом в шаблон
+	(я бы вынес это в отдельный метод контроллера, но тут нет контроллера)
+	*/
+    if ($file['size'] > pow(1024, 3)) {
+    	$file['size'] = round($file['size'] / pow(1024, 3), 2) . ' Гб';
+    } elseif ($file['size'] > pow(1024, 2)) {
+    	$file['size'] = round($file['size'] / pow(1024, 2), 2) . ' Мб';
+    }elseif ($file['size'] > 1024) {
+    	$file['size'] = round($file['size'] / 1024, 2) . ' Кб';
+    }
+    /* Выбор шаблона в зависимости от типа файла */
+    if (in_array($file['mime_type'], array('image/jpeg', 'image/gif',
+    									  'image/png', 'image/tiff',
+    ))) {
     	$app->render('../protected/views/image_view.tpl', array('file'=>$file));
-    }else{
+    } else {
     	$app->render('../protected/views/detail_view.tpl', array('file'=>$file));
     }
 });

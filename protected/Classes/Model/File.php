@@ -34,7 +34,7 @@ class File
 		$info['mime_type'] = $finfo->file($file);
 		$id3 = new \getID3();
 		$id3->encoding = 'UTF-8';
-		$info['properties'] = json_encode( $id3->analyze($file) );
+		$info['properties'] = json_encode($id3->analyze($file));
 		return $info;
 	}
 }

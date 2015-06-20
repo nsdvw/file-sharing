@@ -74,6 +74,19 @@ $app->post('/', function() use ($app) {
 	}
 });
 
+$app->get('/full-size', function() use ($app) {
+	echo '<meta charset="utf-8">Здесь планируется галерея.';
+});
+
+$app->get('/full-size/:id', function($id) use ($app) {
+	$mapper = new \Model\File\Mapper($app->connection);
+	if (!$file = $mapper->findById($id)) {
+		header( "HTTP/1.1 404 Not Found" );
+  		exit();
+	}
+	$app->render('../protected/views/gallery.tpl', array('file'=>$file));
+});
+
 $app->get('/view', function() use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
 	$list = $mapper->findAll();
@@ -82,7 +95,7 @@ $app->get('/view', function() use ($app) {
 
 $app->get('/view/:id', function ($id) use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
-	if (!$file = $mapper->findById($id)) {
+	if ( !($file = $mapper->findById($id)) ) {
 		header( "HTTP/1.1 404 Not Found" );
   		exit();
 	}

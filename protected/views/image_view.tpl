@@ -42,8 +42,9 @@
 
 		<div class="caption">Предпросмотр изображения</div>
 		<div class="preview">
-			<img src="../upload/{$file['id']}_{$file['name']}.txt"
-				alt="image" width="100%">
+			<a href="../full-size/{$file['id']}" target="_blank">
+				<img src="../upload/{$file['id']}_{$file['name']}.txt"
+							alt="image" width="100%">в полном разрешении</a>
 		</div>
 
 		<div class="caption">Специфические характеристики формата</div>

@@ -29,11 +29,12 @@ html, body {
 }
 #list-items td {
 	border: 1px solid #555;
-	padding: 4px;
+	padding: 8px;
 }
 #list-items th {
 	background-color: #eee;
 	border: 1px solid #555;
+	padding: 8px;
 }
 .preview {
 	width: 300px;

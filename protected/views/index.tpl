@@ -18,7 +18,9 @@
 					<label>Выберите файл: <input type="file" name="upload[file1]"></label>
 				</p>
 				<p>
-					<label for="description">Описание (до 255 символов, необязательное поле):</label>
+					<label for="description">
+						Описание (до 255 символов, необязательное поле):
+					</label>
 					<div>
 						<textarea id="description" name="description"></textarea>
 					</div>

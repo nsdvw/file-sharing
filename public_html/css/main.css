@@ -5,6 +5,9 @@ html, body {
 	background-color: #fff;
 }
 #form {
+	border-top: 1px solid #111;
+}
+#wrapper {
 	width: 400px;
 	margin: auto;
 }

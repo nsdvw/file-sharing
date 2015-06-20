@@ -12,8 +12,11 @@ CREATE TABLE file (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL,
 	upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	description VARCHAR(255) COMMENT 'short author\'s description of the file',
+	description VARCHAR(255),
 	author_id INT UNSIGNED,
+	size INT UNSIGNED NOT NULL,
+	mime_type VARCHAR(50) NOT NULL,
+	properties TEXT COMMENT 'specific params of file, packed in json-format string',
 	FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY (id)
 );

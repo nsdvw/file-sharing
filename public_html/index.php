@@ -6,7 +6,7 @@ $app = new \Slim\Slim( array(
 ));
 
 $app->container->singleton('connection', function(){
-	$db_config = parse_ini_file('config.txt');
+	$db_config = parse_ini_file('../protected/config.txt');
 	return new \PDO(
 					$db_config['conn'],
 					$db_config['user'],
@@ -14,14 +14,14 @@ $app->container->singleton('connection', function(){
 				);
 });
 
-$app->get('/', function () use ($app) {
+$app->get('/', function() use ($app) {
     $app->render(
     	'../protected/views/index.tpl',
     	array('noticeMessage'=>'', 'errorMessage'=>'')
    	);
 });
 
-$app->post('/', function () use ($app) {
+$app->post('/', function() use ($app) {
 	$error = $_FILES['upload']['error']['file1'];
 	$type = $_FILES['upload']['type']['file1'];
 	$name = $_FILES['upload']['name']['file1'];
@@ -37,30 +37,49 @@ $app->post('/', function () use ($app) {
 			)
    		);
 	}else{
-		$model = new \Model\File\Mapper($app->connection);
-		$model->save($name, null, $description);
-		move_uploaded_file($tmp_name, __DIR__ . '/upload/'.$model->id.'_'.$name);
-		$app->render(
-			'../protected/views/index.tpl',
-			array(
-				'noticeMessage'=>'Файл был успешно загружен на сервер.',
-				'errorMessage'=>''
-			)
-		);
+		$mapper = new \Model\File\Mapper($app->connection);
+		$file = new \Model\File\File($name, $tmp_name, $description);
+		$app->connection->beginTransaction();
+		$id = $mapper->save($file);
+		if (move_uploaded_file(
+				$tmp_name,
+				"upload/{$id}_{$name}.txt"
+			))
+		{
+			$app->connection->commit();
+			$app->render(
+				'../protected/views/index.tpl',
+				array(
+					'noticeMessage'=>'Файл был успешно загружен на сервер.',
+					'errorMessage'=>'',
+				)
+			);
+		} else {
+			$app->connection->rollBack();
+			$app->render(
+				'../protected/views/index.tpl',
+				array(
+					'noticeMessage'=>'',
+					'errorMessage'=>'Файл не был загружен.
+					Ошибка на сервере: нет прав на запись,
+					либо директория не существует.',
+				)
+			);
+		}
 	}
 });
 
-$app->get('/view', function () use ($app) {
-	$model = new \Model\File\Mapper($app->connection);
-	$list = $model->find();
+$app->get('/view', function() use ($app) {
+	$mapper = new \Model\File\Mapper($app->connection);
+	$list = $mapper->find();
     $app->render('../protected/views/list.tpl', array('list'=>$list));
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
-	$model = new \Model\File\Mapper($app->connection);
-	$file = $model->find($id);
+	$mapper = new \Model\File\Mapper($app->connection);
+	$file = $mapper->find($id);
 	$finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = $finfo->file(__DIR__ . '/upload/'.$file[0]['id'].'_'.$file[0]['name']);
+    $mime = $finfo->file(__DIR__ . "/upload/{$file[0]['id']}_{$file[0]['name']}.txt");
     if(in_array($mime, array('image/jpeg', 'image/gif', 'image/png'))){
     	$app->render('../protected/views/image_view.tpl', array('file'=>$file));
     }else{

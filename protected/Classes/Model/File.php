@@ -1,41 +1,40 @@
 <?php namespace Model\File;
 
-class Mapper
+class File
 {
-	public $id; // lastInsertId
-	protected $connection;
+	public $name;
+	public $description;
+	public $author_id;
+	public $size;
+	public $mime_type;
+	public $properties;
 
-	public function __construct(\PDO $connection)
+	public function __construct(
+								$name,
+								$tmp_name,
+								$description = NULL,
+								$author_id = NULL
+								)
 	{
-		$this->connection = $connection;
+		$this->name = $name;
+		$this->description = $description;
+		$this->author_id = $author_id;
+
+		$info = self::getInfo("/$tmp_name");
+		$this->size = $info['size'];
+		$this->mime_type = $info['mime_type'];
+		$this->properties = $info['properties'];
 	}
 
-	public function save($name, $author_id = null, $description = null)
+	protected static function getInfo($file)
 	{
-		$sql = "INSERT INTO file (name, author_id, description)
-					   VALUES (:name, :author_id, :description)";
-		$sth = $this->connection->prepare($sql);
-		$sth->bindParam(':name', $name, \PDO::PARAM_STR);
-		$sth->bindParam(':author_id', $author_id, \PDO::PARAM_INT);
-		$sth->bindParam(':description', $description, \PDO::PARAM_STR);
-		$sth->execute();
-		$this->id = $this->connection->lastInsertId();
-	}
-
-	public function find($id = null, $limit = 100)
-	{
-		if(!$id){
-			$sql = "SELECT id, name, upload_time, description, author_id
-					FROM file ORDER BY upload_time DESC LIMIT :limit";
-			$sth = $this->connection->prepare($sql);
-			$sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
-		}else{
-			$sql = "SELECT id, name, upload_time, description, author_id
-					FROM file WHERE id=:id";
-			$sth = $this->connection->prepare($sql);
-			$sth->bindParam(':id', $id, \PDO::PARAM_INT);
-		}
-		$sth->execute();
-		return $sth->fetchAll();
+		$info = array();
+		$info['size'] = filesize($file);
+		$finfo = new \finfo(FILEINFO_MIME_TYPE);
+		$info['mime_type'] = $finfo->file($file);
+		$id3 = new \getID3();
+		$id3->encoding = 'UTF-8';
+		$info['properties'] = json_encode( $id3->analyze($file) );
+		return $info;
 	}
 }

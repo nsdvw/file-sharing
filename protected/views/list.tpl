@@ -2,17 +2,20 @@
 <html lang="ru">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>Последние загруженные файлы</title>
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 	<div id="content">
+		<a href="../">Назад на главную</a>
 		<h3>Список последних 100 загруженных на сервер файлов</h3>
 		<table id="list-items">
 			<tr>
 				<th>#</th>
-				<th>Комментарий автора</th>
+				<th>Имя</th>
+				<th>Тип файла</th>
 				<th>Ссылка на подробное описание</th>
+				<th>Размер</th>
 				<th>Дата загрузки</th>
 			</tr>
 			{$i = 1}
@@ -21,13 +24,17 @@
 				<td>
 					{$i++}
 				</td>
+				<td>
+					{$item.name}
+				</td>
 				<td class="item-description">
-					{if $item.description}
-						{$item.description}
-					{/if}
+					{$item.mime_type}
 				</td>
 				<td class="link">
 					<a href="view/{$item.id}">подробное описание</a>
+				</td>
+				<td class="size">
+					{$item.size}
 				</td>
 				<td class="time">
 					{$item.upload_time}

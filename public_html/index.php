@@ -7,12 +7,16 @@ $app = new \Slim\Slim( array(
 
 /* Соединение с бд в синглтон, там же разбираем конфиги */
 $app->container->singleton('connection', function(){
-	$db_config = parse_ini_file('../protected/config.txt');
-	return new \PDO(
-					$db_config['conn'],
-					$db_config['user'],
-					$db_config['pass']
-				);
+	try {
+		$db_config = parse_ini_file('../protected/config.txt');
+		return new \PDO(
+						$db_config['conn'],
+						$db_config['user'],
+						$db_config['pass']
+					);
+	} catch (Exception $e) {
+		die('Something has happened... Please try again or come back later.');
+	}
 });
 
 $app->get('/', function() use ($app) {
@@ -78,7 +82,10 @@ $app->get('/view', function() use ($app) {
 
 $app->get('/view/:id', function ($id) use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
-	$file = $mapper->findById($id);
+	if (!$file = $mapper->findById($id)) {
+		header( "HTTP/1.1 404 Not Found" );
+  		exit();
+	}
 	/* Форматирование сырых данных перед выводом в шаблон
 	(я бы вынес это в отдельный метод контроллера, но тут нет контроллера)
 	*/

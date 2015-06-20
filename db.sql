@@ -16,7 +16,7 @@ CREATE TABLE file (
 	author_id INT UNSIGNED,
 	size INT UNSIGNED NOT NULL,
 	mime_type VARCHAR(50) NOT NULL,
-	properties TEXT COMMENT 'specific params of file, packed in json-format string',
+	properties TEXT COMMENT 'specific params, packed in json-format string',
 	FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY (id)
 );

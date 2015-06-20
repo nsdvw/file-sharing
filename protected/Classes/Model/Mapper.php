@@ -29,7 +29,7 @@ class Mapper
 	public function findAll($limit = 100, $offset = 0)
 	{
 		$sql = "SELECT id, name, upload_time, description,
-				author_id, size, mime_type 
+				author_id, size, mime_type, properties
 				FROM file ORDER BY upload_time DESC LIMIT :offset, :limit";
 		$sth = $this->connection->prepare($sql);
 		$sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
@@ -41,7 +41,7 @@ class Mapper
 	public function findById($id)
 	{
 		$sql = "SELECT id, name, upload_time, description,
-				author_id, size, mime_type
+				author_id, size, mime_type, properties
 				FROM file WHERE id=:id";
 		$sth = $this->connection->prepare($sql);
 		$sth->bindParam(':id', $id, \PDO::PARAM_INT);

@@ -6,20 +6,62 @@
 	<link rel="stylesheet" href="../css/main.css">
 </head>
 <body>
-	<div id="wrapper">
-		<h3>Описание файла</h3>
-		<p class="row">Название: {$file['name']}</p>
-		{if $file[0]['description']}
-		<p class="row">Комментарий автора: {$file['description']}</p>
-		{/if}
-		<p class="row">Ссылка для скачивания: 
-			<a href="../download/{$file[0]['id']}/{$file['name']}">скачать</a>
-		</p>
-		<p class="row">Тип: {$file['mime_type']}</p>
-		<p class="row">Размер: {$file['size']}</p>
-		<p class="row">Дата загрузки: {$file['upload_time']}</p>
-		<img class="preview" src="../upload/{$file['id']}_{$file['name']}.txt"
-			alt="image">
-	</div>
+	<div id="content">
+		<a href="../">Назад на главную</a>
+		<div class="caption">Общие характеристики</div>
+		<table class="description">
+			<tr>
+				<td class="property">Название</td>
+				<td class="value">{$file['name']}</td>
+			</tr>
+			{if $file['description']}
+			<tr>
+				<td class="property">Комментарий автора</td>
+				<td class="value">{$file['description']}</td>
+			</tr>
+			{/if}
+			<tr>
+				<td class="property">Ссылка для скачивания</td>
+				<td class="value">
+					<a href="../download/{$file['id']}/{$file['name']}">скачать</a>
+				</td>
+			</tr>
+			<tr>
+				<td class="property">Тип файла</td>
+				<td class="value">{$file['mime_type']}</td>
+			</tr>
+			<tr>
+				<td class="property">Размер</td>
+				<td class="value">{$file['size']}</td>
+			</tr>
+			<tr>
+				<td class="property">Дата загрузки</td>
+				<td class="value">{$file['upload_time']}</td>
+			</tr>
+		</table>
+
+		<div class="caption">Предпросмотр изображения</div>
+		<div class="preview">
+			<img src="../upload/{$file['id']}_{$file['name']}.txt"
+				alt="image" width="100%">
+		</div>
+
+		<div class="caption">Специфические характеристики формата</div>
+		<table class="description">
+			<tr>
+				<td class="property">Разрешение</td>
+				<td class="value">
+					{$file['properties']->video->resolution_x} x
+					{$file['properties']->video->resolution_x}
+				</td>
+			</tr>
+			<tr>
+				<td class="property">Bits per sample</td>
+				<td class="value">
+					{$file['properties']->video->bits_per_sample}
+				</td>
+			</tr>
+		</table>
+	</div>	
 </body>
 </html>

@@ -89,6 +89,7 @@ $app->get('/view/:id', function ($id) use ($app) {
     }elseif ($file['size'] > 1024) {
     	$file['size'] = round($file['size'] / 1024, 2) . ' Кб';
     }
+    $file['properties'] = json_decode($file['properties']);
     /* Выбор шаблона в зависимости от типа файла */
     if (in_array($file['mime_type'], array('image/jpeg', 'image/gif',
     									  'image/png', 'image/tiff',

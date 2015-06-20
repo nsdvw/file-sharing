@@ -36,11 +36,56 @@ html, body {
 	border: 1px solid #555;
 }
 .preview {
-	width: 240px;
+	width: 300px;
+	margin-left: 15px;
 }
 .notice {
 	color: #4c4;
 }
 .error {
 	color: indianred;
+}
+.caption {
+	font-size: 1.5em;
+	font-weight: bold;
+	color: #111;
+	margin: 25px 15px 15px;
+}
+.description {
+	width: 100%;
+	border-spacing: 0;
+	/*border-collapse: collapse;
+	Скругления не срабатывают при collapse. Whyй?
+	*/
+}
+.description tr:last-child td:last-child {
+	border-bottom-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+  	-moz-border-radius-bottomright: 10px;
+}
+.description tr:last-child td:first-child {
+	border-bottom-left-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+  	-moz-border-radius-bottomleft: 10px;
+}
+.description tr:first-child td:last-child {
+	border-top: 1px solid #ccc;
+	border-top-right-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+  	-moz-border-radius-topright: 10px;
+}
+.description tr:first-child td:first-child {
+	border-top: 1px solid #ccc;
+	border-top-left-radius: 10px;
+	-webkit-border-top-left-radius: 10px;
+  	-moz-border-radius-topleft: 10px;
+}
+.property, .value {
+	width: 50%;
+	padding: 8px;
+	border-bottom: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+}
+.value {
+	border-right: 1px solid #ccc;
 }

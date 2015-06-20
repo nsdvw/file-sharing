@@ -12,12 +12,12 @@
 		<table class="description">
 			<tr>
 				<td class="property">Название</td>
-				<td class="value">{$file['name']}</td>
+				<td class="value">{htmlspecialchars($file['name'])}</td>
 			</tr>
 			<tr>
 				{if $file['description']}
 				<td class="property">Комментарий автора</td>
-				<td class="value">{$file['description']}</td>
+				<td class="value">{htmlspecialchars($file['description'])}</td>
 				{/if}
 			</tr>
 			<tr>

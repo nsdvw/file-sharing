@@ -25,7 +25,7 @@
 					{$i++}
 				</td>
 				<td>
-					{$item.name}
+					{htmlspecialchars($item.name)}
 				</td>
 				<td class="item-description">
 					{$item.mime_type}

@@ -28,19 +28,13 @@
 					{htmlspecialchars($item.name)}
 				</td>
 				<td class="item-description">
-					{$item.mime_type}
+					{$item.properties->mime_type}
 				</td>
 				<td class="link">
 					<a href="view/{$item.id}">подробное описание</a>
 				</td>
 				<td class="size">
-				{if $item.size > pow(1024, 3)}
-					{round($item.size / pow(1024, 3), 2)} Гб
-				{elseif $item.size > pow(1024, 2)}
-					{round($item.size / pow(1024, 2), 2)} Мб
-				{else}
-					{round($item.size / 1024, 2)} Кб
-				{/if}
+					{$item.properties->size}
 				</td>
 				<td class="time">
 					{$item.upload_time}

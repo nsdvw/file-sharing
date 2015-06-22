@@ -28,15 +28,15 @@
 			</tr>
 			<tr>
 				<td class="property">Тип файла</td>
-				<td class="value">{$file['mime_type']}</td>
+				<td class="value">{$file.properties->mime_type}</td>
 			</tr>
 			<tr>
 				<td class="property">Размер</td>
-				<td class="value">{$file['size']}</td>
+				<td class="value">{$file.properties->size}</td>
 			</tr>
 			<tr>
 				<td class="property">Дата загрузки</td>
-				<td class="value">{$file['upload_time']}</td>
+				<td class="value">{$file.upload_time}</td>
 			</tr>
 		</table>
 
@@ -44,7 +44,7 @@
 		<div class="preview">
 			<a href="../full-size/{$file['id']}" target="_blank">
 				<img src="../upload/{$file['id']}_{$file['name']}.txt"
-							alt="image" width="100%">в полном разрешении</a>
+					alt="image" width="240"><br>в полном разрешении</a>
 		</div>
 
 		<div class="caption">Специфические характеристики формата</div>
@@ -52,14 +52,14 @@
 			<tr>
 				<td class="property">Разрешение</td>
 				<td class="value">
-					{$file['properties']->video->resolution_x} x
-					{$file['properties']->video->resolution_x}
+					{$file['properties']->resolution_x} x
+					{$file['properties']->resolution_x}
 				</td>
 			</tr>
 			<tr>
 				<td class="property">Bits per sample</td>
 				<td class="value">
-					{$file['properties']->video->bits_per_sample}
+					{$file['properties']->bits_per_sample}
 				</td>
 			</tr>
 		</table>

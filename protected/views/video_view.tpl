@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 	<meta charset="UTF-8">
-	<title>Подробное описание файла</title>
+	<title>Подробное описание изображения</title>
 	<link rel="stylesheet" href="../css/main.css">
 </head>
 <body>
@@ -14,12 +14,12 @@
 				<td class="property">Название</td>
 				<td class="value">{htmlspecialchars($file['name'])}</td>
 			</tr>
+			{if $file['description']}
 			<tr>
-				{if $file['description']}
 				<td class="property">Комментарий автора</td>
 				<td class="value">{htmlspecialchars($file['description'])}</td>
-				{/if}
 			</tr>
+			{/if}
 			<tr>
 				<td class="property">Ссылка для скачивания</td>
 				<td class="value">
@@ -28,17 +28,25 @@
 			</tr>
 			<tr>
 				<td class="property">Тип файла</td>
-				<td class="value">{$file.properties->mime_type}</td>
+				<td class="value">{$file['mime_type']}</td>
 			</tr>
 			<tr>
 				<td class="property">Размер</td>
-				<td class="value">{$file.properties->size}</td>
+				<td class="value">{$file['size']}</td>
 			</tr>
 			<tr>
 				<td class="property">Дата загрузки</td>
-				<td class="value">{$file.upload_time}</td>
+				<td class="value">{$file['upload_time']}</td>
 			</tr>
 		</table>
-	</div>
+
+		<div class="caption">Предпросмотр изображения</div>
+		<div class="player">
+			<video src="../upload/{$file['id']}_{$file['name']}.txt"
+			controls="controls"></video>
+		</div>
+
+		
+	</div>	
 </body>
 </html>

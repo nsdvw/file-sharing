@@ -27,7 +27,6 @@ $app->get('/', function() use ($app) {
 });
 
 $app->post('/', function() use ($app) {
-	/* Собираем данные из FILES и POST */
 	$error = $_FILES['upload']['error']['file1'];
 	$name = $_FILES['upload']['name']['file1'];
 	$tmp_name = $_FILES['upload']['tmp_name']['file1'];
@@ -90,6 +89,19 @@ $app->get('/full-size/:id', function($id) use ($app) {
 $app->get('/view', function() use ($app) {
 	$mapper = new \Model\File\Mapper($app->connection);
 	$list = $mapper->findAll();
+	$list = array_map(
+			function($el){
+				$el['properties'] = json_decode($el['properties']);
+				$el['properties']->size = 
+					\Model\File\MediaInfo::formatSize($el['properties']->size);
+				if (mb_strlen($el['name']) > 50) {
+					mb_internal_encoding("UTF-8");
+					$el['name'] = mb_substr($el['name'], 0, 50) . '...';
+				}
+				return $el;
+			},
+			$list
+	);
     $app->render('../protected/views/list.tpl', array('list'=>$list));
 });
 
@@ -99,22 +111,26 @@ $app->get('/view/:id', function ($id) use ($app) {
 		header( "HTTP/1.1 404 Not Found" );
   		exit();
 	}
-	/* Форматирование сырых данных перед выводом в шаблон
-	(я бы вынес это в отдельный метод контроллера, но тут нет контроллера)
-	*/
-    if ($file['size'] > pow(1024, 3)) {
-    	$file['size'] = round($file['size'] / pow(1024, 3), 2) . ' Гб';
-    } elseif ($file['size'] > pow(1024, 2)) {
-    	$file['size'] = round($file['size'] / pow(1024, 2), 2) . ' Мб';
-    }elseif ($file['size'] > 1024) {
-    	$file['size'] = round($file['size'] / 1024, 2) . ' Кб';
-    }
-    $file['properties'] = json_decode($file['properties']);
+	$file['properties'] = json_decode($file['properties']);
+	$file['properties']->size = 
+		\Model\File\MediaInfo::formatSize($file['properties']->size);
     /* Выбор шаблона в зависимости от типа файла */
-    if (in_array($file['mime_type'], array('image/jpeg', 'image/gif',
+    if (in_array($file['properties']->mime_type, array('image/jpeg', 'image/gif',
     									  'image/png', 'image/tiff',
-    ))) {
+    	)))
+    {
     	$app->render('../protected/views/image_view.tpl', array('file'=>$file));
+    } elseif(in_array($file['properties']->mime_type, array(
+    		'video/webm', 'video/mp4', 'application/ogg',
+    	)))
+    {
+    	if(($file['properties']->mime_type == 'video/mp4') and
+    		stripos($_SERVER['HTTP_USER_AGENT'], 'opera') !== false)
+    	{
+    		$app->render('../protected/views/detail_view.tpl', array('file'=>$file));
+    	}else{
+    		$app->render('../protected/views/video_view.tpl', array('file'=>$file));
+    	}
     } else {
     	$app->render('../protected/views/detail_view.tpl', array('file'=>$file));
     }

@@ -28,11 +28,11 @@
 			</tr>
 			<tr>
 				<td class="property">Тип файла</td>
-				<td class="value">{$file['mime_type']}</td>
+				<td class="value">{$file.properties->mime_type}</td>
 			</tr>
 			<tr>
 				<td class="property">Размер</td>
-				<td class="value">{$file['size']}</td>
+				<td class="value">{$file.properties->size}</td>
 			</tr>
 			<tr>
 				<td class="property">Дата загрузки</td>

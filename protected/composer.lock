@@ -1,10 +1,10 @@
-{ 
+{
     "_readme": [
         "This file locks the dependencies of your project to a known state",
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "63bd32555ef39211abc53463d5ee7b5b",
+    "hash": "2505b5922858bd22f470f7d00dee43e7",
     "packages": [
         {
             "name": "components/jquery",
@@ -47,6 +47,54 @@
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
             "time": "2015-05-08 05:04:47"
+        },
+        {
+            "name": "donatj/phpuseragentparser",
+            "version": "v0.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/donatj/PhpUserAgent.git",
+                "reference": "4d52dd811016383d95c7dabfa29e824d7523e581"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/donatj/PhpUserAgent/zipball/4d52dd811016383d95c7dabfa29e824d7523e581",
+                "reference": "4d52dd811016383d95c7dabfa29e824d7523e581",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "camspiers/json-pretty": "0.1.*",
+                "donatj/drop": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "Source/UserAgentParser.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jesse G. Donat",
+                    "email": "donatj@gmail.com",
+                    "homepage": "http://donatstudios.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple, streamlined PHP user-agent parser",
+            "homepage": "http://donatstudios.com/PHP-Parser-HTTP_USER_AGENT",
+            "keywords": [
+                "parser",
+                "user agent",
+                "useragent"
+            ],
+            "time": "2015-04-23 16:02:12"
         },
         {
             "name": "james-heinrich/getid3",

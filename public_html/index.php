@@ -114,6 +114,7 @@ $app->get('/view/:id', function ($id) use ($app) {
 	$file['properties'] = json_decode($file['properties']);
 	$file['properties']->size = 
 		\Model\File\MediaInfo::formatSize($file['properties']->size);
+	//$ua_info = parse_user_agent();
     /* Выбор шаблона в зависимости от типа файла */
     if (in_array($file['properties']->mime_type, array('image/jpeg', 'image/gif',
     									  'image/png', 'image/tiff',
@@ -124,8 +125,9 @@ $app->get('/view/:id', function ($id) use ($app) {
     		'video/webm', 'video/mp4', 'application/ogg',
     	)))
     {
+    	$ua_info = parse_user_agent();
     	if(($file['properties']->mime_type == 'video/mp4') and
-    		stripos($_SERVER['HTTP_USER_AGENT'], 'opera') !== false)
+    		$ua_info['browser'] == 'Opera')
     	{
     		$app->render('../protected/views/detail_view.tpl', array('file'=>$file));
     	}else{

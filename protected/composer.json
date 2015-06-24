@@ -8,8 +8,8 @@
         "donatj/phpuseragentparser": "^0.3.6"
     },
     "autoload": {
-    	"psr-4": {
-    		"Model\\": "Classes/Model"
-    	}
+        "psr-4": {
+            "Model\\": "Classes/Model"
+        }
     }
 }

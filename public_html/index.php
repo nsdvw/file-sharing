@@ -22,9 +22,16 @@ $app->container->singleton('connection', function(){
 });
 
 $app->get('/', function() use ($app) {
+    $content = 'upload_form';
+    $title = 'Загрузка нового файла';
     $app->render(
-        'index.tpl',
-        array('noticeMessage'=>'', 'errorMessage'=>'')
+        'frame.tpl',
+        array(
+            'noticeMessage'=>'',
+            'errorMessage'=>'',
+            'content'=>$content,
+            'title'=>$title,
+        )
     );
 });
 
@@ -34,12 +41,16 @@ $app->post('/', function() use ($app) {
     $tmp_name = $_FILES['upload']['tmp_name']['file1'];
     $description = (isset($_POST['description']) and $_POST['description']!=='') 
                         ? $_POST['description'] : null;
+
+
     if($error){
         $app->render(
-            'index.tpl',
+            'frame.tpl',
             array(
                 'noticeMessage'=>'',
                 'errorMessage'=>"Файл не был загружен. Код ошибки: $error",
+                /*'content'=>$content,
+                'title'=>$title,*/
             )
         );
     }else{
@@ -75,16 +86,12 @@ $app->post('/', function() use ($app) {
     }
 });
 
-$app->get('/full-size', function() use ($app) {
-    echo '<meta charset="utf-8">Здесь планируется галерея.';
-});
-
 $app->get('/full-size/:id', function($id) use ($app) {
     $mapper = new \Model\File\Mapper($app->connection);
     if (!$file = $mapper->findById($id)) {
         $app->notFound();
     }
-    $app->render('gallery.tpl', array('file'=>$file));
+    //$app->render('gallery.tpl', array('file'=>$file));
 });
 
 $app->get('/view', function() use ($app) {
@@ -103,7 +110,13 @@ $app->get('/view', function() use ($app) {
             },
             $list
     );
-    $app->render('list.tpl', array('list'=>$list));
+    $content = 'list_info';
+    $title = 'Список файлов на сервере';
+    $app->render('frame.tpl', array(
+        'list'=>$list,
+        'content'=>$content,
+        'title'=>$title,
+    ));
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
@@ -115,29 +128,43 @@ $app->get('/view/:id', function ($id) use ($app) {
     $file['properties']->size = 
         \Model\File\MediaInfo::formatSize($file['properties']->size);
     /* Выбор шаблона в зависимости от типа файла */
+    $content = 'file_info';
+    $title = 'Информация о файле';
+
     if (in_array($file['properties']->mime_type, array(
             'image/jpeg', 'image/gif', 'image/png',
         )))
     {
-        $app->render('image_view.tpl', array('file'=>$file));
+        $preview = 'image_preview';
+        $description = 'image_description';
+        $app->render('frame.tpl', array(
+            'file'=>$file,
+            'content'=>$content,
+            'title'=>$title,
+            'preview'=>$preview,
+            'description'=>$description,
+        ));
     } elseif(in_array($file['properties']->mime_type, array(
             'video/webm', 'video/mp4', 'application/ogg',
         )))
     {
-        $ua_info = parse_user_agent();
-        if(($file['properties']->mime_type == 'video/mp4') and
-            $ua_info['browser'] == 'Opera')
-        {
-            $app->render('detail_view.tpl', array('file'=>$file));
-        }elseif($ua_info['browser'] == 'MSIE' and 
-                ($file['properties']->mime_type == 'application/ogg' or
-                $file['properties']->mime_type == 'video/webm')){
-            $app->render('detail_view.tpl', array('file'=>$file));
-        }else{
-            $app->render('video_view.tpl', array('file'=>$file));
-        }
+        $preview = 'video_player';
+        $description = 'video_description';
+        $app->render('frame.tpl', array(
+            'file'=>$file,
+            'content'=>$content,
+            'title'=>$title,
+            'preview'=>$preview,
+            'description'=>$description,
+        ));
     }else{
-        $app->render('detail_view.tpl', array('file'=>$file));
+        $app->render('frame.tpl', array(
+            'file'=>$file,
+            'content'=>$content,
+            'title'=>$title,
+            'preview'=>false,
+            'description'=>false,
+        ));
     }
 });
 

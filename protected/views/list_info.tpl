@@ -1,3 +1,4 @@
+{include file="header.tpl"}
 <div id="content">
     <a href="../">Назад на главную</a>
     <h3>Список последних 100 загруженных на сервер файлов</h3>
@@ -26,3 +27,4 @@
         {/foreach}
     </table>
 </div>
+{include file="footer.tpl"}

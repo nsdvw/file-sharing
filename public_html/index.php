@@ -24,7 +24,6 @@ $app->container->singleton('connection', function(){
 });
 
 $app->get('/', function() use ($app) {
-    $content = 'upload_form';
     $title = 'Загрузка нового файла';
     $errorMessage = "Файл не был загружен. Код ошибки: ";
     $errorMessage = (isset($_GET['error']))
@@ -32,11 +31,10 @@ $app->get('/', function() use ($app) {
     $noticeMessage = (isset($_GET['notice']) and $_GET['notice'] == 'ok')
                     ? "Файл успешно загружен!" : '';
     $app->render(
-        'frame.tpl',
+        'upload_form.tpl',
         array(
             'noticeMessage'=>$noticeMessage,
             'errorMessage'=>$errorMessage,
-            'content'=>$content,
             'title'=>$title,
         )
     );
@@ -76,11 +74,9 @@ $app->get('/full-size/:id', function($id) use ($app) {
 $app->get('/view', function() use ($app) {
     $mapper = new \Storage\Model\FileMapper($app->connection);
     $list = $mapper->findAll();
-    $content = 'list_info';
     $title = 'Список файлов на сервере';
-    $app->render('frame.tpl', array(
+    $app->render('list_info.tpl', array(
         'list'=>$list,
-        'content'=>$content,
         'title'=>$title,
     ));
 });
@@ -90,7 +86,6 @@ $app->get('/view/:id', function ($id) use ($app) {
     if (!$file = $mapper->findById($id)) {
         $app->notFound();
     }
-    $content = 'file_info';
     $title = 'Информация о файле';
 
     if (in_array($file->mime_type, array(
@@ -99,9 +94,8 @@ $app->get('/view/:id', function ($id) use ($app) {
     {
         $preview = 'image_preview';
         $description = 'image_description';
-        $app->render('frame.tpl', array(
+        $app->render('file_info.tpl', array(
             'file'=>$file,
-            'content'=>$content,
             'title'=>$title,
             'preview'=>$preview,
             'description'=>$description,
@@ -112,20 +106,20 @@ $app->get('/view/:id', function ($id) use ($app) {
     {
         $preview = 'video_player';
         $description = 'video_description';
-        $app->render('frame.tpl', array(
+        $app->render('file_info.tpl', array(
             'file'=>$file,
-            'content'=>$content,
             'title'=>$title,
             'preview'=>$preview,
             'description'=>$description,
         ));
     }else{
-        $app->render('frame.tpl', array(
+        $preview = false;
+        $description = false;
+        $app->render('file_info.tpl', array(
             'file'=>$file,
-            'content'=>$content,
             'title'=>$title,
-            'preview'=>false,
-            'description'=>false,
+            'preview'=>$preview,
+            'description'=>$description,
         ));
     }
 });

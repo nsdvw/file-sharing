@@ -1,3 +1,4 @@
+{include file="header.tpl"}
 <div id="content">
     <a href="../">Назад на главную</a>
     <div class="caption">Общие характеристики</div>
@@ -41,3 +42,4 @@
     {/if}
 
 </div>
+{include file="footer.tpl"}

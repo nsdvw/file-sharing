@@ -1,3 +1,4 @@
+{include file="header.tpl"}
 <div id="wrapper">
     <div id="header">
         <p>Тут что-то должно быть написано.</p>
@@ -22,3 +23,4 @@
         <p class="error">{$errorMessage}</p>
     </div>
 </div>
+{include file="footer.tpl"}

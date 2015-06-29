@@ -4,31 +4,31 @@
     <table class="description">
         <tr>
             <td class="property">Название</td>
-            <td class="value">{htmlspecialchars($file['name'])}</td>
+            <td class="value">{$file->name|escape|truncate:25}</td>
         </tr>
-        {if $file['description']}
+        {if $file->description}
         <tr>
             <td class="property">Комментарий автора</td>
-            <td class="value">{htmlspecialchars($file['description'])}</td>
+            <td class="value">{$file->description|escape}</td>
         </tr>
         {/if}
         <tr>
             <td class="property">Ссылка для скачивания</td>
             <td class="value">
-                <a href="../download/{$file['id']}/{$file['name']}">скачать</a>
+                <a href="../download/{$file->id}/{$file->name}">скачать</a>
             </td>
         </tr>
         <tr>
             <td class="property">Тип файла</td>
-            <td class="value">{$file.properties->mime_type}</td>
+            <td class="value">{$file->mime_type}</td>
         </tr>
         <tr>
             <td class="property">Размер</td>
-            <td class="value">{$file.properties->size}</td>
+            <td class="value">{$file->size}</td>
         </tr>
         <tr>
             <td class="property">Дата загрузки</td>
-            <td class="value">{$file.upload_time}</td>
+            <td class="value">{$file->upload_time}</td>
         </tr>
     </table>
     

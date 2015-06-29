@@ -14,7 +14,10 @@ CREATE TABLE file (
     upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     description VARCHAR(255),
     author_id INT UNSIGNED,
-    properties TEXT COMMENT 'specific params, packed in json-format string',
+    size INT UNSIGNED NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    /* e.g. application/vnd.openxmlformats-officedocument.presentationml.presentation */
+    mediaInfo TEXT COMMENT 'specific params, packed in json-format string',
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)
 );

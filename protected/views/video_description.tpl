@@ -4,17 +4,17 @@
 <table class="description">
     <tr>
         <td class="property">Продолжительность</td>
-        <td class="value">{$file['properties']->playtime}</td>
+        <td class="value">{$file->mediaInfo->playtime}</td>
     </tr>
     <tr>
         <td class="property">Разрешение</td>
         <td class="value">
-            {$file['properties']->resolution_x} x
-            {$file['properties']->resolution_y}
+            {$file->mediaInfo->resolution_x} x
+            {$file->mediaInfo->resolution_y}
         </td>
     </tr>
     <tr>
         <td class="property">Частота кадров</td>
-        <td class="value">{$file.properties->frame_rate}</td>
+        <td class="value">{$file->mediaInfo->frame_rate}</td>
     </tr>
 </table>

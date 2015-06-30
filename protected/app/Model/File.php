@@ -28,17 +28,23 @@ class File
         return $file;
     }
 
-    static public function formatSize($size)
+    public function isImage()
     {
-        if ($size > pow(1024, 3)) {
-            $size = round($size / pow(1024, 3), 2) . ' Гб';
-        } elseif ($size > pow(1024, 2)) {
-            $size = round($size / pow(1024, 2), 2) . ' Мб';
-        } elseif ($size > 1024) {
-            $size = round($size / 1024, 2) . ' Кб';
+        $types = array('image/jpeg', 'image/png', 'image/gif');
+        if (in_array($this->mime_type, $types)) {
+            return true;
         } else {
-            return "$size байт";
+            return false;
         }
-        return $size;
+    }
+
+    public function isVideo()
+    {
+        $types = array('video/webm', 'video/mp4', 'video/ogg');
+        if (in_array($this->mime_type, $types)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

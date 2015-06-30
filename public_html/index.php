@@ -1,13 +1,23 @@
 <?php
-$loader = require '../protected/vendor/autoload.php';
+define('BASE_DIR', '../protected');
+define('UPLOAD_DIR', 'upload');
+define('DOWNLOAD_DIR', 'download');
+define('PREVIEW_DIR', 'preview');
+
+$loader = require BASE_DIR.'/vendor/autoload.php';
 
 $smarty = new \Slim\Views\Smarty();
 //$smarty->caching = false;
 // я не понял, как теперь напрямую обратиться к объекту смарти?
 $app = new \Slim\Slim( array(
     'view' => $smarty,
-    'templates.path' => '../protected/views',
+    'templates.path' => BASE_DIR.'/views',
     'debug' => true,
+));
+
+$baseUrl = $app->request->getUrl();
+$app->view->appendData( array(
+    'baseUrl' => $baseUrl,
 ));
 
 $app->notFound(function () use ($app) {
@@ -15,7 +25,7 @@ $app->notFound(function () use ($app) {
 });
 
 $app->container->singleton('connection', function(){
-        $db_config = parse_ini_file('../protected/config.ini');
+        $db_config = parse_ini_file(BASE_DIR.'/config.ini');
         return new \PDO(
                         $db_config['conn'],
                         $db_config['user'],
@@ -24,10 +34,9 @@ $app->container->singleton('connection', function(){
 });
 
 $app->get('/', function() use ($app) {
-    $title = 'Загрузка нового файла';
-    $errorMessage = "Файл не был загружен. Код ошибки: ";
+    $title = 'Загрузить файл на сервер';
     $errorMessage = (isset($_GET['error']))
-                    ? ('Ошибка. Файл не был загружен. Попробуйте снова.') : '';
+                    ? 'Ошибка. Файл не был загружен. Попробуйте снова.' : '';
     $noticeMessage = (isset($_GET['notice']) and $_GET['notice'] == 'ok')
                     ? "Файл успешно загружен!" : '';
     $app->render(
@@ -46,14 +55,18 @@ $app->post('/', function() use ($app) {
     $tmp_name = $_FILES['upload']['tmp_name']['file1'];
     $description = (isset($_POST['description']) and $_POST['description']!=='') 
                         ? $_POST['description'] : null;
-    if($error){
+    if ($error) {
         $app->response->redirect("/?error=$error");
-    }else{
+    } else {
         $mapper = new \Storage\Model\FileMapper($app->connection);
         $file = \Storage\Model\File::fromUser($name, $tmp_name, $description);
         $app->connection->beginTransaction();
         $mapper->save($file);
-        if (move_uploaded_file($tmp_name, "upload/{$file->id}_{$name}.txt")) {
+        if (move_uploaded_file(
+            $tmp_name,
+            UPLOAD_DIR . '/' .
+            \Storage\Helper\ViewHelper::getUploadName($file->id, $file->name)))
+        {
             $app->connection->commit();
             $app->response->redirect("/?notice=ok");
         } else {
@@ -64,11 +77,15 @@ $app->post('/', function() use ($app) {
 });
 
 $app->get('/full-size/:id', function($id) use ($app) {
-    $mapper = new \Model\File\Mapper($app->connection);
+    $mapper = new \Storage\Model\FileMapper($app->connection);
     if (!$file = $mapper->findById($id)) {
         $app->notFound();
     }
-    //$app->render('gallery.tpl', array('file'=>$file));
+    $title = 'Просмотр изображения';
+    $app->render('image_fullsize.tpl', array(
+        'file'=>$file,
+        'title'=>$title,
+    ));
 });
 
 $app->get('/view', function() use ($app) {
@@ -88,10 +105,11 @@ $app->get('/view/:id', function ($id) use ($app) {
     }
     $title = 'Информация о файле';
 
-    if (in_array($file->mime_type, array(
-            'image/jpeg', 'image/gif', 'image/png',
-        )))
-    {
+    if ($file->isImage()) {
+        $path = PREVIEW_DIR."/{$id}.txt";
+        if (!\Storage\Helper\PreviewGenerator::hasPreview($path)) {
+            \Storage\Helper\PreviewGenerator::createPreview($file);
+        }
         $preview = 'image_preview';
         $description = 'image_description';
         $app->render('file_info.tpl', array(
@@ -100,10 +118,7 @@ $app->get('/view/:id', function ($id) use ($app) {
             'preview'=>$preview,
             'description'=>$description,
         ));
-    } elseif(in_array($file->mime_type, array(
-            'video/webm', 'video/mp4', 'video/ogg',
-        )))
-    {
+    } elseif ($file->isVideo()) {
         $preview = 'video_player';
         $description = 'video_description';
         $app->render('file_info.tpl', array(
@@ -112,7 +127,7 @@ $app->get('/view/:id', function ($id) use ($app) {
             'preview'=>$preview,
             'description'=>$description,
         ));
-    }else{
+    } else {
         $preview = false;
         $description = false;
         $app->render('file_info.tpl', array(

@@ -1,5 +1,5 @@
 {include file="header.tpl"}
-<div id="wrapper">
+<div class="narrow">
     <div id="header">
         <p>Тут что-то должно быть написано.</p>
         <p><a href="./view">Список последних 100 загруженных файлов</a></p>

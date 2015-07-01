@@ -1,7 +1,6 @@
 RewriteEngine On
 
-RewriteRule ^download/([^/]+)/([^/]+)$ /upload/$1_$2.txt
+RewriteRule ^download/[^/]+/[^/]+$ index.php
 
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^/download/.+
 RewriteRule ^ index.php [QSA]

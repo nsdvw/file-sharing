@@ -16,7 +16,7 @@ CREATE TABLE file (
     author_id INT UNSIGNED,
     size INT UNSIGNED NOT NULL,
     mime_type VARCHAR(100) NOT NULL,
-    /* e.g. application/vnd.openxmlformats-officedocument.presentationml.presentation */
+    download_counter INT UNSIGNED NOT NULL DEFAULT 0,
     mediaInfo TEXT COMMENT 'specific params, packed in json-format string',
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)

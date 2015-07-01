@@ -29,6 +29,15 @@ class FileMapper
         $file->id = $this->connection->lastInsertId();
     }
 
+    public function updateCounter($id)
+    {
+        $sql = "UPDATE file SET download_counter = download_counter + 1
+        WHERE id = :id";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindParam(':id', $id, \PDO::PARAM_INT);
+        $sth->execute();
+    }
+
     public function findAll($limit = 100, $offset = 0)
     {
         $sql = "SELECT id, name, upload_time, description,

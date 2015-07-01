@@ -98,6 +98,14 @@ $app->get('/view', function() use ($app) {
     ));
 });
 
+$app->get('/download/:id/:name', function ($id, $name) use ($app){
+    $mapper = new \Storage\Model\FileMapper($app->connection);
+    $mapper->updateCounter($id);
+    header('X-SendFile: ' . '../upload/' . "{$id}_{$name}.txt");
+    header('Content-Disposition: attachment');
+    exit;
+});
+
 $app->get('/view/:id', function ($id) use ($app) {
     $mapper = new \Storage\Model\FileMapper($app->connection);
     if (!$file = $mapper->findById($id)) {

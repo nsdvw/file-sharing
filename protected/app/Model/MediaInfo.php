@@ -44,11 +44,8 @@ class MediaInfo
     {
         $mediaInfo = new self;
         foreach ($obj as $property => $value) {
-            /*echo "This is property name, i guess: $property<br>";
-            echo "And this might be its value: $value<hr>";*/
             $mediaInfo->$property = $obj->$property;
         }
-        //die('some shit happens...');
         return $mediaInfo;
     }
 }

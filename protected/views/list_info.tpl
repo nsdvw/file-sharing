@@ -13,7 +13,7 @@
     {foreach $list as $item}
     <tr>
         <td>{counter}</td>
-        <td>{$item->name|escape|truncate:25}</td>
+        <td>{$item->name|truncate:25|escape}</td>
         <td class="item-description">{$item->mime_type}</td>
         <td class="link">
             <a href="view/{$item->id}">подробное описание</a>

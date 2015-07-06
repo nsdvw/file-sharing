@@ -25,4 +25,20 @@ class ViewHelper
         }
         return $size;
     }
+
+    static function getDownloadUrl($id, $name)
+    {
+        return \DOWNLOAD_DIR . \DIRECTORY_SEPARATOR . $id .
+                                \DIRECTORY_SEPARATOR . $name;
+    }
+
+    static function getUploadPath($id, $name)
+    {
+        return \UPLOAD_DIR.\DIRECTORY_SEPARATOR.self::getUploadName($id, $name);
+    }
+
+    static function getPreviewPath($id)
+    {
+        return \PREVIEW_DIR.\DIRECTORY_SEPARATOR.self::getPreviewName($id);
+    }
 }

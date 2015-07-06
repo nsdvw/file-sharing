@@ -4,7 +4,7 @@
 <table class="description">
     <tr>
         <td class="property">Название</td>
-        <td class="value">{$file->name|escape|truncate:25}</td>
+        <td class="value">{$file->name|truncate:25|escape}</td>
     </tr>
     {if $file->description}
     <tr>
@@ -15,7 +15,9 @@
     <tr>
         <td class="property">Ссылка для скачивания</td>
         <td class="value">
-            <a href="../download/{$file->id}/{$file->name}">скачать</a>
+            <a href=
+        "../{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
+            >скачать</a>
         </td>
     </tr>
     <tr>

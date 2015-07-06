@@ -1,19 +1,29 @@
 <?php
-define('BASE_DIR', '../protected');
+use Slim\Slim;
+use Slim\Views\Smarty;
+use Storage\Model\File;
+use Storage\Model\MediaInfo;
+use Storage\Model\FileMapper;
+use Storage\Helper\ViewHelper;
+use Storage\Helper\PreviewGenerator;
+
 define('UPLOAD_DIR', 'upload');
-define('DOWNLOAD_DIR', 'download');
 define('PREVIEW_DIR', 'preview');
+define('DOWNLOAD_DIR', 'download');
+define('BASE_DIR', '../protected');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
 
-$smarty = new \Slim\Views\Smarty();
-//$smarty->caching = false;
-// я не понял, как теперь напрямую обратиться к объекту смарти?
-$app = new \Slim\Slim( array(
-    'view' => $smarty,
-    'templates.path' => BASE_DIR.'/views',
-    'debug' => true,
+$app = new Slim(
+    array(
+        'view' => new \Slim\Views\Smarty(),
+        'templates.path' => BASE_DIR.'/views',
+        'debug' => true,
 ));
+/*$app->view->caching = false;
+$app->view->compile_check = false;
+$app->view->force_compile = true;
+да чтоб тебя, как же отключить это долбаное кеширование?*/
 
 $baseUrl = $app->request->getUrl();
 $app->view->appendData( array(
@@ -26,7 +36,7 @@ $app->notFound(function () use ($app) {
 
 $app->container->singleton('connection', function(){
         $db_config = parse_ini_file(BASE_DIR.'/config.ini');
-        return new \PDO(
+        return new PDO(
                         $db_config['conn'],
                         $db_config['user'],
                         $db_config['pass']
@@ -58,14 +68,13 @@ $app->post('/', function() use ($app) {
     if ($error) {
         $app->response->redirect("/?error=$error");
     } else {
-        $mapper = new \Storage\Model\FileMapper($app->connection);
-        $file = \Storage\Model\File::fromUser($name, $tmp_name, $description);
+        $mapper = new FileMapper($app->connection);
+        $file = File::fromUser($name, $tmp_name, $description);
         $app->connection->beginTransaction();
         $mapper->save($file);
         if (move_uploaded_file(
             $tmp_name,
-            UPLOAD_DIR . '/' .
-            \Storage\Helper\ViewHelper::getUploadName($file->id, $file->name)))
+            ViewHelper::getUploadPath($file->id, $file->name)))
         {
             $app->connection->commit();
             $app->response->redirect("/?notice=ok");
@@ -75,9 +84,9 @@ $app->post('/', function() use ($app) {
         }
     }
 });
-
+/*
 $app->get('/full-size/:id', function($id) use ($app) {
-    $mapper = new \Storage\Model\FileMapper($app->connection);
+    $mapper = new FileMapper($app->connection);
     if (!$file = $mapper->findById($id)) {
         $app->notFound();
     }
@@ -86,10 +95,10 @@ $app->get('/full-size/:id', function($id) use ($app) {
         'file'=>$file,
         'title'=>$title,
     ));
-});
+});*/
 
 $app->get('/view', function() use ($app) {
-    $mapper = new \Storage\Model\FileMapper($app->connection);
+    $mapper = new FileMapper($app->connection);
     $list = $mapper->findAll();
     $title = 'Список файлов на сервере';
     $app->render('list_info.tpl', array(
@@ -99,24 +108,25 @@ $app->get('/view', function() use ($app) {
 });
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
-    $mapper = new \Storage\Model\FileMapper($app->connection);
+    $mapper = new FileMapper($app->connection);
     $mapper->updateCounter($id);
-    header('X-SendFile: ' . '../upload/' . "{$id}_{$name}.txt");
+    header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
+        ViewHelper::getUploadPath($id, $name));
     header('Content-Disposition: attachment');
     exit;
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
-    $mapper = new \Storage\Model\FileMapper($app->connection);
+    $mapper = new FileMapper($app->connection);
     if (!$file = $mapper->findById($id)) {
         $app->notFound();
     }
     $title = 'Информация о файле';
 
     if ($file->isImage()) {
-        $path = PREVIEW_DIR."/{$id}.txt";
-        if (!\Storage\Helper\PreviewGenerator::hasPreview($path)) {
-            \Storage\Helper\PreviewGenerator::createPreview($file);
+        $path = ViewHelper::getPreviewPath($id);
+        if (!PreviewGenerator::hasPreview($path)) {
+            PreviewGenerator::createPreview($file);
         }
         $preview = 'image_preview';
         $description = 'image_description';

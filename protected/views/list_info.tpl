@@ -8,6 +8,7 @@
         <th>Тип файла</th>
         <th>Ссылка на подробное описание</th>
         <th>Размер</th>
+        <th>Скачиваний</th>
         <th>Дата загрузки</th>
     </tr>
     {foreach $list as $item}
@@ -21,6 +22,7 @@
         <td class="size">
             {\Storage\Helper\ViewHelper::formatSize($item->size)}
         </td>
+        <td class="counter">{$item->download_counter}</td>
         <td class="time">{$item->upload_time}</td>
     </tr>
     {/foreach}

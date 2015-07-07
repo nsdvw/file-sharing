@@ -41,7 +41,7 @@ class FileMapper
     public function findAll($limit = 100, $offset = 0)
     {
         $sql = "SELECT id, name, upload_time, description,
-                       size, mime_type,
+                       size, mime_type, download_counter,
                        author_id, mediaInfo
                 FROM file
                 ORDER BY upload_time DESC LIMIT :offset, :limit";
@@ -61,7 +61,7 @@ class FileMapper
     public function findById($id)
     {
         $sql = "SELECT id, name, upload_time, description,
-                size, mime_type,
+                size, mime_type, download_counter,
                 author_id, mediaInfo
                 FROM file WHERE id=:id";
         $sth = $this->connection->prepare($sql);

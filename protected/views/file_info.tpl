@@ -13,16 +13,20 @@
     </tr>
     {/if}
     <tr>
+        <td class="property">Тип файла</td>
+        <td class="value">{$file->mime_type}</td>
+    </tr>
+    <tr>
+        <td class="property">Скачиваний</td>
+        <td class="value">{$file->download_counter}</td>
+    </tr>
+    <tr>
         <td class="property">Ссылка для скачивания</td>
         <td class="value">
             <a href=
         "../{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
             >скачать</a>
         </td>
-    </tr>
-    <tr>
-        <td class="property">Тип файла</td>
-        <td class="value">{$file->mime_type}</td>
     </tr>
     <tr>
         <td class="property">Размер</td>

@@ -59,6 +59,32 @@ $app->get('/', function() use ($app) {
     );
 });
 
+$app->post('/ajax/upload', function() use ($app) {
+    $error = $_FILES['upload']['error']['file1'];
+    $name = $_FILES['upload']['name']['file1'];
+    $tmp_name = $_FILES['upload']['tmp_name']['file1'];
+    $description = (isset($_POST['description']) and $_POST['description']!=='') 
+                        ? $_POST['description'] : null;
+    if ($error) {
+        echo 'error';
+    } else {
+        $mapper = new FileMapper($app->connection);
+        $file = File::fromUser($name, $tmp_name, $description);
+        $app->connection->beginTransaction();
+        $mapper->save($file);
+        if (move_uploaded_file(
+            $tmp_name,
+            ViewHelper::getUploadPath($file->id, $file->name)))
+        {
+            $app->connection->commit();
+            echo 'ok';
+        } else {
+            $app->connection->rollBack();
+            echo 'error';
+        }
+    }
+});
+
 $app->post('/', function() use ($app) {
     $error = $_FILES['upload']['error']['file1'];
     $name = $_FILES['upload']['name']['file1'];

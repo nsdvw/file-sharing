@@ -9,7 +9,7 @@ class FileMapper
         $this->connection = $connection;
     }
 
-    public function save(\Storage\Model\File &$file)
+    public function save(\Storage\Model\File $file)
     {
         $sql =
         "INSERT INTO file
@@ -23,7 +23,9 @@ class FileMapper
         $sth->bindParam(':size', $file->size, \PDO::PARAM_INT);
         $sth->bindParam(':mime_type', $file->mime_type, \PDO::PARAM_STR);
         $sth->bindParam(
-            ':mediaInfo', json_encode($file->mediaInfo), \PDO::PARAM_STR
+            ':mediaInfo',
+            json_encode($file->mediaInfo),
+            \PDO::PARAM_STR
         );
         $sth->execute();
         $file->id = $this->connection->lastInsertId();

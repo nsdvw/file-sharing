@@ -10,7 +10,7 @@ class MediaInfo
     public $bitrate;
     public $bits_per_sample;
 
-    static public function fromUser($fileName)
+    public static function fromUser($fileName)
     {
         $mediaInfo = new self;
         $id3 = new \getID3();
@@ -40,7 +40,7 @@ class MediaInfo
         return $mediaInfo;
     }
 
-    static public function fromDataBase(\stdClass $obj)
+    public static function fromDataBase(\stdClass $obj)
     {
         $mediaInfo = new self;
         foreach ($obj as $property => $value) {

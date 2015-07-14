@@ -10,13 +10,12 @@ class File
     public $mime_type;
     public $mediaInfo;
 
-    static public function fromUser(
+    public static function fromUser(
         $name,
         $tmp_name,
-        $description = NULL,
-        $author_id = NULL
-        )
-    {
+        $description = null,
+        $author_id = null
+    ) {
         $file = new self;
         $file->name = $name;
         $file->description = $description;
@@ -31,20 +30,12 @@ class File
     public function isImage()
     {
         $types = array('image/jpeg', 'image/png', 'image/gif');
-        if (in_array($this->mime_type, $types)) {
-            return true;
-        } else {
-            return false;
-        }
+        return in_array($this->mime_type, $types);
     }
 
     public function isVideo()
     {
         $types = array('video/webm', 'video/mp4', 'video/ogg');
-        if (in_array($this->mime_type, $types)) {
-            return true;
-        } else {
-            return false;
-        }
+        return in_array($this->mime_type, $types);
     }
 }

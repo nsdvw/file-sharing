@@ -2,7 +2,7 @@
 
 class PreviewGenerator
 {
-    static public function hasPreview($file)
+    public static function hasPreview($file)
     {
         if (file_exists($file)) {
             return true;
@@ -11,13 +11,14 @@ class PreviewGenerator
         }
     }
 
-    static public function createPreview(\Storage\Model\File $file,
+    public static function createPreview(\Storage\Model\File $file,
                                         $preview_width = 300)
     {
-        $preview = fopen(ViewHelper::getPreviewPath($file->id), 'w');
-        fclose($preview);
         $original_width = $file->mediaInfo->resolution_x;
         $original_height = $file->mediaInfo->resolution_y;
+        if ($original_width <= $preview_width) {
+            $preview_width = $original_width;
+        }
         $ratio = $original_width / $preview_width;
         $preview_height = round($original_height / $ratio);
         $content = imagecreatetruecolor($preview_width, $preview_height);

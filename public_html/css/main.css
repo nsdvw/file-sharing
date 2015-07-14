@@ -68,6 +68,20 @@ footer {
     border: 1px solid #555;
     padding: 8px;
 }
+#registerForm {
+    margin-top: 30px;
+}
+#registerForm p {
+    width: 70%;
+    margin: auto;
+}
+#registerForm input[type="text"] {
+    width: 100%;
+    margin-bottom: 10px;
+}
+#login {
+
+}
 .preview {
     width: 300px;
     margin-left: 15px;
@@ -87,6 +101,7 @@ footer {
 .description {
     width: 100%;
     border-spacing: 0;
+    margin-bottom: 20px;
 }
 .description tr:last-child td:last-child {
     border-bottom-right-radius: 10px;

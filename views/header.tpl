@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{$title}</title>
     <link rel="stylesheet" href="{$baseUrl}/css/main.css">
+    <script src="{$baseUrl}/js/lib.js"></script>
 </head>
 <body>
     <div id="wrapper">

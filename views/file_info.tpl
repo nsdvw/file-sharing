@@ -18,14 +18,14 @@
     </tr>
     <tr>
         <td class="property">Скачиваний</td>
-        <td class="value">{$file->download_counter}</td>
+        <td class="value" id="counter">{$file->download_counter}</td>
     </tr>
     <tr>
         <td class="property">Ссылка для скачивания</td>
         <td class="value">
             <a href=
         "{$baseUrl}/{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
-            >скачать</a>
+            id="dowloadLink">скачать</a>
         </td>
     </tr>
     <tr>
@@ -47,5 +47,6 @@
 {if $description !== false}
     {include file="$description.tpl"}
 {/if}
-
+<h2>hello</h2>
+<script src="{$baseUrl}/js/detail_view.js"></script>
 {include file="footer.tpl"}

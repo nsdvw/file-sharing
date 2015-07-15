@@ -1,4 +1,5 @@
 <?php namespace Storage\Model;
+
 use \Storage\Helper\HashGenerator;
 
 class User

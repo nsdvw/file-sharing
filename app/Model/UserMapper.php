@@ -21,4 +21,16 @@ class UserMapper
         $sth->execute();
         $user->id = $this->connection->lastInsertId();
     }
+
+    public function findByEmail($email)
+    {
+        $sql = "SELECT id, login, email, hash, salt
+                FROM user
+                WHERE email=:email";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindParam(':email', $email, \PDO::PARAM_STR);
+        $sth->execute();
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        return $sth->fetch();
+    }
 }

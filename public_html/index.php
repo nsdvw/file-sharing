@@ -3,6 +3,7 @@ use Slim\Slim;
 use Slim\Views\Smarty;
 use Storage\Model\File;
 use Storage\Model\User;
+use Storage\Model\LoginForm;
 use Storage\Model\MediaInfo;
 use Storage\Model\FileMapper;
 use Storage\Model\RegisterForm;
@@ -38,21 +39,25 @@ $app->notFound(function () use ($app) {
     $app->render('404.php');
 });
 
-$app->container->singleton('connection', function(){
-        $db_config = parse_ini_file(BASE_DIR.'/config.ini');
-        return new PDO(
-                        $db_config['conn'],
-                        $db_config['user'],
-                        $db_config['pass']
-                    );
+$app->container->singleton('connection', function () {
+    $db_config = parse_ini_file(BASE_DIR.'/config.ini');
+    return new PDO(
+                    $db_config['conn'],
+                    $db_config['user'],
+                    $db_config['pass']
+                );
 });
 
-$app->container->singleton('fileMapper', function(){
+$app->container->singleton('fileMapper', function () use ($app) {
     return new FileMapper($app->connection);
 });
 
+$app->container->singleton('userMapper', function () use ($app) {
+    return new UserMapper($app->connection);
+});
+
 $app->get('/', function() use ($app) {
-    if (isset($_GET['register'])) {
+    if (isset($_GET['register']) or isset($_GET['login'])) {
         session_start();
         $id = strval($_SESSION['id']);
         $hash = strval($_SESSION['hash']);
@@ -94,10 +99,9 @@ $app->post('/ajax/upload', function() use ($app) {
     if ($error) {
         echo 'error';
     } else {
-        $mapper = new FileMapper($app->connection);
         $file = File::fromUser($name, $tmp_name, $description);
         $app->connection->beginTransaction();
-        $mapper->save($file);
+        $app->fileMapper->save($file);
         if (move_uploaded_file(
             $tmp_name,
             ViewHelper::getUploadPath($file->id, $file->name)))
@@ -113,7 +117,29 @@ $app->post('/ajax/upload', function() use ($app) {
 
 $app->post('/', function() use ($app) {
     if (isset($_POST['login'])) {
-        echo 'hello world';
+        $loginForm = new LoginForm(array(
+            'email'=>$_POST['login']['email'],
+            'password'=>$_POST['login']['password'],
+        ));
+        if ($loginForm->validate()) {
+            if ( !$user = $app->userMapper->findByEmail($loginForm->email) ) {
+                echo 'not found...';die;
+                /* Я в курсе, что здесь надо отредиректить на главную и ошибку
+                * передать либо гет-параметром, либо кукой. Но запутался с
+                * гет-переменными, они у меня перекликаются, и эти ветки условий
+                * разрослись нехорошо... Потом подумаю и исправлю.
+                */
+            } else {
+                if ($user->hash !== sha1($user->salt . $loginForm->password)) {
+                    echo 'password is wrong...<br>';
+                } else {
+                    session_start();
+                    $_SESSION['id'] = $user->id;
+                    $_SESSION['hash'] = $user->hash;
+                    $app->response->redirect('/?login');
+                }
+            }
+        }
     } elseif (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
@@ -123,10 +149,9 @@ $app->post('/', function() use ($app) {
         if ($error) {
             $app->response->redirect("/?error=$error");
         } else {
-            $mapper = new FileMapper($app->connection);
             $file = File::fromUser($name, $tmp_name, $description);
             $app->connection->beginTransaction();
-            $mapper->save($file);
+            $app->fileMapper->save($file);
             if (move_uploaded_file(
                 $tmp_name,
                 ViewHelper::getUploadPath($file->id, $file->name)))
@@ -175,8 +200,7 @@ $app->post('/reg', function () use ($app) {
 });
 
 $app->get('/view', function() use ($app) {
-    $mapper = new FileMapper($app->connection);
-    $list = $mapper->findAll();
+    $list = $app->fileMapper->findAll();
     $title = 'Список файлов на сервере';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
     $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
@@ -192,8 +216,7 @@ $app->get('/view', function() use ($app) {
 });
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
-    $mapper = new FileMapper($app->connection);
-    $mapper->updateCounter($id);
+    $app->fileMapper->updateCounter($id);
     header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
         ViewHelper::getUploadPath($id, $name));
     header('Content-Disposition: attachment');
@@ -201,8 +224,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
 });
 
 $app->get('/view/:id', function ($id) use ($app) {
-    $mapper = new FileMapper($app->connection);
-    if (!$file = $mapper->findById($id)) {
+    if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
     $title = 'Информация о файле';

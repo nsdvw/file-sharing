@@ -1,12 +1,11 @@
 {include file="header.tpl"}
-<a href="../">Назад на главную</a>
+<a href="{$baseUrl}">Назад на главную</a>
 <h3>Список последних 100 загруженных на сервер файлов</h3>
 <table id="list-items">
     <tr>
         <th> # </th>
         <th>Имя</th>
         <th>Тип файла</th>
-        <th>Ссылка на подробное описание</th>
         <th>Размер</th>
         <th>Скачиваний</th>
         <th>Дата загрузки</th>
@@ -14,11 +13,8 @@
     {foreach $list as $item}
     <tr>
         <td>{counter}</td>
-        <td>{$item->name|truncate:25|escape}</td>
+        <td><a href="view/{$item->id}">{$item->name|truncate:25|escape}</a></td>
         <td class="item-description">{$item->mime_type}</td>
-        <td class="link">
-            <a href="view/{$item->id}">подробное описание</a>
-        </td>
         <td class="size">
             {\Storage\Helper\ViewHelper::formatSize($item->size)}
         </td>

@@ -1,5 +1,5 @@
 {include file="header.tpl"}
-<a href="../">Назад на главную</a>
+<a href="{$baseUrl}">Назад на главную</a>
 <div class="caption">Общие характеристики</div>
 <table class="description">
     <tr>
@@ -24,7 +24,7 @@
         <td class="property">Ссылка для скачивания</td>
         <td class="value">
             <a href=
-        "../{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
+        "{$baseUrl}/{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
             >скачать</a>
         </td>
     </tr>

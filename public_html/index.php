@@ -115,6 +115,31 @@ $app->post('/ajax/upload', function() use ($app) {
     }
 });
 
+$app->get('/ajax/finfo/:id', function ($id) use ($app) {
+    $types = array(
+        'audio/mpeg'=>'mp3',
+        'audio/mp4'=>'m4a',
+        'audio/webm'=>'webma',
+        'audio/x-wav'=>'wav',
+        'audio/x-flv'=>'fla',
+        'audio/ogg'=>'oga',
+        'video/ogg'=>'ogv',
+        'video/webm'=>'webmv',
+        'video/mp4'=>'m4v',
+        'video/x-flv'=>'flv',
+    );
+    if (!$file = $app->fileMapper->findById($id)) {
+        echo 'error';
+    } elseif (!key_exists($file->mime_type, $types)) {
+        echo 'error';
+    } else {
+        $type = $types[$file->mime_type];
+        $name = ViewHelper::getUploadName($file->id, $file->name);
+        $json = '{"' . $type . '": "/' . UPLOAD_DIR . "/$name" . '"}';
+        echo $json;
+    }
+});
+
 $app->post('/', function() use ($app) {
     if (isset($_POST['login'])) {
         $loginForm = new LoginForm(array(
@@ -124,8 +149,8 @@ $app->post('/', function() use ($app) {
         if ($loginForm->validate()) {
             if ( !$user = $app->userMapper->findByEmail($loginForm->email) ) {
                 echo 'not found...';die;
-                /* Я в курсе, что здесь надо отредиректить на главную и ошибку
-                * передать либо гет-параметром, либо кукой. Но запутался с
+                /* Я в курсе, что здесь надо передать ошибку
+                * либо гет-параметром, либо кукой. Но запутался с
                 * гет-переменными, они у меня перекликаются, и эти ветки условий
                 * разрослись нехорошо... Потом подумаю и исправлю.
                 */
@@ -252,6 +277,19 @@ $app->get('/view/:id', function ($id) use ($app) {
     } elseif ($file->isVideo()) {
         $preview = 'video_player';
         $description = 'video_description';
+        $app->render(
+            'file_info.tpl',
+            array(
+                'file'=>$file,
+                'title'=>$title,
+                'preview'=>$preview,
+                'description'=>$description,
+                'login'=>$login,
+            )
+        );
+    } elseif($file->isAudio()) {
+        $preview = 'audio_player';
+        $description = 'audio_description';
         $app->render(
             'file_info.tpl',
             array(

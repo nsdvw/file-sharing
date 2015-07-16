@@ -35,7 +35,24 @@ class File
 
     public function isVideo()
     {
-        $types = array('video/webm', 'video/mp4', 'video/ogg');
+        $types = array(
+            'video/webm',
+            'video/mp4',
+            'video/ogg',
+            'video/x-flv',
+        );
+        return in_array($this->mime_type, $types);
+    }
+
+    public function isAudio()
+    {
+        $types = array(
+            'audio/mpeg',
+            'audio/mp4',
+            'audio/x-wav',
+            'audio/webm',
+            'audio/ogg',
+        );
         return in_array($this->mime_type, $types);
     }
 }

@@ -38,15 +38,14 @@
         <td class="property">Дата загрузки</td>
         <td class="value">{$file->upload_time}</td>
     </tr>
+    {if $description !== false}
+        {include file="$description.tpl"}
+    {/if}
 </table>
 
 {if $preview !== false}
     {include file="$preview.tpl"}
 {/if}
 
-{if $description !== false}
-    {include file="$description.tpl"}
-{/if}
-<h2>hello</h2>
 <script src="{$baseUrl}/js/detail_view.js"></script>
 {include file="footer.tpl"}

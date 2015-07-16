@@ -7,7 +7,6 @@ class MediaInfo
     public $frame_rate;
     public $encoding;
     public $playtime;
-    public $bitrate;
     public $bits_per_sample;
 
     public static function fromUser($fileName)
@@ -30,9 +29,6 @@ class MediaInfo
         }
         if (isset($finfo['playtime_string'])) {
             $mediaInfo->playtime = $finfo['playtime_string'];
-        }
-        if (isset($finfo['bitrate'])) {
-            $mediaInfo->bitrate = $finfo['bitrate'];
         }
         if (isset($finfo['video']['bits_per_sample'])) {
             $mediaInfo->bits_per_sample = $finfo['video']['bits_per_sample'];

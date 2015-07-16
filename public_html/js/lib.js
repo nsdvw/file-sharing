@@ -21,3 +21,18 @@ function updateCounter()
     var counter = document.getElementById('counter');
     counter.innerHTML = String(Number(counter.innerHTML) + 1);
 }
+
+function getPlayerSettings(id)
+{
+    var settings = undefined;
+    var xhr = getXmlHttp();
+    xhr.onreadystatechange = function () {
+        if (this.readyState != 4) return;
+        if (this.responseText != 'error') {
+            settings = JSON.parse(this.responseText);
+        }
+    };
+    xhr.open('GET', '/ajax/finfo/' + id, false);
+    xhr.send(null);
+    return settings;
+}

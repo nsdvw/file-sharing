@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>{$title}</title>
     <link rel="stylesheet" href="{$baseUrl}/css/main.css">
+    <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
     <script src="{$baseUrl}/js/lib.js"></script>
 </head>
 <body>

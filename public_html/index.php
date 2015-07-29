@@ -79,6 +79,7 @@ $app->get('/', function() use ($app) {
                     ? 'Ошибка. Файл не был загружен. Попробуйте снова.' : '';
     $noticeMessage = (isset($_GET['notice']) and $_GET['notice'] == 'ok')
                     ? "Файл успешно загружен!" : '';
+    $bookmark = 'Upload';
     $app->render(
         'upload_form.tpl',
         array(
@@ -86,6 +87,7 @@ $app->get('/', function() use ($app) {
             'errorMessage'=>$errorMessage,
             'title'=>$title,
             'login'=>$login,
+            'bookmark'=>$bookmark,
         )
     );
 });
@@ -190,7 +192,7 @@ $app->post('/', function() use ($app) {
                     $path = ViewHelper::getPreviewPath($file->id);
                     PreviewGenerator::createPreview($file);
                 }
-                $app->response->redirect("/?notice=ok");
+                $app->response->redirect('/view/?upload=ok');
             } else {
                 $app->connection->rollBack();
                 $app->response->redirect("/?error=server_error");
@@ -202,11 +204,13 @@ $app->post('/', function() use ($app) {
 $app->get('/reg', function () use ($app) {
     $title = 'Регистрация';
     $login = false;
+    $bookmark = 'Sign up';
     $app->render(
         'register_form.tpl',
         array(
             'title'=>$title,
             'login'=>$login,
+            'bookmark'=>$bookmark,
         )
     );
 });
@@ -233,17 +237,24 @@ $app->post('/reg', function () use ($app) {
 });
 
 $app->get('/view', function() use ($app) {
-    $list = $app->fileMapper->findAll();
+    $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+    $offset = (intval($page) - 1) * 5;
+    $list = $app->fileMapper->findAll($offset);
     $title = 'Список файлов на сервере';
+    $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
+                    ? "File has been uploaded successfully" : '';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
     $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
     $login = ($id and $hash) ? true : false;
+    $bookmark = 'Files';
     $app->render(
         'list_info.tpl',
         array(
             'list'=>$list,
             'title'=>$title,
             'login'=>$login,
+            'noticeMessage'=>$noticeMessage,
+            'bookmark'=>$bookmark,
         )
     );
 });

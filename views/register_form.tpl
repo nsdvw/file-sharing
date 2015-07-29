@@ -1,5 +1,5 @@
 {include file="header.tpl"}
-<div class="container-narrow">
+<div id="container-narrow">
     <div class="logo2">
         <div id="folder-main-part"></div>
         <div id="folder-bookmark"></div>
@@ -7,7 +7,9 @@
         <div id="logo-text">ile-sharing</div>
     </div>
     <div class="register">
-        <div class="register-message">Registration allows you to upload files havier than 500Mb, download with maximum speed, comment files without captcha and many other useful things!</div>
+        <div class="register-message">
+            Registration allows you to upload files havier than 500Mb, download with maximum speed, comment files without captcha and many other useful things!
+        </div>
         <form action="" method="post" name="register" id="registerForm">
             <div class="register-field-name">
                 <label for="register[login]">Login:</label>
@@ -36,6 +38,7 @@
                     <input type="submit" value="sign up" class="small-button">
                 </div>
             </div>
+            <div class="clearDummy"></div>
         </form>
     </div>
 </div>

@@ -59,7 +59,9 @@ header {
     background: linear-gradient(to bottom,  #e8e8e8 0%,#ffffff 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8e8e8', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
 }
-.activeBookmark a:link, a:visited, a:active {
+.activeBookmark a:link,
+.activeBookmark a:visited,
+.activeBookmark a:active {
     color: #000;
     text-decoration: none;
 }
@@ -75,7 +77,9 @@ header {
     background: linear-gradient(to bottom,  #323232 0%,#292929 26%,#575757 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#323232', endColorstr='#575757',GradientType=0 ); /* IE6-9 */
 }
-.inactiveBookmark a:link, a:visited, a:active {
+.inactiveBookmark a:link,
+.inactiveBookmark a:visited,
+.inactiveBookmark a:active {
     color: #fff;
     text-decoration: none;
 }
@@ -103,6 +107,7 @@ header {
     width: 9.75rem;
     height: 1rem;
     border: 1px solid #888;
+    background: #fff;
 }
 .small-button {
     color: #fff;
@@ -124,6 +129,9 @@ header {
 }
 .small-button:hover {
     cursor: pointer;
+    box-shadow: 0 0 0.375rem #888;
+    -webkit-box-shadow: 0 0 0.375rem #888;
+    -moz-box-shadow: 0 0 0.375rem #888;
 }
 .logo1 {
     position: relative;
@@ -189,6 +197,14 @@ header {
     left: 0;
     top: 0;
     width: 94%;
+    text-align: left;
+}
+.input-file-name {
+    font-size: 0.875rem;
+    line-height: 2rem;
+    padding-left: 1rem;
+    color: #888;
+    font-style: italic;
 }
 .input-button {
     height: 2.125rem;
@@ -244,8 +260,11 @@ input[type="file"] {
     background: linear-gradient(to bottom,  #575757 0%,#292929 74%,#323232 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#575757', endColorstr='#323232',GradientType=0 ); /* IE6-9 */
 }
-.bit-button:hover {
+.big-button:hover {
     cursor: pointer;
+    box-shadow: 0 0 0.375rem #888;
+    -webkit-box-shadow: 0 0 0.375rem #888;
+    -moz-box-shadow: 0 0 0.375rem #888;
 }
 footer {
     background-color: #000;
@@ -261,6 +280,12 @@ footer {
     border-bottom: 1px solid #fff;
     font-size: 1.125rem;
     padding: 1.5rem;
+}
+.footerLinks a:link,
+.footerLinks a:visited,
+.footerLinks a:active {
+    color: #fff;
+    text-decoration: none;
 }
 .copyright {
     padding: 0.625rem;
@@ -426,6 +451,9 @@ footer {
     border-right: 1px solid #ccc;
 }
 
+.register {
+    padding-bottom: 3rem;
+}
 .register-field-name {
     float: left;
     width: 50%;
@@ -449,4 +477,23 @@ footer {
 .register-field-error {
     color: indianred;
     font-size: 0.875rem;
+}
+.register input[type="text"],
+.register input[type="password"] {
+    border: 1px solid #888;
+    background: #fff;
+}
+
+#progressBox {
+    border: 1px solid #888;
+    width: 80%;
+    height: 1.25rem;
+    margin: auto;
+    display: none;
+}
+#progressBar {
+    height: 100%;
+    width: 0;
+    background: #ccc;
+    float: left;
 }

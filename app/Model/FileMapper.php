@@ -40,7 +40,7 @@ class FileMapper
         $sth->execute();
     }
 
-    public function findAll($limit = 100, $offset = 0)
+    public function findAll($offset = 0, $limit = 5)
     {
         $sql = "SELECT id, name, upload_time, description,
                        size, mime_type, download_counter,

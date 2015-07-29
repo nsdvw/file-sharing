@@ -107,6 +107,10 @@ $app->post('/ajax/upload', function() use ($app) {
             ViewHelper::getUploadPath($file->id, $file->name)))
         {
             $app->connection->commit();
+            if ($file->isImage()) {
+                $path = ViewHelper::getPreviewPath($file->id);
+                PreviewGenerator::createPreview($file);
+            }
             echo 'ok';
         } else {
             $app->connection->rollBack();
@@ -182,6 +186,10 @@ $app->post('/', function() use ($app) {
                 ViewHelper::getUploadPath($file->id, $file->name)))
             {
                 $app->connection->commit();
+                if ($file->isImage()) {
+                    $path = ViewHelper::getPreviewPath($file->id);
+                    PreviewGenerator::createPreview($file);
+                }
                 $app->response->redirect("/?notice=ok");
             } else {
                 $app->connection->rollBack();

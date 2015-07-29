@@ -11,9 +11,10 @@ class PreviewGenerator
         }
     }
 
-    public static function createPreview(\Storage\Model\File $file,
-                                        $preview_width = 300)
-    {
+    public static function createPreview(
+        \Storage\Model\File $file,
+        $preview_width = 300
+    ) {
         $original_width = $file->mediaInfo->resolution_x;
         $original_height = $file->mediaInfo->resolution_y;
         if ($original_width <= $preview_width) {

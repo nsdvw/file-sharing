@@ -6,6 +6,7 @@
         <div id="initial-letter">f</div>
         <div id="logo-text">ile-sharing</div>
     </div>
+
     <div class="notice" id="notice">{$noticeMessage}</div>
     <div class="content">
         <div class="files-list">
@@ -34,21 +35,41 @@
             </div>
         </div>
         {/foreach}
+
             <div class="pager">
+                {if $firstPage == 1}
+                <div class="pager-first">First</div>
                 <div class="pager-previous">Previous</div>
-                <div class="pager-pages">
-                    <span class="pager-number">1</span>
-                    <span class="pager-number">2</span>
-                    <span class="pager-number">3</span>
-                    <span class="pager-number">4</span>
-                    <span class="pager-number">5</span>
-                    <span class="pager-number">6</span>
-                    <span class="pager-number">...</span>
-                    <span class="pager-number">324</span>
-                    <span class="pager-number">325</span>
+                {else}
+                <div class="pager-first">
+                    <a href="{$baseUrl}/view?page=1">First</a>
                 </div>
+                <div class="pager-previous">
+                    <a href="{$baseUrl}/view?page={$currentPage - 1}">Previous</a>
+                </div>
+                {/if}
+                
+                <div class="pager-pages">
+                    {for $i = $firstPage; $i lte $lastPage; $i++}
+                        {if $i == $currentPage}
+                        <span class="pager-number">{$i}</span>
+                        {else}
+                        <span class="pager-number">
+                            <a href="{$baseUrl}/view?page={$i}">{$i}</a>
+                        </span>
+                        {/if}
+                    {/for}
+                </div>
+                {if $currentPage != $pageCount}
+                <div class="pager-next">
+                    <a href="{$baseUrl}/view?page={$currentPage + 1}">Next</a>
+                </div>
+                {else}
                 <div class="pager-next">Next</div>
-                <div class="pager-last">Last</div>
+                {/if}
+                <div class="pager-last">
+                    <a href="{$baseUrl}/view?page={$pageCount}">Last</a>
+                </div>
             </div>
         </div>
         <div class="preview">

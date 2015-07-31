@@ -320,8 +320,9 @@ $app->post('/reg', function () use ($app) {
 });
 
 $app->get('/view', function() use ($app) {
-    $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
-    $offset = (intval($page) - 1) * 10;
+    $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * \Storage\Helper\Pager::PER_PAGE;
+    $pager = new \Storage\Helper\Pager($app->connection, $page);
     $list = $app->fileMapper->findAll($offset);
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
@@ -344,6 +345,10 @@ $app->get('/view', function() use ($app) {
             'loginError'=>$loginError,
             'noticeMessage'=>$noticeMessage,
             'bookmark'=>$bookmark,
+            'currentPage'=>$pager->currentPage,
+            'lastPage'=>$pager->lastPage,
+            'firstPage'=>$pager->firstPage,
+            'pageCount'=>$pager->pageCount,
         )
     );
 });

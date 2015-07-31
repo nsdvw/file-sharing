@@ -1,5 +1,7 @@
 <?php namespace Storage\Model;
 
+use Storage\Helper\Pager;
+
 class FileMapper
 {
     protected $connection;
@@ -40,7 +42,7 @@ class FileMapper
         $sth->execute();
     }
 
-    public function findAll($offset = 0, $limit = 10)
+    public function findAll($offset = 0, $limit = Pager::PER_PAGE)
     {
         $sql = "SELECT id, name, upload_time, description,
                        size, mime_type, download_counter,

@@ -333,12 +333,18 @@ footer {
     -webkit-border-radius: 0.5rem;
     padding: 0.375rem;
 }
+.pager-first {
+    float: left;
+    margin: 0 2rem 0 0.5rem;
+}
 .pager-previous {
     float: left;
     margin: 0 2rem 0 0.5rem;
 }
 .pager-pages {
     float: left;
+    text-align: center;
+    width: 14rem;
     margin-right: 2rem;
 }
 .pager-next {

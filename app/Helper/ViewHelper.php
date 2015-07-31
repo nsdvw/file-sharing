@@ -15,13 +15,13 @@ class ViewHelper
     public static function formatSize($size)
     {
         if ($size > pow(1024, 3)) {
-            $size = round($size / pow(1024, 3), 2) . ' Гб';
+            $size = round($size / pow(1024, 3), 2) . ' Gb';
         } elseif ($size > pow(1024, 2)) {
-            $size = round($size / pow(1024, 2), 2) . ' Мб';
+            $size = round($size / pow(1024, 2), 2) . ' Mb';
         } elseif ($size > 1024) {
-            $size = round($size / 1024, 2) . ' Кб';
+            $size = round($size / 1024, 2) . ' Kb';
         } else {
-            return "$size байт";
+            return "$size bytes";
         }
         return $size;
     }

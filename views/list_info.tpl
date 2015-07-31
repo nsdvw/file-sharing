@@ -11,7 +11,7 @@
     <div class="content">
         <div class="files-list">
         {foreach $list as $file}
-        <div class="file-item file-nonselected">
+        <div class="file-item file-nonselected" data-id="{$file->id}">
             <div class="file-icon
                 {if $file->isImage()}file-icon-image
                 {elseif $file->isVideo()}file-icon-video
@@ -37,9 +37,9 @@
         {/foreach}
 
             <div class="pager">
-                {if $firstPage == 1}
-                <div class="pager-first">First</div>
-                <div class="pager-previous">Previous</div>
+                {if $currentPage == 1}
+                <div class="pager-first not-active">First</div>
+                <div class="pager-previous not-active">Previous</div>
                 {else}
                 <div class="pager-first">
                     <a href="{$baseUrl}/view?page=1">First</a>
@@ -50,40 +50,31 @@
                 {/if}
                 
                 <div class="pager-pages">
-                    {for $i = $firstPage; $i lte $lastPage; $i++}
-                        {if $i == $currentPage}
-                        <span class="pager-number">{$i}</span>
-                        {else}
-                        <span class="pager-number">
-                            <a href="{$baseUrl}/view?page={$i}">{$i}</a>
-                        </span>
-                        {/if}
-                    {/for}
+                {for $i = $firstPage; $i lte $lastPage; $i++}
+                    {if $i == $currentPage}
+                    <span class="pager-number current-page">{$i}</span>
+                    {else}
+                    <span class="pager-number">
+                        <a href="{$baseUrl}/view?page={$i}">{$i}</a>
+                    </span>
+                    {/if}
+                {/for}
                 </div>
+
                 {if $currentPage != $pageCount}
+                <div class="pager-last">
+                    <a href="{$baseUrl}/view?page={$pageCount}">Last</a>
+                </div>
                 <div class="pager-next">
                     <a href="{$baseUrl}/view?page={$currentPage + 1}">Next</a>
                 </div>
                 {else}
-                <div class="pager-next">Next</div>
+                <div class="pager-last not-active">Last</div>
+                <div class="pager-next not-active">Next</div>
                 {/if}
-                <div class="pager-last">
-                    <a href="{$baseUrl}/view?page={$pageCount}">Last</a>
-                </div>
             </div>
         </div>
-        <div class="preview">
-            <img src="/image/mononoke.jpg" alt="image">
-            <div class="preview-name">
-                mononoke_art.jpg
-            </div>
-            <div class="preview-size">Size: 824Kb</div>
-            <div class="preview-date">Uploaded: 23-07-2015 18:45</div>
-            <div class="preview-downloads">Downloads: 245</div>
-            <div class="preview-format">Format: image/jpg</div>
-            <div class="preview-resolution">Resolution: 1590 &times; 1920</div>
-            <div class="preview-more">more...</div>
-        </div>
+        <div class="preview" id="previewBox"></div>
         <div class="clearDummy"></div>
     </div>
 </div>

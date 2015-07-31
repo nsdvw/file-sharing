@@ -2,8 +2,8 @@
 
 class Pager
 {
-    const PER_PAGE = 3;
-    const COUNTER_LINKS = 6;
+    const PER_PAGE = 20;
+    const LINKS_COUNT = 6;
     public $currentPage;
     public $pageCount;
     public $firstPage;
@@ -21,14 +21,15 @@ class Pager
         $res = $sth->fetch(\PDO::FETCH_ASSOC);
         $this->pageCount = intval(ceil($res['page_count'] / self::PER_PAGE));
 
+        $linksCount = (self::LINKS_COUNT > $this->pageCount) ? $this->pageCount
+            : self::LINKS_COUNT;
         $this->firstPage =
-            ($this->currentPage + self::COUNTER_LINKS - 1 <= $this->pageCount)
+            ($this->currentPage + $linksCount - 1 <= $this->pageCount)
             ? $this->currentPage
-            : $this->pageCount - self::COUNTER_LINKS + 1;
-
+            : $this->pageCount - $linksCount + 1;
         $this->lastPage =
-            ($this->currentPage + self::COUNTER_LINKS - 1 <= $this->pageCount)
-            ? $this->firstPage + self::COUNTER_LINKS - 1
+            ($this->currentPage + $linksCount - 1 <= $this->pageCount)
+            ? $this->firstPage + $linksCount - 1
             : $this->pageCount;
     }
 }

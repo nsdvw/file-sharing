@@ -146,7 +146,7 @@ $app->post('/ajax/upload', function() use ($app) {
     }
 });
 
-$app->get('/ajax/finfo/:id', function ($id) use ($app) {
+$app->get('/ajax/mediainfo/:id', function ($id) use ($app) {
     $types = array(
         'audio/mpeg'=>'mp3',
         'audio/mp4'=>'m4a',
@@ -168,6 +168,15 @@ $app->get('/ajax/finfo/:id', function ($id) use ($app) {
         $name = ViewHelper::getUploadName($file->id, $file->name);
         $json = '{"' . $type . '": "/' . UPLOAD_DIR . "/$name" . '"}';
         echo $json;
+    }
+});
+
+$app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
+    if (!$file = $app->fileMapper->findById($id)) {
+        echo 'error';
+    } else {
+        $file->size = ViewHelper::formatSize($file->size);
+        echo json_encode($file);
     }
 });
 

@@ -24,5 +24,18 @@ for (var i=0; i < files.length; i++) {
 				}
 			}
 		}
+
+		var xhr = getXmlHttp();
+		if (!this.hasAttribute('data-id')) return;
+		var id = this.getAttribute('data-id');
+	    xhr.onreadystatechange = function () {
+	        if (this.readyState != 4) return;
+	        if (this.responseText != 'error') {
+	            var obj = JSON.parse(this.responseText);
+	            createPreview(obj);
+	        }
+	    };
+	    xhr.open('GET', '/ajax/fileinfo/' + id, true);
+	    xhr.send(null);
 	});
 }

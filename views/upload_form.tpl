@@ -17,9 +17,9 @@
             Agree with TOS</label>
         </div>
         <input type="submit" value="Upload" class="big-button" id="send">
+        <div class="notice" id="notice">{$noticeMessage}</div>
+        <div class="error" id="upload-error">{$uploadError}</div>
     </form>
-    <p class="notice" id="notice">{$noticeMessage}</p>
-    <p class="error" id="error">{$errorMessage}</p>
     <div id="progressBox" class="progressBox">
         <div id="progressBar" class="progressBar"></div>
     </div>

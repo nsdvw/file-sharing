@@ -1,4 +1,4 @@
-<div class="caption">Аудио-проигрыватель</div>
+<div class="caption">Audio player</div>
 <div class="player">
 <div id="jquery_jplayer_1" class="jp-jplayer"></div>
 <div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">

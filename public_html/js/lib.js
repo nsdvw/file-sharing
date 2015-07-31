@@ -36,6 +36,22 @@ function updateCounter() {
     counter.innerHTML = String(Number(counter.innerHTML) + 1);
 }
 
+function addClass(el, addClass) {
+    var oldClassName = (el.hasAttribute('class')) ? el.getAttribute('class') : '';
+    if (oldClassName.indexOf(addClass) > -1) return;
+    var newClassName = oldClassName + ' ' + addClass;
+    el.setAttribute('class', newClassName);
+}
+
+function removeClass(el, removeClass) {
+    var oldClassName = (el.hasAttribute('class')) ? el.getAttribute('class') : '';
+    var indexOfClass = oldClassName.indexOf(removeClass);
+    if (indexOfClass < 0) return;
+    var newClassName = oldClassName.slice(0, indexOfClass) + 
+                       oldClassName.slice(indexOfClass + removeClass.length);
+    el.setAttribute('class', newClassName);
+}
+
 function getPlayerSettings(id) {
     var settings = undefined;
     var xhr = getXmlHttp();

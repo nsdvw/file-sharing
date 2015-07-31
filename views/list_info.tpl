@@ -9,15 +9,29 @@
     <div class="notice" id="notice">{$noticeMessage}</div>
     <div class="content">
         <div class="files-list">
-        {foreach $list as $item}
-        <div class="file-item">
-            <div class="file-type-icon file-type-icon-image"></div>
-            <div class="file-name">{$item->name|truncate:25|escape}</div>
-            <div class="file-date">{$item->upload_time}</div>
-            <div class="file-size">
-                {\Storage\Helper\ViewHelper::formatSize($item->size)}
+        {foreach $list as $file}
+        <div class="file-item file-nonselected">
+            <div class="file-icon
+                {if $file->isImage()}file-icon-image
+                {elseif $file->isVideo()}file-icon-video
+                {elseif $file->isAudio()}file-icon-audio
+                {elseif $file->isText()}file-icon-text
+                {elseif $file->isArchive()}file-icon-archive
+                {else}file-icon-none
+                {/if}">
             </div>
-            <div class="file-download-icon"></div>
+            <div class="file-name">
+                <a href="{$baseUrl}{\Storage\Helper\ViewHelper::getDetailViewUrl($file->id)}" target="_blank">
+                    {$file->name|truncate:30|escape}
+                </a>
+            </div>
+            <div class="file-date">{$file->upload_time}</div>
+            <div class="file-size">
+                {\Storage\Helper\ViewHelper::formatSize($file->size)}
+            </div>
+            <div class="file-download-icon">
+                <a href="{\Storage\Helper\ViewHelper::getDownloadUrl($file->id,$file->name)}"></a>
+            </div>
         </div>
         {/foreach}
             <div class="pager">
@@ -52,4 +66,5 @@
         <div class="clearDummy"></div>
     </div>
 </div>
+<script src="{$baseUrl}/js/list.js"></script>
 {include file="footer.tpl"}

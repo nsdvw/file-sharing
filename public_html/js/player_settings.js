@@ -1,4 +1,3 @@
-/* Плеер получает настройки */
 var suppliedFormat = [];
 var splitPath = location.pathname.split('/');
 var id = splitPath[2];

@@ -55,4 +55,27 @@ class File
         );
         return in_array($this->mime_type, $types);
     }
+
+    public function isText()
+    {
+        $types = array(
+            'text/plain',
+            'application/xml',
+            'text/rtf',
+            'text/php',
+            'text/html',
+            'text/x-php',
+        );
+        return in_array($this->mime_type, $types);
+    }
+
+    public function isArchive()
+    {
+        $types = array(
+            'application/zip',
+            'application/gzip',
+            'application/x-gzip',
+        );
+        return in_array($this->mime_type, $types);
+    }
 }

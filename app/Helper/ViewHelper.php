@@ -41,4 +41,9 @@ class ViewHelper
     {
         return \PREVIEW_DIR.\DIRECTORY_SEPARATOR.self::getPreviewName($id);
     }
+
+    public static function getDetailViewUrl($id)
+    {
+        return \DIRECTORY_SEPARATOR . 'view' . \DIRECTORY_SEPARATOR . $id;
+    }
 }

@@ -4,7 +4,7 @@ window.onload = function () {
     button.onclick = function (event) {
         event.preventDefault();
         var notice = document.getElementById('notice');
-        var error = document.getElementById('error');
+        var error = document.getElementById('upload-error');
         if (!window.FormData) {
             notice.innerHTML = 'Идет загрузка, не закрывайте браузер...';
             return;

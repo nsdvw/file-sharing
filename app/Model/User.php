@@ -16,6 +16,6 @@ class User
         $this->login = $form->login;
         $this->email = $form->email;
         $this->salt = HashGenerator::generateSalt();
-        $this->hash = HashGenerator::generateHash($this->salt . $form->password);
+        $this->hash = HashGenerator::generateHash($this->salt, $form->password);
     }
 }

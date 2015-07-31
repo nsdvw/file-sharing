@@ -1,15 +1,15 @@
 <tr>
-    <td class="property">Продолжительность</td>
+    <td class="property">Play time</td>
     <td class="value">{$file->mediaInfo->playtime}</td>
 </tr>
 <tr>
-    <td class="property">Разрешение</td>
+    <td class="property">Resolution</td>
     <td class="value">
         {$file->mediaInfo->resolution_x} x
         {$file->mediaInfo->resolution_y}
     </td>
 </tr>
 <tr>
-    <td class="property">Частота кадров</td>
+    <td class="property">Frame rate</td>
     <td class="value">{$file->mediaInfo->frame_rate}</td>
 </tr>

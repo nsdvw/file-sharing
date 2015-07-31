@@ -26,9 +26,10 @@ $app = new Slim(
         'debug' => true,
 ));
 /*$app->view->caching = false;
-$app->view->compile_check = false;
+$app->view->compile_check = true;
 $app->view->force_compile = true;
-да чтоб тебя, как же отключить это долбаное кеширование?*/
+как отключить это долбанное кеширование?
+*/
 
 $baseUrl = $app->request->getUrl();
 $app->view->appendData( array(
@@ -36,7 +37,25 @@ $app->view->appendData( array(
 ));
 
 $app->notFound(function () use ($app) {
-    $app->render('404.php');
+    $title = 'FileSharing &mdash; page not found';
+    $bookmark = 'Upload';
+    $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
+    $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
+    $login = ($id and $hash) ? true : false;
+    $loginEmail = '';
+    $loginPassword = '';
+    $loginError = '';
+    $app->render(
+        '404.tpl',
+        array(
+            'login'=>$login,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'bookmark'=>$bookmark,
+        )
+    );
 });
 
 $app->container->singleton('connection', function () {
@@ -66,7 +85,7 @@ $app->get('/', function() use ($app) {
         $_COOKIE['id'] = $id;
         $_COOKIE['hash'] = $hash;
     }
-    $title = 'Загрузить файл на сервер';
+    $title = 'FileSharing &mdash; upload file';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
     $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
     $logout = (isset($_GET['logout'])) ? true : false;
@@ -75,19 +94,25 @@ $app->get('/', function() use ($app) {
         setcookie('hash', '');
     }
     $login = ($id and $hash and !$logout) ? true : false;
-    $errorMessage = (isset($_GET['error']))
-                    ? 'Ошибка. Файл не был загружен. Попробуйте снова.' : '';
+    $uploadError = (isset($_GET['error']))
+                    ? 'File hasn\'t been uploaded, please try again later' : '';
     $noticeMessage = (isset($_GET['notice']) and $_GET['notice'] == 'ok')
-                    ? "Файл успешно загружен!" : '';
+                    ? 'File was uploded successfully' : '';
     $bookmark = 'Upload';
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
     $app->render(
         'upload_form.tpl',
         array(
             'noticeMessage'=>$noticeMessage,
-            'errorMessage'=>$errorMessage,
+            'uploadError'=>$uploadError,
+            'loginError'=>$loginError,
             'title'=>$title,
             'login'=>$login,
             'bookmark'=>$bookmark,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
         )
     );
 });
@@ -148,21 +173,18 @@ $app->get('/ajax/finfo/:id', function ($id) use ($app) {
 
 $app->post('/', function() use ($app) {
     if (isset($_POST['login'])) {
-        $loginForm = new LoginForm(array(
-            'email'=>$_POST['login']['email'],
-            'password'=>$_POST['login']['password'],
-        ));
+        $loginForm = new LoginForm(
+            array(
+                'email'=>$_POST['login']['email'],
+                'password'=>$_POST['login']['password'],
+            )
+        );
         if ($loginForm->validate()) {
-            if ( !$user = $app->userMapper->findByEmail($loginForm->email) ) {
-                echo 'not found...';die;
-                /* Я в курсе, что здесь надо передать ошибку
-                * либо гет-параметром, либо кукой. Но запутался с
-                * гет-переменными, они у меня перекликаются, и эти ветки условий
-                * разрослись нехорошо... Потом подумаю и исправлю.
-                */
+            if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
+                $loginError = 'user not found';
             } else {
                 if ($user->hash !== sha1($user->salt . $loginForm->password)) {
-                    echo 'password is wrong...<br>';
+                    $loginError = 'password is wrong';
                 } else {
                     session_start();
                     $_SESSION['id'] = $user->id;
@@ -170,7 +192,29 @@ $app->post('/', function() use ($app) {
                     $app->response->redirect('/?login');
                 }
             }
+        } else {
+            $loginError = $loginForm->errorMessage;
         }
+    $noticeMessage = '';
+    $uploadError = '';
+    $title = 'FileSharing &mdash; upload file';
+    $login = false;
+    $bookmark = 'Upload';
+    $loginEmail = $loginForm->email;
+    $loginPassword = $loginForm->password;
+    $app->render(
+        'upload_form.tpl',
+        array(
+            'noticeMessage'=>$noticeMessage,
+            'uploadError'=>$uploadError,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'login'=>$login,
+            'bookmark'=>$bookmark,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            )
+        );
     } elseif (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
@@ -202,20 +246,34 @@ $app->post('/', function() use ($app) {
 });
 
 $app->get('/reg', function () use ($app) {
-    $title = 'Регистрация';
+    $title = 'FileSharing &mdash; registration';
     $login = false;
     $bookmark = 'Sign up';
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
+    $registerError = '';
+    $registerLogin = '';
+    $registerEmail = '';
+    $registerPassword = '';
     $app->render(
         'register_form.tpl',
         array(
             'title'=>$title,
             'login'=>$login,
             'bookmark'=>$bookmark,
+            'loginError'=>$loginError,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            'registerError'=>$registerError,
+            'registerLogin'=>$registerLogin,
+            'registerEmail'=>$registerEmail,
+            'registerPassword'=>$registerPassword,
         )
     );
 });
 
-$app->post('/reg', function () use ($app) {
+$app->post('/reg', function () use ($app) {  
     $registerForm = new RegisterForm(
         array(
             'login'=>$_POST['register']['login'],
@@ -232,20 +290,48 @@ $app->post('/reg', function () use ($app) {
         $_SESSION['id'] = $user->id;
         $_SESSION['hash'] = $user->hash;
         $app->response->redirect('/?register=ok');
+    } else {
+        $title = 'FileSharing &mdash; registration';
+        $login = false;
+        $bookmark = 'Sign up';
+        $loginError = '';
+        $registerError = $registerForm->errorMessage;
+        $registerLogin = $registerForm->login;
+        $registerEmail = $registerForm->email;
+        $loginEmail = '';
+        $loginPassword = '';
+        $registerPassword = $registerForm->password;
+        $app->render(
+            'register_form.tpl',
+            array(
+                'title'=>$title,
+                'login'=>$login,
+                'bookmark'=>$bookmark,
+                'loginError'=>$loginError,
+                'registerError'=>$registerError,
+                'registerLogin'=>$registerLogin,
+                'registerEmail'=>$registerEmail,
+                'registerPassword'=>$registerPassword,
+                'loginEmail'=>$loginEmail,
+                'loginPassword'=>$loginPassword,
+            )
+        );
     }
-    else echo '<meta charset="utf-8">Не прошла валидация.';
 });
 
 $app->get('/view', function() use ($app) {
     $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
-    $offset = (intval($page) - 1) * 5;
+    $offset = (intval($page) - 1) * 10;
     $list = $app->fileMapper->findAll($offset);
-    $title = 'Список файлов на сервере';
+    $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
                     ? "File has been uploaded successfully" : '';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
     $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
     $login = ($id and $hash) ? true : false;
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
     $bookmark = 'Files';
     $app->render(
         'list_info.tpl',
@@ -253,6 +339,9 @@ $app->get('/view', function() use ($app) {
             'list'=>$list,
             'title'=>$title,
             'login'=>$login,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            'loginError'=>$loginError,
             'noticeMessage'=>$noticeMessage,
             'bookmark'=>$bookmark,
         )
@@ -271,10 +360,14 @@ $app->get('/view/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
-    $title = 'Информация о файле';
+    $title = 'FileSharing &mdash; file description';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
     $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
     $login = ($id and $hash) ? true : false;
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
+    $bookmark = 'Files';
 
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
@@ -283,56 +376,30 @@ $app->get('/view/:id', function ($id) use ($app) {
         }
         $preview = 'image_preview';
         $description = 'image_description';
-        $app->render(
-            'file_info.tpl',
-            array(
-                'file'=>$file,
-                'title'=>$title,
-                'preview'=>$preview,
-                'description'=>$description,
-                'login'=>$login,
-            )
-        );
     } elseif ($file->isVideo()) {
         $preview = 'video_player';
         $description = 'video_description';
-        $app->render(
-            'file_info.tpl',
-            array(
-                'file'=>$file,
-                'title'=>$title,
-                'preview'=>$preview,
-                'description'=>$description,
-                'login'=>$login,
-            )
-        );
     } elseif($file->isAudio()) {
         $preview = 'audio_player';
         $description = 'audio_description';
-        $app->render(
-            'file_info.tpl',
-            array(
-                'file'=>$file,
-                'title'=>$title,
-                'preview'=>$preview,
-                'description'=>$description,
-                'login'=>$login,
-            )
-        );
     } else {
         $preview = false;
         $description = false;
-        $app->render(
-            'file_info.tpl',
-            array(
-                'file'=>$file,
-                'title'=>$title,
-                'preview'=>$preview,
-                'description'=>$description,
-                'login'=>$login,
-            )
-        );
     }
+    $app->render(
+        'file_info.tpl',
+        array(
+            'file'=>$file,
+            'title'=>$title,
+            'login'=>$login,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            'loginError'=>$loginError,
+            'bookmark'=>$bookmark,
+            'preview'=>$preview,
+            'description'=>$description,
+        )
+    );
 });
 
 $app->run();

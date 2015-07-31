@@ -1,4 +1,4 @@
 <tr>
-    <td class="property">Продолжительность</td>
+    <td class="property">Play time</td>
     <td class="value">{$file->mediaInfo->playtime}</td>
 </tr>

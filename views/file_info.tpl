@@ -1,46 +1,40 @@
 {include file="header.tpl"}
-<a href="{$baseUrl}">Назад на главную</a>
-<div class="caption">Общие характеристики</div>
+<div id="container-wide">
+<div class="caption">File description</div>
 <table class="description">
     <tr>
-        <td class="property">Название</td>
-        <td class="value">{$file->name|truncate:25|escape}</td>
+        <td class="property">Name</td>
+        <td class="value">{$file->name|truncate:50|escape}</td>
     </tr>
-    {if $file->description}
     <tr>
-        <td class="property">Комментарий автора</td>
-        <td class="value">{$file->description|escape}</td>
-    </tr>
-    {/if}
-    <tr>
-        <td class="property">Тип файла</td>
+        <td class="property">File type</td>
         <td class="value">{$file->mime_type}</td>
     </tr>
+    {if $description !== false}
+        {include file="$description.tpl"}
+    {/if}
     <tr>
-        <td class="property">Скачиваний</td>
+        <td class="property">Downloads</td>
         <td class="value" id="counter">{$file->download_counter}</td>
     </tr>
     <tr>
-        <td class="property">Ссылка для скачивания</td>
-        <td class="value">
-            <a href=
-        "{$baseUrl}/{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
-            id="dowloadLink">скачать</a>
-        </td>
+        <td class="property">Uploaded</td>
+        <td class="value">{$file->upload_time}</td>
     </tr>
     <tr>
-        <td class="property">Размер</td>
+        <td class="property">Size</td>
         <td class="value">
             {\Storage\Helper\ViewHelper::formatSize($file->size)}
         </td>
     </tr>
     <tr>
-        <td class="property">Дата загрузки</td>
-        <td class="value">{$file->upload_time}</td>
+        <td class="property"></td>
+        <td class="value">
+            <a href=
+        "{$baseUrl}/{\Storage\Helper\ViewHelper::getDownloadUrl($file->id, $file->name)}"
+            id="dowloadLink">download</a>
+        </td>
     </tr>
-    {if $description !== false}
-        {include file="$description.tpl"}
-    {/if}
 </table>
 
 {if $preview !== false}
@@ -48,4 +42,5 @@
 {/if}
 
 <script src="{$baseUrl}/js/detail_view.js"></script>
+</div>
 {include file="footer.tpl"}

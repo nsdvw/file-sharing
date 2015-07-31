@@ -9,7 +9,7 @@ class RegisterForm extends Form
     public function rules()
     {
         return array(
-            'login'=>array('notEmpty'=>true, 'maxLength'=>20),
+            'login' => array('notEmpty'=>true, 'maxLength'=>20, 'minLength'=>4),
             'email' => array('notEmpty'=>true, 'isEmail'=>true, 'maxLength'=>50),
             'password' => array('notEmpty'=>true, 'minLength'=>5, 'maxLength'=>50),
         );

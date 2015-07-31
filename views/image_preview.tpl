@@ -1,9 +1,9 @@
-<div class="caption">Предпросмотр изображения</div>
-<div class="preview">
+<div class="caption">Image preview</div>
+<div class="image-preview">
     <a href="/{\Storage\Helper\ViewHelper::getUploadPath($file->id, $file->name)}"
         target="_blank">
         <img src="../{\Storage\Helper\ViewHelper::getPreviewPath($file->id)}"
             alt="image">
-        <br>в полном разрешении
+        <br>in full resolution
     </a>
 </div>

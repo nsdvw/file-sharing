@@ -2,7 +2,7 @@
 
 class HashGenerator
 {
-    const LENGTH = 10;
+    const SALT_LENGTH = 10;
     
     public static function getCharacters()
     {
@@ -14,14 +14,14 @@ class HashGenerator
         $salt = '';
         $characters = self::getCharacters();
         $charactersLength = strlen($characters);
-        for ($i = 0; $i < self::LENGTH; $i++) {
+        for ($i = 0; $i < self::SALT_LENGTH; $i++) {
             $salt .= $characters[rand(0, $charactersLength - 1)];
         }
         return $salt;
     }
 
-    public static function generateHash($saltedPassword)
+    public static function generateHash($salt, $password)
     {
-        return sha1($saltedPassword);
+        return sha1($salt . $password);
     }
 }

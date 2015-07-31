@@ -15,22 +15,27 @@
                 <label for="register[login]">Login:</label>
             </div>
             <div class="register-field-input">
-                <div><input type="text" name="register[login]"></div>
+                <div>
+                    <input type="text" name="register[login]" value="{$registerLogin}">
+                </div>
                 <div class="register-field-error"></div>
             </div>
             <div class="register-field-name">
                 <label for="register[email]">Email:</label>
             </div>
             <div class="register-field-input">
-                <div><input type="text" name="register[email]"></div>
-                <div class="register-field-error">hello</div>
+                <div>
+                    <input type="text" name="register[email]" value="{$registerEmail}">
+                </div>
             </div>
             <div class="register-field-name">
                 <label for="register[password]">Password:</label>
             </div>
             <div class="register-field-input">
-                <div><input type="password" name="register[password]"></div>
-                <div class="register-field-error">world</div>
+                <div>
+                    <input type="password" name="register[password]" value="{$registerPassword}">
+                </div>
+                <div class="register-field-error">{$registerError}</div>
             </div>
             <div class="register-field-name"></div>
             <div class="register-field-input">

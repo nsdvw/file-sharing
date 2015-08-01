@@ -6,7 +6,7 @@ window.onload = function () {
         var notice = document.getElementById('notice');
         var error = document.getElementById('upload-error');
         if (!window.FormData) {
-            notice.innerHTML = 'Идет загрузка, не закрывайте браузер...';
+            notice.innerHTML = 'Uploading is in porgress, do not close the browser...';
             return;
         }
         var agreeBox = document.getElementById('agreeBox');
@@ -21,7 +21,7 @@ window.onload = function () {
             error.innerHTML = 'You didn\'t choose the file';
             return;
         }
-        notice.innerHTML = 'Идет загрузка, не закрывайте браузер...';
+        notice.innerHTML = 'Uploading is in porgress, do not close the browser...';
         var xhr = getXmlHttp();
         var formData = new FormData(form);
         var progressBox = document.getElementById('progressBox');
@@ -31,11 +31,11 @@ window.onload = function () {
         xhr.onreadystatechange = function () {
             if (this.readyState != 4) return;
             if (this.responseText != 'error') {
-                notice.innerHTML = 'Файл успешно загружен!';
+                notice.innerHTML = 'File has been uploaded successfully';
                 alert('File has been uploaded successfully');
                 window.location.href = decodeURI('/view?upload=ok');
             } else {
-                error.innerHTML = 'Произошла ошибка. Попробуйте еще раз.';
+                error.innerHTML = 'Error. Try again later.';
             }
         };
 

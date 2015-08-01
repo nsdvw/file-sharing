@@ -15,7 +15,7 @@ function getXmlHttp() {
     return xmlhttp;
 }
 
-/* Function from w3.org to get a compatible path from input.value
+/* Function from w3.org to get a compatible path from fileInput.value
 http://www.w3.org/TR/2012/WD-html5-20121025/states-of-the-type-attribute.html#fakepath-srsly
 */
 function extractFilename(path) {

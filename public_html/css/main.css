@@ -489,7 +489,7 @@ footer {
     height: 100%;
 }
 .preview {
-    margin-left: 37.5rem;
+    margin: 0 0 3rem 37.5rem;
     padding: 0 1rem;
 }
 .preview a:link, .preview a:visited, .preview a:active {

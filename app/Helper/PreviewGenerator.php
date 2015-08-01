@@ -1,20 +1,16 @@
 <?php namespace Storage\Helper;
 
+use Storage\Model\File;
+
 class PreviewGenerator
 {
     public static function hasPreview($file)
     {
-        if (file_exists($file)) {
-            return true;
-        } else {
-            return false;
-        }
+        return file_exists($file);
     }
 
-    public static function createPreview(
-        \Storage\Model\File $file,
-        $preview_width = 300
-    ) {
+    public static function createPreview(File $file, $preview_width = 300)
+    {
         $original_width = $file->mediaInfo->resolution_x;
         $original_height = $file->mediaInfo->resolution_y;
         if ($original_width <= $preview_width) {
@@ -40,6 +36,10 @@ class PreviewGenerator
             break;
         case 'image/png':
             $fullSize = imagecreatefrompng($uploadedFile);
+            $transparent = imagecolorallocatealpha($content, 0, 0, 0, 127); 
+            imagefill($content, 0, 0, $transparent);
+            imagealphablending($content, false);
+            imagesavealpha($content, true);
             imagecopyresampled($content, $fullSize, 0, 0, 0, 0,
             $preview_width, $preview_height, $original_width, $original_height);
             imagepng($content, ViewHelper::getPreviewPath($file->id));

@@ -22,6 +22,7 @@
     <div id="progressBox" class="progressBox">
         <div id="progressBar" class="progressBar"></div>
     </div>
+    <div id="notice"></div>
     <script src="{$baseUrl}/js/main.js"></script>
 </div>
 {include file="footer.tpl"}

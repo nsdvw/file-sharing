@@ -33,4 +33,16 @@ class UserMapper
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
         return $sth->fetch();
     }
+
+    public function findById($id)
+    {
+        $sql = "SELECT id, login, email, hash, salt
+                FROM user
+                WHERE id=:id";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindParam(':id', $id, \PDO::PARAM_INT);
+        $sth->execute();
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        return $sth->fetch();
+    }
 }

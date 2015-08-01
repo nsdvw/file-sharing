@@ -8,6 +8,7 @@ use Storage\Model\MediaInfo;
 use Storage\Model\FileMapper;
 use Storage\Model\RegisterForm;
 use Storage\Model\UserMapper;
+use Storage\Helper\Pager;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
@@ -115,12 +116,23 @@ $app->post('/ajax/upload', function() use ($app) {
     $error = $_FILES['upload']['error']['file1'];
     $name = $_FILES['upload']['name']['file1'];
     $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-    $description = (isset($_POST['description']) and $_POST['description']!=='') 
-                        ? $_POST['description'] : null;
+    if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+        $author_id = null;
+    } else {
+        $id = intval($_COOKIE['id']);
+        $hash = $_COOKIE['hash'];
+        if (!$user = $app->userMapper->findById($id)) {
+            $author_id = null;
+        } elseif ($user->hash !== $hash) {
+            $author_id = null;
+        } else {
+            $author_id = $id;
+        }
+    }
     if ($error) {
         echo 'error';
     } else {
-        $file = File::fromUser($name, $tmp_name, $description);
+        $file = File::fromUser($name, $tmp_name, $author_id);
         $app->connection->beginTransaction();
         $app->fileMapper->save($file);
         if (move_uploaded_file(
@@ -139,30 +151,21 @@ $app->post('/ajax/upload', function() use ($app) {
         }
     }
 });
+
 $app->get('/ajax/mediainfo/:id', function ($id) use ($app) {
-    $types = array(
-        'audio/mpeg'=>'mp3',
-        'audio/mp4'=>'m4a',
-        'audio/webm'=>'webma',
-        'audio/x-wav'=>'wav',
-        'audio/x-flv'=>'fla',
-        'audio/ogg'=>'oga',
-        'video/ogg'=>'ogv',
-        'video/webm'=>'webmv',
-        'video/mp4'=>'m4v',
-        'video/x-flv'=>'flv',
-    );
+    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
     if (!$file = $app->fileMapper->findById($id)) {
         echo 'error';
-    } elseif (!key_exists($file->mime_type, $types)) {
+    } elseif (!in_array($file->mime_type, $jPlayerTypes)) {
         echo 'error';
     } else {
-        $type = $types[$file->mime_type];
+        $type = array_search($file->mime_type, $jPlayerTypes);
         $name = ViewHelper::getUploadName($file->id, $file->name);
         $json = '{"' . $type . '": "/' . UPLOAD_DIR . "/$name" . '"}';
         echo $json;
     }
 });
+
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         echo 'error';
@@ -171,6 +174,7 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
         echo json_encode($file);
     }
 });
+
 $app->post('/', function() use ($app) {
     if (isset($_POST['login'])) {
         $loginForm = new LoginForm(
@@ -195,36 +199,45 @@ $app->post('/', function() use ($app) {
         } else {
             $loginError = $loginForm->errorMessage;
         }
-    $noticeMessage = '';
-    $uploadError = '';
-    $title = 'FileSharing &mdash; upload file';
-    $login = false;
-    $bookmark = 'Upload';
-    $loginEmail = $loginForm->email;
-    $loginPassword = $loginForm->password;
-    $app->render(
-        'upload_form.tpl',
-        array(
-            'noticeMessage'=>$noticeMessage,
-            'uploadError'=>$uploadError,
-            'loginError'=>$loginError,
-            'title'=>$title,
-            'login'=>$login,
-            'bookmark'=>$bookmark,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
-            )
-        );
+        $uploadError = '';
+        $title = 'FileSharing &mdash; upload file';
+        $login = false;
+        $bookmark = 'Upload';
+        $loginEmail = $loginForm->email;
+        $loginPassword = $loginForm->password;
+        $app->render(
+            'upload_form.tpl',
+            array(
+                'uploadError'=>$uploadError,
+                'loginError'=>$loginError,
+                'title'=>$title,
+                'login'=>$login,
+                'bookmark'=>$bookmark,
+                'loginEmail'=>$loginEmail,
+                'loginPassword'=>$loginPassword,
+                )
+            );
     } elseif (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
         $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-        $description = (isset($_POST['description']) and $_POST['description']!=='') 
-                            ? $_POST['description'] : null;
+        if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+            $author_id = null;
+        } else {
+            $id = inval($_COOKIE['id']);
+            $hash = $_COOKIE['hash'];
+            if (!$user = $app->userMapper->findById($id)) {
+                $author_id = null;
+            } elseif ($user->hash !== $hash) {
+                $author_id = null;
+            } else {
+                $author_id = $id;
+            }
+        }
         if ($error) {
             $app->response->redirect("/?error=$error");
         } else {
-            $file = File::fromUser($name, $tmp_name, $description);
+            $file = File::fromUser($name, $tmp_name, $author_id);
             $app->connection->beginTransaction();
             $app->fileMapper->save($file);
             if (move_uploaded_file(
@@ -244,6 +257,7 @@ $app->post('/', function() use ($app) {
         }
     }
 });
+
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $login = false;
@@ -271,6 +285,7 @@ $app->get('/reg', function () use ($app) {
         )
     );
 });
+
 $app->post('/reg', function () use ($app) {  
     $registerForm = new RegisterForm(
         array(
@@ -316,10 +331,11 @@ $app->post('/reg', function () use ($app) {
         );
     }
 });
+
 $app->get('/view', function() use ($app) {
     $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
-    $offset = ($page - 1) * \Storage\Helper\Pager::PER_PAGE;
-    $pager = new \Storage\Helper\Pager($app->connection, $page);
+    $offset = ($page - 1) * Pager::PER_PAGE;
+    $pager = new Pager($app->connection, $page);
     $list = $app->fileMapper->findAll($offset);
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
@@ -336,11 +352,11 @@ $app->get('/view', function() use ($app) {
         array(
             'list'=>$list,
             'title'=>$title,
+            'noticeMessage'=>$noticeMessage,
             'login'=>$login,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
             'loginError'=>$loginError,
-            'noticeMessage'=>$noticeMessage,
             'bookmark'=>$bookmark,
             'currentPage'=>$pager->currentPage,
             'lastPage'=>$pager->lastPage,
@@ -349,6 +365,7 @@ $app->get('/view', function() use ($app) {
         )
     );
 });
+
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
     header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
@@ -356,6 +373,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
     header('Content-Disposition: attachment');
     exit;
 });
+
 $app->get('/view/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
@@ -400,4 +418,5 @@ $app->get('/view/:id', function ($id) use ($app) {
         )
     );
 });
+
 $app->run();

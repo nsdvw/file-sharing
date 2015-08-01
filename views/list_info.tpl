@@ -1,6 +1,6 @@
 {include file="header.tpl"}
 <div id="container-wide">
-    <div class="logo2">
+    <div class="{if $login == true}logo3{else}logo2{/if}">
         <div id="folder-main-part"></div>
         <div id="folder-bookmark"></div>
         <div id="initial-letter">f</div>
@@ -35,7 +35,7 @@
             </div>
         </div>
         {/foreach}
-
+        {if $pageCount > 1}
             <div class="pager">
                 {if $currentPage == 1}
                 <div class="pager-first not-active">First</div>
@@ -73,6 +73,7 @@
                 <div class="pager-next not-active">Next</div>
                 {/if}
             </div>
+        {/if}
         </div>
         <div class="preview" id="previewBox"></div>
         <div class="clearDummy"></div>

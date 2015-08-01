@@ -11,17 +11,16 @@ class FileMapper
         $this->connection = $connection;
     }
 
-    public function save(\Storage\Model\File $file)
+    public function save(File $file)
     {
         $sql =
         "INSERT INTO file
-            (name, author_id, description, size, mime_type, mediaInfo)
+            (name, author_id, size, mime_type, mediaInfo)
         VALUES
-            (:name, :author_id, :description, :size, :mime_type, :mediaInfo)";
+            (:name, :author_id, :size, :mime_type, :mediaInfo)";
         $sth = $this->connection->prepare($sql);
         $sth->bindParam(':name', $file->name, \PDO::PARAM_STR);
         $sth->bindParam(':author_id', $file->author_id, \PDO::PARAM_INT);
-        $sth->bindParam(':description', $file->description, \PDO::PARAM_STR);
         $sth->bindParam(':size', $file->size, \PDO::PARAM_INT);
         $sth->bindParam(':mime_type', $file->mime_type, \PDO::PARAM_STR);
         $sth->bindParam(
@@ -44,9 +43,8 @@ class FileMapper
 
     public function findAll($offset = 0, $limit = Pager::PER_PAGE)
     {
-        $sql = "SELECT id, name, upload_time, description,
-                       size, mime_type, download_counter,
-                       author_id, mediaInfo
+        $sql = "SELECT id, name, upload_time, size, mime_type,
+                       download_counter, author_id, mediaInfo
                 FROM file
                 ORDER BY upload_time DESC LIMIT :offset, :limit";
         $sth = $this->connection->prepare($sql);
@@ -55,7 +53,7 @@ class FileMapper
         $sth->execute();
         $list = $sth->fetchAll(\PDO::FETCH_CLASS, '\Storage\Model\File');
         foreach ($list as $row) {
-            $row->mediaInfo = \Storage\Model\MediaInfo::fromDataBase(
+            $row->mediaInfo = MediaInfo::fromDataBase(
                 json_decode($row->mediaInfo)
             );
         }
@@ -64,7 +62,7 @@ class FileMapper
 
     public function findById($id)
     {
-        $sql = "SELECT id, name, upload_time, description,
+        $sql = "SELECT id, name, upload_time,
                 size, mime_type, download_counter,
                 author_id, mediaInfo
                 FROM file WHERE id=:id";
@@ -73,7 +71,7 @@ class FileMapper
         $sth->execute();
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\File');
         $row = $sth->fetch();
-        $row->mediaInfo = \Storage\Model\MediaInfo::fromDataBase(
+        $row->mediaInfo = MediaInfo::fromDataBase(
             json_decode($row->mediaInfo)
         );
         return $row;

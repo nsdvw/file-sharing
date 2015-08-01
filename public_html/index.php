@@ -18,7 +18,6 @@ define('DOWNLOAD_DIR', 'download');
 define('BASE_DIR', '..');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
-
 $app = new Slim(
     array(
         'view' => new Smarty(),
@@ -30,7 +29,6 @@ $app->view->compile_check = true;
 $app->view->force_compile = true;
 как отключить это долбанное кеширование?
 */
-
 $baseUrl = $app->request->getUrl();
 $app->view->appendData( array(
     'baseUrl' => $baseUrl,
@@ -66,11 +64,9 @@ $app->container->singleton('connection', function () {
                     $db_config['pass']
                 );
 });
-
 $app->container->singleton('fileMapper', function () use ($app) {
     return new FileMapper($app->connection);
 });
-
 $app->container->singleton('userMapper', function () use ($app) {
     return new UserMapper($app->connection);
 });
@@ -78,12 +74,13 @@ $app->container->singleton('userMapper', function () use ($app) {
 $app->get('/', function() use ($app) {
     if (isset($_GET['register']) or isset($_GET['login'])) {
         session_start();
-        $id = strval($_SESSION['id']);
-        $hash = strval($_SESSION['hash']);
-        setcookie('id', strval($_SESSION['id']), time() + 3600 * 24 * 7);
-        setcookie('hash', strval($_SESSION['hash']), time() + 3600 * 24 * 7);
+        $id = (isset($_SESSION['id'])) ? strval($_SESSION['id']) : '';
+        $hash = (isset($_SESSION['hash'])) ? strval($_SESSION['hash']) : '';
+        setcookie('id', $id, time() + 3600 * 24 * 7);
+        setcookie('hash', $hash, time() + 3600 * 24 * 7);
         $_COOKIE['id'] = $id;
         $_COOKIE['hash'] = $hash;
+        session_destroy();
     }
     $title = 'FileSharing &mdash; upload file';
     $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
@@ -96,8 +93,6 @@ $app->get('/', function() use ($app) {
     $login = ($id and $hash and !$logout) ? true : false;
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
-    $noticeMessage = (isset($_GET['notice']) and $_GET['notice'] == 'ok')
-                    ? 'File was uploded successfully' : '';
     $bookmark = 'Upload';
     $loginError = '';
     $loginEmail = '';
@@ -105,7 +100,6 @@ $app->get('/', function() use ($app) {
     $app->render(
         'upload_form.tpl',
         array(
-            'noticeMessage'=>$noticeMessage,
             'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
@@ -145,7 +139,6 @@ $app->post('/ajax/upload', function() use ($app) {
         }
     }
 });
-
 $app->get('/ajax/mediainfo/:id', function ($id) use ($app) {
     $types = array(
         'audio/mpeg'=>'mp3',
@@ -170,7 +163,6 @@ $app->get('/ajax/mediainfo/:id', function ($id) use ($app) {
         echo $json;
     }
 });
-
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         echo 'error';
@@ -179,7 +171,6 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
         echo json_encode($file);
     }
 });
-
 $app->post('/', function() use ($app) {
     if (isset($_POST['login'])) {
         $loginForm = new LoginForm(
@@ -253,7 +244,6 @@ $app->post('/', function() use ($app) {
         }
     }
 });
-
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $login = false;
@@ -281,7 +271,6 @@ $app->get('/reg', function () use ($app) {
         )
     );
 });
-
 $app->post('/reg', function () use ($app) {  
     $registerForm = new RegisterForm(
         array(
@@ -327,7 +316,6 @@ $app->post('/reg', function () use ($app) {
         );
     }
 });
-
 $app->get('/view', function() use ($app) {
     $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
     $offset = ($page - 1) * \Storage\Helper\Pager::PER_PAGE;
@@ -361,7 +349,6 @@ $app->get('/view', function() use ($app) {
         )
     );
 });
-
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
     header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
@@ -369,7 +356,6 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
     header('Content-Disposition: attachment');
     exit;
 });
-
 $app->get('/view/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
@@ -382,7 +368,6 @@ $app->get('/view/:id', function ($id) use ($app) {
     $loginEmail = '';
     $loginPassword = '';
     $bookmark = 'Files';
-
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
         if (!PreviewGenerator::hasPreview($path)) {
@@ -415,5 +400,4 @@ $app->get('/view/:id', function ($id) use ($app) {
         )
     );
 });
-
 $app->run();

@@ -23,9 +23,10 @@ class FileMapper
         $sth->bindParam(':author_id', $file->author_id, \PDO::PARAM_INT);
         $sth->bindParam(':size', $file->size, \PDO::PARAM_INT);
         $sth->bindParam(':mime_type', $file->mime_type, \PDO::PARAM_STR);
+        $mediaInfo = json_encode($file->mediaInfo);
         $sth->bindParam(
             ':mediaInfo',
-            json_encode($file->mediaInfo),
+            $mediaInfo,
             \PDO::PARAM_STR
         );
         $sth->execute();

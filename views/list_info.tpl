@@ -6,9 +6,8 @@
         <div id="initial-letter">f</div>
         <div id="logo-text">ile-sharing</div>
     </div>
-
-    <div class="notice" id="notice">{$noticeMessage}</div>
     <div class="content">
+        <div class="notice" id="notice">{$noticeMessage}</div>
         <div class="files-list">
         {foreach $list as $file}
         <div class="file-item file-nonselected" data-id="{$file->id}">

@@ -25,11 +25,7 @@ $app = new Slim(
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
 ));
-/*$app->view->caching = false;
-$app->view->compile_check = true;
-$app->view->force_compile = true;
-как отключить это долбанное кеширование?
-*/
+
 $baseUrl = $app->request->getUrl();
 $app->view->appendData( array(
     'baseUrl' => $baseUrl,
@@ -224,7 +220,7 @@ $app->post('/', function() use ($app) {
         if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
             $author_id = null;
         } else {
-            $id = inval($_COOKIE['id']);
+            $id = intval($_COOKIE['id']);
             $hash = $_COOKIE['hash'];
             if (!$user = $app->userMapper->findById($id)) {
                 $author_id = null;

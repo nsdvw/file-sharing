@@ -163,7 +163,7 @@ header {
     font-family: georgia;
     font-weight: bold;
     letter-spacing: 0.45rem;
-    margin: 0 auto;
+    margin: 0 auto 1rem;
 }
 .logo3 {
     width: 30rem;
@@ -174,7 +174,7 @@ header {
     font-family: georgia;
     font-weight: bold;
     letter-spacing: 0.45rem;
-    margin: 2rem auto 0;
+    margin: 2rem auto 1rem;
 }
 #folder-main-part {
     position: absolute;
@@ -319,7 +319,7 @@ footer {
     padding: 0.625rem;
 }
 .content {
-    margin-top: 1.5rem;
+    margin: 1.5rem 0 2rem;
 }
 .files-list {
     width: 37.5rem;
@@ -600,6 +600,9 @@ footer {
     height: 1.25rem;
     margin: auto;
     display: none;
+}
+#notice {
+    text-align: center;
 }
 #progressBar {
     height: 100%;

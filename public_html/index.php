@@ -68,7 +68,66 @@ $app->container->singleton('userMapper', function () use ($app) {
     return new UserMapper($app->connection);
 });
 
-$app->get('/', function() use ($app) {
+$app->get('/login', function () use ($app) {
+    session_start();
+    if (isset($_SESSION['id']) and isset($_SESSION['hash'])) {
+        $id = $_SESSION['id'];
+        $hash = $_SESSION['hash'];
+        setcookie('id', $id, time() + 3600 * 24 * 7);
+        setcookie('hash', $hash, time() + 3600 * 24 * 7);
+        $_COOKIE['id'] = $id;
+        $_COOKIE['hash'] = $hash;
+    }
+    if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])) {
+        $login = true;
+    } else {
+        $login = false;
+    }
+    $title = 'FileSharing &mdash; upload file';
+    $uploadError = '';
+    $bookmark = 'Upload';
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
+    $app->render(
+        'upload_form.tpl',
+        array(
+            'uploadError'=>$uploadError,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'login'=>$login,
+            'bookmark'=>$bookmark,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+        )
+    );
+});
+
+$app->get('/logout', function () use ($app) {
+    setcookie('id', '');
+    setcookie('hash', '');
+    $title = 'FileSharing &mdash; upload file';
+    $uploadError = '';
+    $login = false;
+    $bookmark = 'Upload';
+    $loginError = '';
+    $loginEmail = '';
+    $loginPassword = '';
+    $app->render(
+        'upload_form.tpl',
+        array(
+            'uploadError'=>$uploadError,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'login'=>$login,
+            'bookmark'=>$bookmark,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+        )
+    );
+});
+
+$app->get('/', function () use ($app) {
     if (isset($_GET['register']) or isset($_GET['login'])) {
         session_start();
         $id = (isset($_SESSION['id'])) ? strval($_SESSION['id']) : '';
@@ -171,49 +230,53 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     }
 });
 
-$app->post('/', function() use ($app) {
-    if (isset($_POST['login'])) {
-        $loginForm = new LoginForm(
-            array(
-                'email'=>$_POST['login']['email'],
-                'password'=>$_POST['login']['password'],
+$app->post('/login', function () use ($app) {
+    $loginForm = new LoginForm(
+        array(
+            'email'=>$_POST['login']['email'],
+            'password'=>$_POST['login']['password'],
+        )
+    );
+    if ($loginForm->validate()) {
+        if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
+            $loginError = 'user not found';
+        } else {
+            if ($user->hash !== sha1($user->salt . $loginForm->password)) {
+                $loginError = 'password is wrong';
+            } else {
+                session_start();
+                $_SESSION['id'] = $user->id;
+                $_SESSION['hash'] = $user->hash;
+                //echo "set id to {$user->id} and hash to {$user->hash}";die;
+                $app->response->redirect('/login');
+                $loginError = ''; // иначе выдает exception, что переменная undefined
+            }
+        }
+    } else {
+        $loginError = $loginForm->errorMessage;
+    }
+    $uploadError = '';
+    $title = 'FileSharing &mdash; upload file';
+    $login = false;
+    $bookmark = 'Upload';
+    $loginEmail = $loginForm->email;
+    $loginPassword = $loginForm->password;
+    $app->render(
+        'upload_form.tpl',
+        array(
+            'uploadError'=>$uploadError,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'login'=>$login,
+            'bookmark'=>$bookmark,
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
             )
         );
-        if ($loginForm->validate()) {
-            if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
-                $loginError = 'user not found';
-            } else {
-                if ($user->hash !== sha1($user->salt . $loginForm->password)) {
-                    $loginError = 'password is wrong';
-                } else {
-                    session_start();
-                    $_SESSION['id'] = $user->id;
-                    $_SESSION['hash'] = $user->hash;
-                    $app->response->redirect('/?login');
-                }
-            }
-        } else {
-            $loginError = $loginForm->errorMessage;
-        }
-        $uploadError = '';
-        $title = 'FileSharing &mdash; upload file';
-        $login = false;
-        $bookmark = 'Upload';
-        $loginEmail = $loginForm->email;
-        $loginPassword = $loginForm->password;
-        $app->render(
-            'upload_form.tpl',
-            array(
-                'uploadError'=>$uploadError,
-                'loginError'=>$loginError,
-                'title'=>$title,
-                'login'=>$login,
-                'bookmark'=>$bookmark,
-                'loginEmail'=>$loginEmail,
-                'loginPassword'=>$loginPassword,
-                )
-            );
-    } elseif (isset($_POST['upload'])) {
+});
+
+$app->post('/', function() use ($app) {
+    if (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
         $tmp_name = $_FILES['upload']['tmp_name']['file1'];

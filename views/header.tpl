@@ -31,7 +31,7 @@
           </div>
           {else}
           <div class="inactiveBookmark">
-            <a href="{$baseUrl}/?logout">Log out</a>
+            <a href="{$baseUrl}/logout">Log out</a>
           </div>
           {/if}
           <div class="clearDummy"></div>
@@ -40,7 +40,7 @@
     </header>
     {if $login !== true}
     <div class="authentication">
-      <form action="{$baseUrl}" method="post" name="login" class="loginForm">
+      <form action="{$baseUrl}/login" method="post" name="login" class="loginForm">
         <input type="text" name="login[email]" placeholder="email" value="{$loginEmail}">
         <input type="password" name="login[password]" placeholder="password" value="{$loginPassword}">
         <input type="submit" value="Login" class="small-button">

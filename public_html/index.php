@@ -1,4 +1,5 @@
 <?php
+
 use Slim\Slim;
 use Slim\Views\Smarty;
 use Storage\Model\File;
@@ -12,6 +13,7 @@ use Storage\Helper\Pager;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
+use Storage\Auth\LoginManager;
 
 define('UPLOAD_DIR', 'upload');
 define('PREVIEW_DIR', 'preview');
@@ -69,16 +71,8 @@ $app->container->singleton('userMapper', function () use ($app) {
 });
 
 $app->get('/login', function () use ($app) {
-    session_start();
-    if (isset($_SESSION['id']) and isset($_SESSION['hash'])) {
-        $id = $_SESSION['id'];
-        $hash = $_SESSION['hash'];
-        setcookie('id', $id, time() + 3600 * 24 * 7);
-        setcookie('hash', $hash, time() + 3600 * 24 * 7);
-        $_COOKIE['id'] = $id;
-        $_COOKIE['hash'] = $hash;
-    }
-    if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])) {
+    LoginManager::login();
+    if (LoginManager::isLoggedIn()) {
         $login = true;
     } else {
         $login = false;
@@ -104,8 +98,7 @@ $app->get('/login', function () use ($app) {
 });
 
 $app->get('/logout', function () use ($app) {
-    setcookie('id', '');
-    setcookie('hash', '');
+    LoginManager::logout();
     $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
     $login = false;
@@ -129,24 +122,10 @@ $app->get('/logout', function () use ($app) {
 
 $app->get('/', function () use ($app) {
     if (isset($_GET['register']) or isset($_GET['login'])) {
-        session_start();
-        $id = (isset($_SESSION['id'])) ? strval($_SESSION['id']) : '';
-        $hash = (isset($_SESSION['hash'])) ? strval($_SESSION['hash']) : '';
-        setcookie('id', $id, time() + 3600 * 24 * 7);
-        setcookie('hash', $hash, time() + 3600 * 24 * 7);
-        $_COOKIE['id'] = $id;
-        $_COOKIE['hash'] = $hash;
-        session_destroy();
+        LoginManager::login();
     }
     $title = 'FileSharing &mdash; upload file';
-    $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
-    $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
-    $logout = (isset($_GET['logout'])) ? true : false;
-    if ($logout) {
-        setcookie('id', '');
-        setcookie('hash', '');
-    }
-    $login = ($id and $hash and !$logout) ? true : false;
+    $login = true;
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
     $bookmark = 'Upload';
@@ -171,18 +150,10 @@ $app->post('/ajax/upload', function() use ($app) {
     $error = $_FILES['upload']['error']['file1'];
     $name = $_FILES['upload']['name']['file1'];
     $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-    if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+    if (!LoginManager::isLoggedIn()) {
         $author_id = null;
     } else {
-        $id = intval($_COOKIE['id']);
-        $hash = $_COOKIE['hash'];
-        if (!$user = $app->userMapper->findById($id)) {
-            $author_id = null;
-        } elseif ($user->hash !== $hash) {
-            $author_id = null;
-        } else {
-            $author_id = $id;
-        }
+        $author_id = $_COOKIE['id'];
     }
     if ($error) {
         echo 'error';
@@ -247,7 +218,6 @@ $app->post('/login', function () use ($app) {
                 session_start();
                 $_SESSION['id'] = $user->id;
                 $_SESSION['hash'] = $user->hash;
-                //echo "set id to {$user->id} and hash to {$user->hash}";die;
                 $app->response->redirect('/login');
                 $loginError = ''; // иначе выдает exception, что переменная undefined
             }
@@ -280,18 +250,10 @@ $app->post('/', function() use ($app) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
         $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-        if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+        if (!LoginManager::isLoggedIn()) {
             $author_id = null;
         } else {
-            $id = intval($_COOKIE['id']);
-            $hash = $_COOKIE['hash'];
-            if (!$user = $app->userMapper->findById($id)) {
-                $author_id = null;
-            } elseif ($user->hash !== $hash) {
-                $author_id = null;
-            } else {
-                $author_id = $id;
-            }
+            $author_id = $id;
         }
         if ($error) {
             $app->response->redirect("/?error=$error");
@@ -399,9 +361,11 @@ $app->get('/view', function() use ($app) {
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
                     ? "File has been uploaded successfully" : '';
-    $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
-    $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
-    $login = ($id and $hash) ? true : false;
+    if (LoginManager::isLoggedIn()) {
+        $login = true;
+    } else {
+        $login = false;
+    }
     $loginError = '';
     $loginEmail = '';
     $loginPassword = '';
@@ -438,9 +402,11 @@ $app->get('/view/:id', function ($id) use ($app) {
         $app->notFound();
     }
     $title = 'FileSharing &mdash; file description';
-    $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
-    $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
-    $login = ($id and $hash) ? true : false;
+    if (LoginManager::isLoggedIn()) {
+        $login = true;
+    } else {
+        $login = false;
+    }
     $loginError = '';
     $loginEmail = '';
     $loginPassword = '';

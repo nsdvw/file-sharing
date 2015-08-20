@@ -30,6 +30,10 @@ class PreviewGenerator
             break;
         case 'image/gif':
             $fullSize = imagecreatefromgif($uploadedFile);
+            $transparent = imagecolorallocatealpha($content, 0, 0, 0, 127); 
+            imagefill($content, 0, 0, $transparent);
+            imagealphablending($content, false);
+            imagesavealpha($content, true);
             imagecopyresampled($content, $fullSize, 0, 0, 0, 0,
             $preview_width, $preview_height, $original_width, $original_height);
             imagegif($content, ViewHelper::getPreviewPath($file->id));

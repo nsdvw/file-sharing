@@ -6,7 +6,7 @@
         <div id="initial-letter">f</div>
         <div id="logo-text">ile-sharing</div>
     </div>
-    <form class="upload-form" name="upload" method="post" action="" enctype="multipart/form-data">
+    <form class="upload-form" name="upload" method="post" action="{$baseUrl}/upload_file" enctype="multipart/form-data">
         <div class="input-file" id="fakeInputFile">
             <span class="input-file-name" id="inputFileName"></span>
         </div>

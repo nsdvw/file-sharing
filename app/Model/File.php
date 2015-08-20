@@ -34,7 +34,7 @@ class File
         $file->size = filesize($tmp_name);
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $file->mime_type = $finfo->file($tmp_name);
-        $file->mediaInfo = MediaInfo::fromUser($tmp_name);
+        $file->mediaInfo = MediaInfo::fromFile($tmp_name);
         return $file;
     }
 

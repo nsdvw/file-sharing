@@ -36,9 +36,11 @@ $app->view->appendData( array(
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
     $bookmark = 'Upload';
-    $id = (isset($_COOKIE['id'])) ? $_COOKIE['id'] : null;
-    $hash = (isset($_COOKIE['hash'])) ? $_COOKIE['hash'] : null;
-    $login = ($id and $hash) ? true : false;
+    if (LoginManager::isLoggedIn()) {
+        $login = true;
+    } else {
+        $login = false;
+    }
     $loginEmail = '';
     $loginPassword = '';
     $loginError = '';
@@ -243,7 +245,13 @@ $app->post('/login', function () use ($app) {
         );
 });
 
-$app->post('/', function() use ($app) {
+$app->post('/upload_file', function() use ($app) {
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+    and $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+        $request = 'ajax';
+    } else {
+        $request = 'direct';
+    }
     if (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
@@ -251,10 +259,14 @@ $app->post('/', function() use ($app) {
         if (!LoginManager::isLoggedIn()) {
             $author_id = null;
         } else {
-            $author_id = $id;
+            $author_id = $_COOKIE['id'];
         }
         if ($error) {
-            $app->response->redirect("/?error=$error");
+            if ($request == 'ajax') {
+                echo 'error';
+            } else {
+                $app->response->redirect("/?error=$error");
+            }
         } else {
             $file = File::fromUser($name, $tmp_name, $author_id);
             $app->connection->beginTransaction();
@@ -268,10 +280,18 @@ $app->post('/', function() use ($app) {
                     $path = ViewHelper::getPreviewPath($file->id);
                     PreviewGenerator::createPreview($file);
                 }
-                $app->response->redirect('/view/?upload=ok');
+                if ($request == 'ajax') {
+                    echo 'ok';
+                } else {
+                    $app->response->redirect('/view/?upload=ok');
+                }
             } else {
                 $app->connection->rollBack();
-                $app->response->redirect("/?error=server_error");
+                if ($request == 'ajax') {
+                    echo 'error';
+                } else {
+                    $app->response->redirect("/?error=server_error");
+                }
             }
         }
     }

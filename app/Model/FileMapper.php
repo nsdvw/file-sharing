@@ -24,11 +24,7 @@ class FileMapper
         $sth->bindParam(':size', $file->size, \PDO::PARAM_INT);
         $sth->bindParam(':mime_type', $file->mime_type, \PDO::PARAM_STR);
         $mediaInfo = json_encode($file->mediaInfo);
-        $sth->bindParam(
-            ':mediaInfo',
-            $mediaInfo,
-            \PDO::PARAM_STR
-        );
+        $sth->bindParam(':mediaInfo', $mediaInfo, \PDO::PARAM_STR);
         $sth->execute();
         $file->id = $this->connection->lastInsertId();
     }

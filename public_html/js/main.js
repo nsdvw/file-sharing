@@ -32,6 +32,7 @@ window.onload = function () {
             if (this.readyState != 4) return;
             if (this.responseText != 'error') {
                 notice.innerHTML = 'File has been uploaded successfully';
+                console.log(this.responseText);
                 alert('File has been uploaded successfully');
                 window.location.href = decodeURI('/view?upload=ok');
             } else {
@@ -45,7 +46,8 @@ window.onload = function () {
             progressBar.style.width = fullWidth * progress + 'px';
         };
 
-        xhr.open('POST', '/ajax/upload');
+        xhr.open('POST', '/upload_file');
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.send(formData);
     };
 

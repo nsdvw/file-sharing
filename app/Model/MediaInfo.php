@@ -9,7 +9,7 @@ class MediaInfo
     public $playtime;
     public $bits_per_sample;
 
-    public static function fromUser($fileName)
+    public static function fromFile($fileName)
     {
         $mediaInfo = new self;
         $id3 = new \getID3();
@@ -40,7 +40,8 @@ class MediaInfo
     {
         $mediaInfo = new self;
         foreach ($obj as $property => $value) {
-            $mediaInfo->$property = $obj->$property;
+            if (isset($mediaInfo->$property))
+                $mediaInfo->$property = $obj->$property;
         }
         return $mediaInfo;
     }

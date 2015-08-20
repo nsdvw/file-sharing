@@ -17,6 +17,7 @@ class LoginManager
         setcookie('hash', $hash, time() + 3600 * 24 * 7);
         $_COOKIE['id'] = $id;
         $_COOKIE['hash'] = $hash;
+        session_destroy();
         return true;
     }
 

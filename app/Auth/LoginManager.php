@@ -9,14 +9,15 @@ class LoginManager
     public static function login()
     {
         session_start();
-        if (isset($_SESSION['id']) and isset($_SESSION['hash'])) {
-            $id = $_SESSION['id'];
-            $hash = $_SESSION['hash'];
-            setcookie('id', $id, time() + 3600 * 24 * 7);
-            setcookie('hash', $hash, time() + 3600 * 24 * 7);
-            $_COOKIE['id'] = $id;
-            $_COOKIE['hash'] = $hash;
-        }
+        if (!isset($_SESSION['id']) or !isset($_SESSION['hash']))
+            return false;
+        $id = $_SESSION['id'];
+        $hash = $_SESSION['hash'];
+        setcookie('id', $id, time() + 3600 * 24 * 7);
+        setcookie('hash', $hash, time() + 3600 * 24 * 7);
+        $_COOKIE['id'] = $id;
+        $_COOKIE['hash'] = $hash;
+        return true;
     }
 
     public static function logout()
@@ -41,5 +42,13 @@ class LoginManager
         if ($user->hash != $hash) return false;
 
         return true;
+    }
+
+    public static function setSession(array $params) // не хватает фантазии дать внятное имя
+    {
+        session_start();
+        foreach ($params as $key=>$value) {
+            $_SESSION[$key] = $value;
+        }
     }
 }

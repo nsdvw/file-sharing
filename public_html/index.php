@@ -71,8 +71,7 @@ $app->container->singleton('userMapper', function () use ($app) {
 });
 
 $app->get('/login', function () use ($app) {
-    LoginManager::login();
-    if (LoginManager::isLoggedIn()) {
+    if (LoginManager::login()) {
         $login = true;
     } else {
         $login = false;
@@ -121,11 +120,12 @@ $app->get('/logout', function () use ($app) {
 });
 
 $app->get('/', function () use ($app) {
-    if (isset($_GET['register']) or isset($_GET['login'])) {
-        LoginManager::login();
+    if (LoginManager::login()) {
+        $login = true;
+    } else {
+        $login = false;
     }
     $title = 'FileSharing &mdash; upload file';
-    $login = true;
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
     $bookmark = 'Upload';
@@ -215,11 +215,9 @@ $app->post('/login', function () use ($app) {
             if ($user->hash !== sha1($user->salt . $loginForm->password)) {
                 $loginError = 'password is wrong';
             } else {
-                session_start();
-                $_SESSION['id'] = $user->id;
-                $_SESSION['hash'] = $user->hash;
+                LoginManager::setSession(array('id'=>$user->id, 'hash'=>$user->hash,));
+                $loginError = '';
                 $app->response->redirect('/login');
-                $loginError = ''; // иначе выдает exception, что переменная undefined
             }
         }
     } else {
@@ -318,11 +316,8 @@ $app->post('/reg', function () use ($app) {
     if ($registerForm->validate()) {
         $user = new User;
         $user->fromForm($registerForm);
-        $mapper = new UserMapper($app->connection);
-        $mapper->register($user);
-        session_start();
-        $_SESSION['id'] = $user->id;
-        $_SESSION['hash'] = $user->hash;
+        $app->userMapper->register($user);
+        LoginManager::setSession(array('id'=>$user->id, 'hash'=>$user->hash,));
         $app->response->redirect('/?register=ok');
     } else {
         $title = 'FileSharing &mdash; registration';

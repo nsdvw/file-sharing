@@ -46,8 +46,7 @@ window.onload = function () {
             progressBar.style.width = fullWidth * progress + 'px';
         };
 
-        xhr.open('POST', '/upload_file');
-        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.open('POST', '/upload_file?ajax');
         xhr.send(formData);
     };
 

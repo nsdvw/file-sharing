@@ -40,7 +40,7 @@ class MediaInfo
     {
         $mediaInfo = new self;
         foreach ($obj as $property => $value) {
-            if (isset($mediaInfo->$property))
+            //if (isset($mediaInfo->$property))
                 $mediaInfo->$property = $obj->$property;
         }
         return $mediaInfo;

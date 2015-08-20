@@ -44,16 +44,15 @@
 </div>
 </div>
 </div>
-<script src="{$baseUrl}/js/player_settings.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     $("#jquery_jplayer_1").jPlayer({
     ready: function () {
-        $(this).jPlayer("setMedia", settings);
+        $(this).jPlayer("setMedia", { '{$type}':'{$path}' });
     },
     cssSelectorAncestor: "#jp_container_1",
     swfPath: "/js",
-    supplied: suppliedFormat,
+    supplied: '{$type}',
     useStateClassSkin: true,
     autoBlur: false,
     smoothPlayBar: true,

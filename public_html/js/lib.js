@@ -52,20 +52,6 @@ function removeClass(el, removeClass) {
     el.setAttribute('class', newClassName);
 }
 
-function getPlayerSettings(id) {
-    var settings = undefined;
-    var xhr = getXmlHttp();
-    xhr.onreadystatechange = function () {
-        if (this.readyState != 4) return;
-        if (this.responseText != 'error') {
-            settings = JSON.parse(this.responseText);
-        }
-    };
-    xhr.open('GET', '/ajax/mediainfo/' + id, false);
-    xhr.send(null);
-    return settings;
-}
-
 function cropFilename(fileName, maxLength) {
     maxLength = maxLength || 40;
     if (fileName.length <= maxLength) return fileName;

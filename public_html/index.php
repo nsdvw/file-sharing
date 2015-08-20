@@ -19,6 +19,7 @@ define('UPLOAD_DIR', 'upload');
 define('PREVIEW_DIR', 'preview');
 define('DOWNLOAD_DIR', 'download');
 define('BASE_DIR', '..');
+mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
 $app = new Slim(
@@ -180,20 +181,6 @@ $app->post('/ajax/upload', function() use ($app) {
     }
 });
 
-$app->get('/ajax/mediainfo/:id', function ($id) use ($app) {
-    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
-    if (!$file = $app->fileMapper->findById($id)) {
-        echo 'error';
-    } elseif (!in_array($file->mime_type, $jPlayerTypes)) {
-        echo 'error';
-    } else {
-        $type = array_search($file->mime_type, $jPlayerTypes);
-        $name = ViewHelper::getUploadName($file->id, $file->name);
-        $json = '{"' . $type . '": "/' . UPLOAD_DIR . "/$name" . '"}';
-        echo $json;
-    }
-});
-
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         echo 'error';
@@ -246,12 +233,7 @@ $app->post('/login', function () use ($app) {
 });
 
 $app->post('/upload_file', function() use ($app) {
-    if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-    and $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-        $request = 'ajax';
-    } else {
-        $request = 'direct';
-    }
+    $request_method = (isset($_GET['ajax'])) ? 'ajax' : 'direct';
     if (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
@@ -262,7 +244,7 @@ $app->post('/upload_file', function() use ($app) {
             $author_id = $_COOKIE['id'];
         }
         if ($error) {
-            if ($request == 'ajax') {
+            if ($request_method == 'ajax') {
                 echo 'error';
             } else {
                 $app->response->redirect("/?error=$error");
@@ -280,14 +262,14 @@ $app->post('/upload_file', function() use ($app) {
                     $path = ViewHelper::getPreviewPath($file->id);
                     PreviewGenerator::createPreview($file);
                 }
-                if ($request == 'ajax') {
+                if ($request_method == 'ajax') {
                     echo 'ok';
                 } else {
                     $app->response->redirect('/view/?upload=ok');
                 }
             } else {
                 $app->connection->rollBack();
-                if ($request == 'ajax') {
+                if ($request_method == 'ajax') {
                     echo 'error';
                 } else {
                     $app->response->redirect("/?error=server_error");
@@ -426,6 +408,9 @@ $app->get('/view/:id', function ($id) use ($app) {
     $loginEmail = '';
     $loginPassword = '';
     $bookmark = 'Files';
+    $type = '';
+    $path = '';
+    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
         if (!PreviewGenerator::hasPreview($path)) {
@@ -436,9 +421,15 @@ $app->get('/view/:id', function ($id) use ($app) {
     } elseif ($file->isVideo()) {
         $preview = 'video_player';
         $description = 'video_description';
+        $name = ViewHelper::getUploadName($file->id, $file->name);
+        $type = array_search($file->mime_type, $jPlayerTypes);
+        $path = '/' . UPLOAD_DIR . "/$name";
     } elseif($file->isAudio()) {
         $preview = 'audio_player';
         $description = 'audio_description';
+        $name = ViewHelper::getUploadName($file->id, $file->name);
+        $type = array_search($file->mime_type, $jPlayerTypes);
+        $path = '/' . UPLOAD_DIR . "/$name";
     } else {
         $preview = false;
         $description = false;
@@ -455,6 +446,8 @@ $app->get('/view/:id', function ($id) use ($app) {
             'bookmark'=>$bookmark,
             'preview'=>$preview,
             'description'=>$description,
+            'type'=>$type,
+            'path'=>$path,
         )
     );
 });

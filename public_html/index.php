@@ -73,6 +73,27 @@ $app->container->singleton('userMapper', function () use ($app) {
     return new UserMapper($app->connection);
 });
 
+$app->get('/test', function () use ($app){
+    $parent_path = '3';
+    $sql = "SELECT MAX(materialized_path) AS comment_path FROM comment
+                WHERE materialized_path LIKE CONCAT(:parentpath, '%')";
+    $sth = $app->connection->prepare($sql);
+    $sth->bindValue(':parentpath', $parent_path, \PDO::PARAM_STR);
+    $sth->execute();
+    $lastReplyPath = $sth->fetch();
+    var_dump($lastReplyPath);
+    $endOfPath = mb_substr($lastReplyPath['comment_path'], mb_strlen($parent_path));
+    if($endOfPath == '') {
+        $number = $parent_path . '.1';
+    } else {
+        $explode = explode('.', $endOfPath);
+        $number = $parent_path .'.'. ++$explode[1];
+        var_dump($explode);
+    }
+    echo $number;
+
+});
+
 $app->get('/login', function () use ($app) {
     if (LoginManager::login()) {
         $login = true;

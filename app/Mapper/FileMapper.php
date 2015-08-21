@@ -20,12 +20,12 @@ class FileMapper
         VALUES
             (:name, :author_id, :size, :mime_type, :mediaInfo)";
         $sth = $this->connection->prepare($sql);
-        $sth->bindParam(':name', $file->name, \PDO::PARAM_STR);
-        $sth->bindParam(':author_id', $file->author_id, \PDO::PARAM_INT);
-        $sth->bindParam(':size', $file->size, \PDO::PARAM_INT);
-        $sth->bindParam(':mime_type', $file->mime_type, \PDO::PARAM_STR);
+        $sth->bindValue(':name', $file->name, \PDO::PARAM_STR);
+        $sth->bindValue(':author_id', $file->author_id, \PDO::PARAM_INT);
+        $sth->bindValue(':size', $file->size, \PDO::PARAM_INT);
+        $sth->bindValue(':mime_type', $file->mime_type, \PDO::PARAM_STR);
         $mediaInfo = json_encode($file->mediaInfo);
-        $sth->bindParam(':mediaInfo', $mediaInfo, \PDO::PARAM_STR);
+        $sth->bindValue(':mediaInfo', $mediaInfo, \PDO::PARAM_STR);
         $sth->execute();
         $file->id = $this->connection->lastInsertId();
     }
@@ -35,7 +35,7 @@ class FileMapper
         $sql = "UPDATE file SET download_counter = download_counter + 1
         WHERE id = :id";
         $sth = $this->connection->prepare($sql);
-        $sth->bindParam(':id', $id, \PDO::PARAM_INT);
+        $sth->bindValue(':id', $id, \PDO::PARAM_INT);
         $sth->execute();
     }
 
@@ -46,8 +46,8 @@ class FileMapper
                 FROM file
                 ORDER BY upload_time DESC LIMIT :offset, :limit";
         $sth = $this->connection->prepare($sql);
-        $sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
-        $sth->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $sth->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $sth->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $sth->execute();
         $list = $sth->fetchAll(\PDO::FETCH_CLASS, '\Storage\Model\File');
         foreach ($list as $row) {
@@ -65,7 +65,7 @@ class FileMapper
                 author_id, mediaInfo
                 FROM file WHERE id=:id";
         $sth = $this->connection->prepare($sql);
-        $sth->bindParam(':id', $id, \PDO::PARAM_INT);
+        $sth->bindValue(':id', $id, \PDO::PARAM_INT);
         $sth->execute();
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\File');
         $row = $sth->fetch();

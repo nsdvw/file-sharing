@@ -21,3 +21,19 @@ CREATE TABLE file (
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE comment (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    contents TEXT NOT NULL,
+    file_id INT UNSIGNED NOT NULL,
+    author_id INT UNSIGNED,
+    materialized_path VARCHAR(255) NOT NULL,
+    added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (file_id) REFERENCES file (id),
+    FOREIGN KEY (author_id) REFERENCES user (id),
+    PRIMARY KEY (id)
+);
+
+/*INSERT INTO comment (contents, file_id, materialized_path)
+    VALUES ('hello', 1, '3.3.1');
+SELECT MAX(materialized_path) FROM comment;*/

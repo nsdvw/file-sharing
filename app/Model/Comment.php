@@ -12,6 +12,7 @@ class Comment
     public $author_id;
     public $materialized_path;
     public $added;
+    public $level;
 
     public function fromForm(CommentForm $form)
     {
@@ -57,5 +58,10 @@ class Comment
             $explode = explode('.', $endOfPath);
             return $parent_path .'.'. ++$explode[1];
         }
+    }
+
+    public static function getLevelFromPath($path)
+    {
+        return count(explode('.', $path));
     }
 }

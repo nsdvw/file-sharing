@@ -33,7 +33,3 @@ CREATE TABLE comment (
     FOREIGN KEY (author_id) REFERENCES user (id),
     PRIMARY KEY (id)
 );
-
-/*INSERT INTO comment (contents, file_id, materialized_path)
-    VALUES ('hello', 1, '3.3.1');
-SELECT MAX(materialized_path) FROM comment;*/

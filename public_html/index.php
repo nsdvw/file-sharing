@@ -4,11 +4,13 @@ use Slim\Slim;
 use Slim\Views\Smarty;
 use Storage\Model\File;
 use Storage\Model\User;
+use Storage\Model\Comment;
 use Storage\Model\LoginForm;
 use Storage\Model\MediaInfo;
 use Storage\Model\RegisterForm;
 use Storage\Mapper\FileMapper;
 use Storage\Mapper\UserMapper;
+use Storage\Mapper\CommentMapper;
 use Storage\Helper\Pager;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
@@ -72,26 +74,16 @@ $app->container->singleton('fileMapper', function () use ($app) {
 $app->container->singleton('userMapper', function () use ($app) {
     return new UserMapper($app->connection);
 });
+$app->container->singleton('commentMapper', function () use ($app) {
+    return new CommentMapper($app->connection);
+});
 
-$app->get('/test', function () use ($app){
-    $parent_path = '3';
-    $sql = "SELECT MAX(materialized_path) AS comment_path FROM comment
-                WHERE materialized_path LIKE CONCAT(:parentpath, '%')";
-    $sth = $app->connection->prepare($sql);
-    $sth->bindValue(':parentpath', $parent_path, \PDO::PARAM_STR);
-    $sth->execute();
-    $lastReplyPath = $sth->fetch();
-    var_dump($lastReplyPath);
-    $endOfPath = mb_substr($lastReplyPath['comment_path'], mb_strlen($parent_path));
-    if($endOfPath == '') {
-        $number = $parent_path . '.1';
-    } else {
-        $explode = explode('.', $endOfPath);
-        $number = $parent_path .'.'. ++$explode[1];
-        var_dump($explode);
+$app->get('/test', function() use ($app) {
+    $comments = $app->commentMapper->getComments();
+    foreach ($comments as $comment) {
+        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
     }
-    echo $number;
-
+    var_dump($comments);
 });
 
 $app->get('/login', function () use ($app) {
@@ -168,38 +160,6 @@ $app->get('/', function () use ($app) {
             'loginPassword'=>$loginPassword,
         )
     );
-});
-
-$app->post('/ajax/upload', function() use ($app) {
-    $error = $_FILES['upload']['error']['file1'];
-    $name = $_FILES['upload']['name']['file1'];
-    $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-    if (!LoginManager::isLoggedIn()) {
-        $author_id = null;
-    } else {
-        $author_id = $_COOKIE['id'];
-    }
-    if ($error) {
-        echo 'error';
-    } else {
-        $file = File::fromUser($name, $tmp_name, $author_id);
-        $app->connection->beginTransaction();
-        $app->fileMapper->save($file);
-        if (move_uploaded_file(
-            $tmp_name,
-            ViewHelper::getUploadPath($file->id, $file->name)))
-        {
-            $app->connection->commit();
-            if ($file->isImage()) {
-                $path = ViewHelper::getPreviewPath($file->id);
-                PreviewGenerator::createPreview($file);
-            }
-            echo 'ok';
-        } else {
-            $app->connection->rollBack();
-            echo 'error';
-        }
-    }
 });
 
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
@@ -431,6 +391,7 @@ $app->get('/view/:id', function ($id) use ($app) {
     $bookmark = 'Files';
     $type = '';
     $path = '';
+
     $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
@@ -455,6 +416,13 @@ $app->get('/view/:id', function ($id) use ($app) {
         $preview = false;
         $description = false;
     }
+
+    $comments = $app->commentMapper->getComments();
+    foreach ($comments as $comment) {
+        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
+        $comment->author_id = $app->userMapper->findById($comment->author_id);
+    }
+
     $app->render(
         'file_info.tpl',
         array(
@@ -469,6 +437,7 @@ $app->get('/view/:id', function ($id) use ($app) {
             'description'=>$description,
             'type'=>$type,
             'path'=>$path,
+            'comments'=>$comments,
         )
     );
 });

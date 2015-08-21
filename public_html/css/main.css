@@ -610,3 +610,47 @@ footer {
     background: #ccc;
     float: left;
 }
+.comment {
+    margin: 0.75rem 0;
+    position: relative;
+    border-left: 1px dashed #ddd;
+    padding-left: 0.25rem;
+}
+.level-2 {
+    margin-left: 3rem;
+}
+.level-3 {
+    margin-left: 6rem;
+}
+.level-4 {
+    margin-left: 9rem;
+}
+.c-title {
+    position: absolute;
+    top: 0;
+    left: 0.5rem;
+    font-size: 0.8rem;
+}
+.c-author {
+    font-weight: bold;
+    padding-right: 1rem;
+}
+.c-added {
+    color: #888;
+    font-size: 0.75rem;
+}
+.c-reply {
+    position: absolute;
+    bottom: 0;
+    left: 0.5rem;
+    color: #444;
+}
+.c-reply a:link,
+.c-reply a:visited {
+    color: #444;
+    font-size: 0.7rem;
+}
+.c-text {
+    padding: 1.25rem 0.25rem 1.25rem;
+    font-size: 0.95rem;
+}

@@ -11,6 +11,15 @@ class CommentMapper
         $this->connection = $connection;
     }
 
+    public function getComments()
+    {
+        $sql = "SELECT * FROM comment";
+        $sth = $this->connection->prepare($sql);
+        $sth->execute();
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\Comment');
+        return $sth->fetchAll();
+    }
+
     public function getLastCommentPath($file_id)
     {
         $sql = "SELECT MAX(materialized_path) AS comment_path FROM comment

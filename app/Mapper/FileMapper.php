@@ -1,6 +1,7 @@
-<?php namespace Storage\Model;
+<?php namespace Storage\Mapper;
 
 use Storage\Helper\Pager;
+use Storage\Model\MediaInfo;
 
 class FileMapper
 {

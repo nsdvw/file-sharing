@@ -1,4 +1,4 @@
-<?php namespace Storage\Model;
+<?php namespace Storage\Mapper;
 
 class UserMapper
 {

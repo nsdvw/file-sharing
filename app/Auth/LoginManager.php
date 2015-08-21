@@ -2,7 +2,7 @@
 
 namespace Storage\Auth;
 
-use Storage\Model\UserMapper;
+use Storage\Mapper\UserMapper;
 
 class LoginManager
 {

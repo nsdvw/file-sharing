@@ -664,3 +664,8 @@ footer {
     width: 100%;
     height: 4rem;
 }
+.c-error {
+    color: indianred;
+    font-size: 0.875rem;
+    line-height: 1.2rem;
+}

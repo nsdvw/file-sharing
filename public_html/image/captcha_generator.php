@@ -6,10 +6,10 @@ $captcha = imagecreatefromjpeg('noise.jpg');
 $color = imagecolorallocate($captcha, 140, 140, 140);
 $letters = 5;
 $randomString = strtolower(substr(base64_encode(sha1(uniqid())), 0, $letters));
-$_SESSION['randomString'] = $randomString;
+$_SESSION['captcha'] = $randomString;
 
 $x = 20;
-$y = 55;
+$y = 40;
 $offset = 40;
 
 for ($i = 0; $i < $letters; $i++) {

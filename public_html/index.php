@@ -4,6 +4,7 @@ use Slim\Slim;
 use Slim\Views\Smarty;
 use Storage\Model\File;
 use Storage\Model\User;
+use Storage\Model\Captcha;
 use Storage\Model\Comment;
 use Storage\Model\LoginForm;
 use Storage\Model\MediaInfo;
@@ -129,7 +130,8 @@ $app->get('/logout', function () use ($app) {
 });
 
 $app->get('/', function () use ($app) {
-    if (LoginManager::login()) {
+    LoginManager::login();
+    if (LoginManager::isLoggedIn()) {
         $login = true;
     } else {
         $login = false;
@@ -439,9 +441,14 @@ $app->get('/view/:id', function ($id) use ($app) {
 });
 
 $app->post('/view/:id', function ($id) use ($app) {
+    $postError = '';
     if (!LoginManager::isLoggedIn()) {
         $author_id = null;
         $login = false;
+        $captcha = new Captcha(
+                    array('passcode'=>$_POST['comment_form']['captcha'],)
+                );
+        $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
     } else {
         $author_id = intval($_COOKIE['id']);
         $login = true;
@@ -455,8 +462,7 @@ $app->post('/view/:id', function ($id) use ($app) {
             ));
     if (!$form->validate()) {
         $postError = $form->errorMessage;
-    } else {
-        $postError = '';
+    } else if (!$postError) {
         $comment = new Comment;
         $comment->fromForm($form);
         $app->commentMapper->save($comment);

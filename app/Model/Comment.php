@@ -18,7 +18,7 @@ class Comment
     {
         $this->contents = $form->contents;
         $this->file_id = $form->file_id;
-        $this->author_id = $form->author_id;
+        $this->author_id = ($form->author_id) ? intval($form->author_id) : null;
         $db_config = parse_ini_file(\BASE_DIR.'/config.ini');
         $connection = new \PDO(
                     $db_config['conn'],

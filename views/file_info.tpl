@@ -47,7 +47,13 @@
             class="comment-area"></textarea>
         <input type="hidden" name="comment_form[reply_id]" value="{$reply}">
     </div>
-    <div class="error">{$postError}</div>
+    <div class="c-error">{$postError}</div>
+    {if $login != true}
+        <div class="c-captcha">
+            <img src="{$baseUrl}/image/captcha_generator.php" alt="captcha"><br>
+            <input type="text" name="comment_form[captcha]">
+        </div>
+    {/if}
     <input type="submit" class="small-button" value="send">
 </form>
 

@@ -59,4 +59,14 @@ class Form
         }
         return true;
     }
+
+    public function validateCaptcha($field)
+    {
+        session_start();
+        if ($this->$field != $_SESSION['captcha']) {
+            $this->errorMessage = 'Wrong captcha';
+            return false;
+        }
+        return true;
+    }
 }

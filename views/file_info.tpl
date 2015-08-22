@@ -41,16 +41,26 @@
     {include file="$preview.tpl"}
 {/if}
 
+<form action="" method="POST" name="comment_form" class="comment-form">
+    <div>
+        <textarea name="comment_form[contents]" placeholder="Leave a comment..."
+            class="comment-area"></textarea>
+        <input type="hidden" name="comment_form[reply_id]" value="{$reply}">
+    </div>
+    <div class="error">{$postError}</div>
+    <input type="submit" class="small-button" value="send">
+</form>
+
 <div class="comments">
     {foreach $comments as $comment}
         <div class="comment level-{$comment->level}">
             <div class="c-title">
                 <span class="c-author">
-                    {$comment->author_id->login|default:'Anonymous'}
+                    {$comment->author_id->login|default:'Anonymous'|escape}
                 </span>
                 <span class="c-added">{$comment->added}</span>
             </div>
-            <div class="c-text">{$comment->contents}</div>
+            <div class="c-text">{$comment->contents|escape}</div>
             <div class="c-reply">
                 <a href="{$baseUrl}/view/{$file->id}?reply={$comment->id}">Reply</a>
             </div>

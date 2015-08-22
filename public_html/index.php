@@ -7,6 +7,7 @@ use Storage\Model\User;
 use Storage\Model\Comment;
 use Storage\Model\LoginForm;
 use Storage\Model\MediaInfo;
+use Storage\Model\CommentForm;
 use Storage\Model\RegisterForm;
 use Storage\Mapper\FileMapper;
 use Storage\Mapper\UserMapper;
@@ -76,14 +77,6 @@ $app->container->singleton('userMapper', function () use ($app) {
 });
 $app->container->singleton('commentMapper', function () use ($app) {
     return new CommentMapper($app->connection);
-});
-
-$app->get('/test', function() use ($app) {
-    $comments = $app->commentMapper->getComments();
-    foreach ($comments as $comment) {
-        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
-    }
-    var_dump($comments);
 });
 
 $app->get('/login', function () use ($app) {
@@ -417,11 +410,12 @@ $app->get('/view/:id', function ($id) use ($app) {
         $description = false;
     }
 
-    $comments = $app->commentMapper->getComments();
+    $comments = $app->commentMapper->getComments($file->id);
     foreach ($comments as $comment) {
         $comment->level = Comment::getLevelFromPath($comment->materialized_path);
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
+    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
 
     $app->render(
         'file_info.tpl',
@@ -438,8 +432,93 @@ $app->get('/view/:id', function ($id) use ($app) {
             'type'=>$type,
             'path'=>$path,
             'comments'=>$comments,
+            'reply'=>$reply,
+            'postError'=>'',
         )
     );
+});
+
+$app->post('/view/:id', function ($id) use ($app) {
+    if (!LoginManager::isLoggedIn()) {
+        $author_id = null;
+        $login = false;
+    } else {
+        $author_id = intval($_COOKIE['id']);
+        $login = true;
+    }
+    $form = new CommentForm(
+            array(
+                'contents'=>$_POST['comment_form']['contents'],
+                'reply_id'=>$_POST['comment_form']['reply_id'],
+                'file_id'=>$id,
+                'author_id'=>$author_id,
+            ));
+    if (!$form->validate()) {
+        $postError = $form->errorMessage;
+    } else {
+        $postError = '';
+        $comment = new Comment;
+        $comment->fromForm($form);
+        $app->commentMapper->save($comment);
+        $app->response->redirect('/view/'.$id);
+    }
+    /***********************************************/
+    $title = 'FileSharing &mdash; file description';
+    $file = $app->fileMapper->findById($id);
+    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
+    $type = '';
+    $path = '';
+    if ($file->isImage()) {
+        $path = ViewHelper::getPreviewPath($id);
+        if (!PreviewGenerator::hasPreview($path)) {
+            PreviewGenerator::createPreview($file);
+        }
+        $preview = 'image_preview';
+        $description = 'image_description';
+    } elseif ($file->isVideo()) {
+        $preview = 'video_player';
+        $description = 'video_description';
+        $name = ViewHelper::getUploadName($file->id, $file->name);
+        $type = array_search($file->mime_type, $jPlayerTypes);
+        $path = '/' . UPLOAD_DIR . "/$name";
+    } elseif($file->isAudio()) {
+        $preview = 'audio_player';
+        $description = 'audio_description';
+        $name = ViewHelper::getUploadName($file->id, $file->name);
+        $type = array_search($file->mime_type, $jPlayerTypes);
+        $path = '/' . UPLOAD_DIR . "/$name";
+    } else {
+        $preview = false;
+        $description = false;
+    }
+
+    $comments = $app->commentMapper->getComments($file->id);
+    foreach ($comments as $comment) {
+        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
+        $comment->author_id = $app->userMapper->findById($comment->author_id);
+    }
+    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
+
+    $app->render(
+        'file_info.tpl',
+        array(
+            'file'=>$file,
+            'title'=>$title,
+            'login'=>$login,
+            'loginEmail'=>'',
+            'loginPassword'=>'',
+            'loginError'=>'',
+            'bookmark'=>'Files',
+            'preview'=>$preview,
+            'description'=>$description,
+            'type'=>$type,
+            'path'=>$path,
+            'comments'=>$comments,
+            'reply'=>$reply,
+            'postError'=>$postError,
+        )
+    );
+
 });
 
 $app->run();

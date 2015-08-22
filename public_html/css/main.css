@@ -610,6 +610,9 @@ footer {
     background: #ccc;
     float: left;
 }
+.comments {
+    margin-bottom: 2rem;
+}
 .comment {
     margin: 0.75rem 0;
     position: relative;
@@ -653,4 +656,11 @@ footer {
 .c-text {
     padding: 1.25rem 0.25rem 1.25rem;
     font-size: 0.95rem;
+}
+.comment-form {
+    margin-bottom: 2rem;
+}
+.comment-area {
+    width: 100%;
+    height: 4rem;
 }

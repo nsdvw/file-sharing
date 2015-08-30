@@ -1,11 +1,6 @@
 {include file="header.tpl"}
 <div id="container-narrow">
-    <div class="logo1">
-        <div id="folder-main-part"></div>
-        <div id="folder-bookmark"></div>
-        <div id="initial-letter">f</div>
-        <div id="logo-text">ile-sharing</div>
-    </div>
+    {include file="logo1.tpl"}
     <form class="upload-form" name="upload" method="post" action="{$baseUrl}/upload_file" enctype="multipart/form-data">
         <div class="input-file" id="fakeInputFile">
             <span class="input-file-name" id="inputFileName"></span>

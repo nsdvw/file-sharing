@@ -38,10 +38,12 @@
     {if $loginManager->loggedUser === null}
     <div class="authentication">
       <form action="{$baseUrl}/login" method="post" name="login" class="loginForm">
-        <input type="text" name="login[email]" placeholder="email" value="{$loginEmail|escape}">
-        <input type="password" name="login[password]" placeholder="password" value="{$loginPassword|escape}">
+        <input type="text" name="login[email]"
+            placeholder="email" value="{$loginEmail|escape|default:''}">
+        <input type="password" name="login[password]" placeholder="password"
+            value="{$loginPassword|escape|default:''}">
         <input type="submit" value="Login" class="small-button">
-        <div class="loginError">{$loginError}</div>
+        <div class="loginError">{$loginError|default:''}</div>
       </form>
     </div>
     {/if}

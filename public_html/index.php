@@ -62,15 +62,9 @@ $app->view->appendData( array(
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
     $bookmark = 'Upload';
-    $loginEmail = '';
-    $loginPassword = '';
-    $loginError = '';
     $app->render(
         '404.tpl',
         array(
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
-            'loginError'=>$loginError,
             'title'=>$title,
             'bookmark'=>$bookmark,
         )
@@ -81,18 +75,12 @@ $app->get('/login', function () use ($app) {
     $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
     $bookmark = 'Upload';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $app->render(
         'upload_form.tpl',
         array(
             'uploadError'=>$uploadError,
-            'loginError'=>$loginError,
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
         )
     );
 });
@@ -103,18 +91,12 @@ $app->get('/logout', function () use ($app) {
     $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
     $bookmark = 'Upload';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $app->render(
         'upload_form.tpl',
         array(
             'uploadError'=>$uploadError,
-            'loginError'=>$loginError,
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
         )
     );
 });
@@ -124,18 +106,12 @@ $app->get('/', function () use ($app) {
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
     $bookmark = 'Upload';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $app->render(
         'upload_form.tpl',
         array(
             'uploadError'=>$uploadError,
-            'loginError'=>$loginError,
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
         )
     );
 });
@@ -171,15 +147,13 @@ $app->post('/login', function () use ($app) {
     } else {
         $loginError = $loginForm->errorMessage;
     }
-    $uploadError = '';
     $title = 'FileSharing &mdash; upload file';
     $bookmark = 'Upload';
     $loginEmail = $loginForm->email;
     $loginPassword = $loginForm->password;
     $app->render(
-        'upload_form.tpl',
+        'login.tpl',
         array(
-            'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
             'bookmark'=>$bookmark,
@@ -236,9 +210,6 @@ $app->post('/upload_file', function() use ($app) {
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $registerError = '';
     $registerLogin = '';
     $registerEmail = '';
@@ -248,9 +219,6 @@ $app->get('/reg', function () use ($app) {
         array(
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'loginError'=>$loginError,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
             'registerError'=>$registerError,
             'registerLogin'=>$registerLogin,
             'registerEmail'=>$registerEmail,
@@ -276,25 +244,19 @@ $app->post('/reg', function () use ($app) {
     } else {
         $title = 'FileSharing &mdash; registration';
         $bookmark = 'Sign up';
-        $loginError = '';
         $registerError = $registerForm->errorMessage;
         $registerLogin = $registerForm->login;
         $registerEmail = $registerForm->email;
-        $loginEmail = '';
-        $loginPassword = '';
         $registerPassword = $registerForm->password;
         $app->render(
             'register_form.tpl',
             array(
                 'title'=>$title,
                 'bookmark'=>$bookmark,
-                'loginError'=>$loginError,
                 'registerError'=>$registerError,
                 'registerLogin'=>$registerLogin,
                 'registerEmail'=>$registerEmail,
                 'registerPassword'=>$registerPassword,
-                'loginEmail'=>$loginEmail,
-                'loginPassword'=>$loginPassword,
             )
         );
     }
@@ -308,9 +270,6 @@ $app->get('/view', function() use ($app) {
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
                     ? "File has been uploaded successfully" : '';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $bookmark = 'Files';
     $app->render(
         'list_info.tpl',
@@ -318,9 +277,6 @@ $app->get('/view', function() use ($app) {
             'list'=>$list,
             'title'=>$title,
             'noticeMessage'=>$noticeMessage,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
-            'loginError'=>$loginError,
             'bookmark'=>$bookmark,
             'currentPage'=>$pager->currentPage,
             'lastPage'=>$pager->lastPage,
@@ -343,9 +299,6 @@ $app->get('/view/:id', function ($id) use ($app) {
         $app->notFound();
     }
     $title = 'FileSharing &mdash; file description';
-    $loginError = '';
-    $loginEmail = '';
-    $loginPassword = '';
     $bookmark = 'Files';
     $type = '';
     $path = '';
@@ -387,9 +340,6 @@ $app->get('/view/:id', function ($id) use ($app) {
         array(
             'file'=>$file,
             'title'=>$title,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
-            'loginError'=>$loginError,
             'bookmark'=>$bookmark,
             'preview'=>$preview,
             'description'=>$description,

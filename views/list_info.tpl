@@ -1,6 +1,6 @@
 {include file="header.tpl"}
 <div id="container-wide">
-    <div class="{if $login == true}logo3{else}logo2{/if}">
+    <div class="{if $loginManager !== null}logo3{else}logo2{/if}">
         <div id="folder-main-part"></div>
         <div id="folder-bookmark"></div>
         <div id="initial-letter">f</div>

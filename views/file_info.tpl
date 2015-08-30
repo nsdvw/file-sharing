@@ -48,7 +48,7 @@
         <input type="hidden" name="comment_form[reply_id]" value="{$reply}">
     </div>
     <div class="c-error">{$postError}</div>
-    {if $login != true}
+    {if $loginManager->loggedUser === null}
         <div class="c-captcha">
             <img src="{$baseUrl}/image/captcha_generator.php" alt="captcha"><br>
             <input type="text" name="comment_form[captcha]">

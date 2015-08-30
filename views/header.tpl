@@ -20,16 +20,13 @@
           <div class="{if $bookmark == 'Files'}activeBookmark{else}inactiveBookmark{/if}">
             <a href="{$baseUrl}/view">Files</a>
           </div>
-          {if $login !== true}
+          {if $loginManager->loggedUser === null}
           <div class="{if $bookmark == 'TOS'}activeBookmark{else}inactiveBookmark{/if}">TOS</div>
-          {else}
-          <div class="{if $bookmark == 'Account'}activeBookmark{else}inactiveBookmark{/if}">Account</div>
-          {/if}
-          {if $login !== true}
           <div class="{if $bookmark == 'Sign up'}activeBookmark{else}inactiveBookmark{/if}">
             <a href="{$baseUrl}/reg">Sign up</a>
           </div>
           {else}
+          <div class="{if $bookmark == 'Account'}activeBookmark{else}inactiveBookmark{/if}">Account</div>
           <div class="inactiveBookmark">
             <a href="{$baseUrl}/logout">Log out</a>
           </div>
@@ -38,7 +35,7 @@
         </div>
       </div>
     </header>
-    {if $login !== true}
+    {if $loginManager->loggedUser === null}
     <div class="authentication">
       <form action="{$baseUrl}/login" method="post" name="login" class="loginForm">
         <input type="text" name="login[email]" placeholder="email" value="{$loginEmail|escape}">

@@ -33,35 +33,6 @@ $app = new Slim(
         'debug' => true,
 ));
 
-$baseUrl = $app->request->getUrl();
-$app->view->appendData( array(
-    'baseUrl' => $baseUrl,
-));
-
-$app->notFound(function () use ($app) {
-    $title = 'FileSharing &mdash; page not found';
-    $bookmark = 'Upload';
-    if (LoginManager::isLoggedIn()) {
-        $login = true;
-    } else {
-        $login = false;
-    }
-    $loginEmail = '';
-    $loginPassword = '';
-    $loginError = '';
-    $app->render(
-        '404.tpl',
-        array(
-            'login'=>$login,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
-            'loginError'=>$loginError,
-            'title'=>$title,
-            'bookmark'=>$bookmark,
-        )
-    );
-});
-
 $app->container->singleton('connection', function () {
     $db_config = parse_ini_file(BASE_DIR.'/config.ini');
     return new PDO(
@@ -79,13 +50,34 @@ $app->container->singleton('userMapper', function () use ($app) {
 $app->container->singleton('commentMapper', function () use ($app) {
     return new CommentMapper($app->connection);
 });
+$app->container->singleton('loginManager', function () use ($app){
+    return new LoginManager($app->userMapper);
+});
+
+$app->view->appendData( array(
+    'baseUrl' => $app->request->getUrl(),
+    'loginManager' => $app->loginManager,
+));
+
+$app->notFound(function () use ($app) {
+    $title = 'FileSharing &mdash; page not found';
+    $bookmark = 'Upload';
+    $loginEmail = '';
+    $loginPassword = '';
+    $loginError = '';
+    $app->render(
+        '404.tpl',
+        array(
+            'loginEmail'=>$loginEmail,
+            'loginPassword'=>$loginPassword,
+            'loginError'=>$loginError,
+            'title'=>$title,
+            'bookmark'=>$bookmark,
+        )
+    );
+});
 
 $app->get('/login', function () use ($app) {
-    if (LoginManager::login()) {
-        $login = true;
-    } else {
-        $login = false;
-    }
     $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
     $bookmark = 'Upload';
@@ -98,7 +90,6 @@ $app->get('/login', function () use ($app) {
             'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
-            'login'=>$login,
             'bookmark'=>$bookmark,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
@@ -107,10 +98,10 @@ $app->get('/login', function () use ($app) {
 });
 
 $app->get('/logout', function () use ($app) {
-    LoginManager::logout();
+    $app->loginManager->logout();
+    $app->loginManager->loggedUser = null;
     $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
-    $login = false;
     $bookmark = 'Upload';
     $loginError = '';
     $loginEmail = '';
@@ -121,7 +112,6 @@ $app->get('/logout', function () use ($app) {
             'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
-            'login'=>$login,
             'bookmark'=>$bookmark,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
@@ -130,12 +120,6 @@ $app->get('/logout', function () use ($app) {
 });
 
 $app->get('/', function () use ($app) {
-    LoginManager::login();
-    if (LoginManager::isLoggedIn()) {
-        $login = true;
-    } else {
-        $login = false;
-    }
     $title = 'FileSharing &mdash; upload file';
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
@@ -149,7 +133,6 @@ $app->get('/', function () use ($app) {
             'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
-            'login'=>$login,
             'bookmark'=>$bookmark,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
@@ -180,7 +163,7 @@ $app->post('/login', function () use ($app) {
             if ($user->hash !== sha1($user->salt . $loginForm->password)) {
                 $loginError = 'password is wrong';
             } else {
-                LoginManager::setSession(array('id'=>$user->id, 'hash'=>$user->hash,));
+                $app->loginManager->authorizeUser($user);
                 $loginError = '';
                 $app->response->redirect('/login');
             }
@@ -190,7 +173,6 @@ $app->post('/login', function () use ($app) {
     }
     $uploadError = '';
     $title = 'FileSharing &mdash; upload file';
-    $login = false;
     $bookmark = 'Upload';
     $loginEmail = $loginForm->email;
     $loginPassword = $loginForm->password;
@@ -200,7 +182,6 @@ $app->post('/login', function () use ($app) {
             'uploadError'=>$uploadError,
             'loginError'=>$loginError,
             'title'=>$title,
-            'login'=>$login,
             'bookmark'=>$bookmark,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
@@ -214,11 +195,6 @@ $app->post('/upload_file', function() use ($app) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
         $tmp_name = $_FILES['upload']['tmp_name']['file1'];
-        if (!LoginManager::isLoggedIn()) {
-            $author_id = null;
-        } else {
-            $author_id = $_COOKIE['id'];
-        }
         if ($error) {
             if ($request_method == 'ajax') {
                 echo 'error';
@@ -226,6 +202,8 @@ $app->post('/upload_file', function() use ($app) {
                 $app->response->redirect("/?error=$error");
             }
         } else {
+            $author_id = ($app->loginManager->loggedUser) ?
+                         $app->loginManager->loggedUser->id : null;
             $file = File::fromUser($name, $tmp_name, $author_id);
             $app->connection->beginTransaction();
             $app->fileMapper->save($file);
@@ -257,7 +235,6 @@ $app->post('/upload_file', function() use ($app) {
 
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
-    $login = false;
     $bookmark = 'Sign up';
     $loginError = '';
     $loginEmail = '';
@@ -270,7 +247,6 @@ $app->get('/reg', function () use ($app) {
         'register_form.tpl',
         array(
             'title'=>$title,
-            'login'=>$login,
             'bookmark'=>$bookmark,
             'loginError'=>$loginError,
             'loginEmail'=>$loginEmail,
@@ -295,11 +271,10 @@ $app->post('/reg', function () use ($app) {
         $user = new User;
         $user->fromForm($registerForm);
         $app->userMapper->register($user);
-        LoginManager::setSession(array('id'=>$user->id, 'hash'=>$user->hash,));
+        $app->loginManager->authorizeUser($user);
         $app->response->redirect('/?register=ok');
     } else {
         $title = 'FileSharing &mdash; registration';
-        $login = false;
         $bookmark = 'Sign up';
         $loginError = '';
         $registerError = $registerForm->errorMessage;
@@ -312,7 +287,6 @@ $app->post('/reg', function () use ($app) {
             'register_form.tpl',
             array(
                 'title'=>$title,
-                'login'=>$login,
                 'bookmark'=>$bookmark,
                 'loginError'=>$loginError,
                 'registerError'=>$registerError,
@@ -334,11 +308,6 @@ $app->get('/view', function() use ($app) {
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
                     ? "File has been uploaded successfully" : '';
-    if (LoginManager::isLoggedIn()) {
-        $login = true;
-    } else {
-        $login = false;
-    }
     $loginError = '';
     $loginEmail = '';
     $loginPassword = '';
@@ -349,7 +318,6 @@ $app->get('/view', function() use ($app) {
             'list'=>$list,
             'title'=>$title,
             'noticeMessage'=>$noticeMessage,
-            'login'=>$login,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
             'loginError'=>$loginError,
@@ -375,11 +343,6 @@ $app->get('/view/:id', function ($id) use ($app) {
         $app->notFound();
     }
     $title = 'FileSharing &mdash; file description';
-    if (LoginManager::isLoggedIn()) {
-        $login = true;
-    } else {
-        $login = false;
-    }
     $loginError = '';
     $loginEmail = '';
     $loginPassword = '';
@@ -424,7 +387,6 @@ $app->get('/view/:id', function ($id) use ($app) {
         array(
             'file'=>$file,
             'title'=>$title,
-            'login'=>$login,
             'loginEmail'=>$loginEmail,
             'loginPassword'=>$loginPassword,
             'loginError'=>$loginError,
@@ -442,16 +404,14 @@ $app->get('/view/:id', function ($id) use ($app) {
 
 $app->post('/view/:id', function ($id) use ($app) {
     $postError = '';
-    if (!LoginManager::isLoggedIn()) {
+    if (!$app->loginManager->loggedUser) {
         $author_id = null;
-        $login = false;
         $captcha = new Captcha(
                     array('passcode'=>$_POST['comment_form']['captcha'],)
                 );
         $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
     } else {
-        $author_id = intval($_COOKIE['id']);
-        $login = true;
+        $author_id = $app->loginManager->loggedUser->id;
     }
     $form = new CommentForm(
             array(
@@ -510,7 +470,6 @@ $app->post('/view/:id', function ($id) use ($app) {
         array(
             'file'=>$file,
             'title'=>$title,
-            'login'=>$login,
             'loginEmail'=>'',
             'loginPassword'=>'',
             'loginError'=>'',

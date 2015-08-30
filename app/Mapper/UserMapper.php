@@ -1,5 +1,7 @@
 <?php namespace Storage\Mapper;
 
+use Storage\Model\User;
+
 class UserMapper
 {
     protected $connection;

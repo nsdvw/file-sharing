@@ -2,6 +2,7 @@
 
 use Storage\Helper\Pager;
 use Storage\Model\MediaInfo;
+use Storage\Model\File;
 
 class FileMapper
 {

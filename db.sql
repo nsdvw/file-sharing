@@ -28,8 +28,10 @@ CREATE TABLE comment (
     file_id INT UNSIGNED NOT NULL,
     author_id INT UNSIGNED,
     materialized_path VARCHAR(255) NOT NULL,
+    parent_id INT UNSIGNED,
     added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (file_id) REFERENCES file (id),
     FOREIGN KEY (author_id) REFERENCES user (id),
+    FOREIGN KEY (parent_id) REFERENCES comment (id),
     PRIMARY KEY (id)
 );

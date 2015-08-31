@@ -11,6 +11,18 @@ class File
     public $mime_type;
     public $mediaInfo;
 
+    protected function getSafeFields()
+    {
+        return array(
+            'id',
+            'name',
+            'author_id',
+            'size',
+            'mime_type',
+            'media_info',
+        );
+    }
+
     public static $videoTypes = array(
             'webmv'=>'video/webm',
             'm4v'=>'video/mp4',
@@ -89,10 +101,10 @@ class File
                 }
                 $array[$propertyName] = $mediaInfo;
             } else {
-                if ($propertyName === 'size') {
+                if ($propertyName === 'size')
                     $propertyValue = ViewHelper::formatSize($propertyValue);
-                }
-                $array[$propertyName] = $propertyValue;
+                if ( in_array($propertyName, $this->getSafeFields()) )
+                    $array[$propertyName] = $propertyValue;
             }
         }
         return $array;

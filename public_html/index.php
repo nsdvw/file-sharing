@@ -57,30 +57,16 @@ $app->container->singleton('loginManager', function () use ($app){
 $app->view->appendData( array(
     'baseUrl' => $app->request->getUrl(),
     'loginManager' => $app->loginManager,
+    'title'=>'FileSharing &mdash; upload file',
+    'bookmark'=>'Upload',
 ));
 
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
-    $bookmark = 'Upload';
     $app->render(
         '404.tpl',
         array(
             'title'=>$title,
-            'bookmark'=>$bookmark,
-        )
-    );
-});
-
-$app->get('/login', function () use ($app) {
-    $title = 'FileSharing &mdash; upload file';
-    $uploadError = '';
-    $bookmark = 'Upload';
-    $app->render(
-        'upload_form.tpl',
-        array(
-            'uploadError'=>$uploadError,
-            'title'=>$title,
-            'bookmark'=>$bookmark,
         )
     );
 });
@@ -88,30 +74,23 @@ $app->get('/login', function () use ($app) {
 $app->get('/logout', function () use ($app) {
     $app->loginManager->logout();
     $app->loginManager->loggedUser = null;
-    $title = 'FileSharing &mdash; upload file';
     $uploadError = '';
-    $bookmark = 'Upload';
     $app->render(
         'upload_form.tpl',
         array(
             'uploadError'=>$uploadError,
             'title'=>$title,
-            'bookmark'=>$bookmark,
         )
     );
 });
 
 $app->get('/', function () use ($app) {
-    $title = 'FileSharing &mdash; upload file';
     $uploadError = (isset($_GET['error']))
                     ? 'File hasn\'t been uploaded, please try again later' : '';
-    $bookmark = 'Upload';
     $app->render(
         'upload_form.tpl',
         array(
             'uploadError'=>$uploadError,
-            'title'=>$title,
-            'bookmark'=>$bookmark,
         )
     );
 });
@@ -125,43 +104,49 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     }
 });
 
-$app->post('/login', function () use ($app) {
-    $loginForm = new LoginForm(
-        array(
-            'email'=>$_POST['login']['email'],
-            'password'=>$_POST['login']['password'],
-        )
-    );
-    if ($loginForm->validate()) {
-        if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
-            $loginError = 'user not found';
-        } else {
-            if ($user->hash !== sha1($user->salt . $loginForm->password)) {
-                $loginError = 'password is wrong';
-            } else {
-                $app->loginManager->authorizeUser($user);
-                $loginError = '';
-                $app->response->redirect('/login');
-            }
-        }
-    } else {
-        $loginError = $loginForm->errorMessage;
-    }
-    $title = 'FileSharing &mdash; upload file';
-    $bookmark = 'Upload';
-    $loginEmail = $loginForm->email;
-    $loginPassword = $loginForm->password;
-    $app->render(
-        'login.tpl',
-        array(
-            'loginError'=>$loginError,
-            'title'=>$title,
-            'bookmark'=>$bookmark,
-            'loginEmail'=>$loginEmail,
-            'loginPassword'=>$loginPassword,
+$app->map('/login', function () use ($app) {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $uploadError = '';
+        $app->render(
+            'upload_form.tpl',
+            array(
+                'uploadError'=>$uploadError,
             )
         );
-});
+    } else {
+        $loginForm = new LoginForm(
+            array(
+                'email'=>$_POST['login']['email'],
+                'password'=>$_POST['login']['password'],
+            )
+        );
+        if ($loginForm->validate()) {
+            if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
+                $loginError = 'user not found';
+            } else {
+                if ($user->hash !== sha1($user->salt . $loginForm->password)) {
+                    $loginError = 'password is wrong';
+                } else {
+                    $app->loginManager->authorizeUser($user);
+                    $loginError = '';
+                    $app->response->redirect('/login');
+                }
+            }
+        } else {
+            $loginError = $loginForm->errorMessage;
+        }
+        $loginEmail = $loginForm->email;
+        $loginPassword = $loginForm->password;
+        $app->render(
+            'login.tpl',
+            array(
+                'loginError'=>$loginError,
+                'loginEmail'=>$loginEmail,
+                'loginPassword'=>$loginPassword,
+                )
+        );
+    }
+})->via('GET', 'POST');
 
 $app->post('/upload_file', function() use ($app) {
     $request_method = (isset($_GET['ajax'])) ? 'ajax' : 'direct';

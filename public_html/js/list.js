@@ -30,9 +30,9 @@ for (var i=0; i < files.length; i++) {
 		var id = this.getAttribute('data-id');
 	    xhr.onreadystatechange = function () {
 	        if (this.readyState != 4) return;
-	        if (this.responseText != 'error') {
-	            var obj = JSON.parse(this.responseText);
-	            createPreview(obj);
+	        var response = JSON.parse(this.responseText);
+	        if (response) {
+	            createPreview(response);
 	        }
 	    };
 	    xhr.open('GET', '/ajax/fileinfo/' + id, true);

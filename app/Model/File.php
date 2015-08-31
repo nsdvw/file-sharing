@@ -1,5 +1,7 @@
 <?php namespace Storage\Model;
 
+use Storage\Helper\ViewHelper;
+
 class File
 {
     public $id;
@@ -8,6 +10,7 @@ class File
     public $size;
     public $mime_type;
     public $mediaInfo;
+
     public static $videoTypes = array(
             'webmv'=>'video/webm',
             'm4v'=>'video/mp4',
@@ -26,8 +29,8 @@ class File
     public static function fromUser(
         $name,
         $tmp_name,
-        $author_id = null
-    ) {
+        $author_id = null )
+    {
         $file = new self;
         $file->name = $name;
         $file->author_id = $author_id;
@@ -75,5 +78,24 @@ class File
             'application/x-gzip',
         );
         return in_array($this->mime_type, $types);
+    }
+
+    public function toArray()
+    {
+        $json = array();
+        foreach ($this as $propertyName => $propertyValue) {
+            if ($propertyValue instanceof MediaInfo) {
+                foreach ($propertyValue as $key => $value) {
+                    $mediaInfo[$key] = $value;
+                }
+                $json[$propertyName] = $mediaInfo;
+            } else {
+                if ($propertyName === 'size') {
+                    $propertyValue = ViewHelper::formatSize($propertyValue);
+                }
+                $json[$propertyName] = $propertyValue;
+            }
+        }
+        return $json;
     }
 }

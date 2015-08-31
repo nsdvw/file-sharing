@@ -78,11 +78,12 @@ $app->get('/logout', function () use ($app) {
 });
 
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
-    if (!$file = $app->fileMapper->findById($id)) {
-        echo 'error';
+    header('Content-Type: application/json');
+    $file = $app->fileMapper->findById($id);
+    if (!$file) {
+        echo json_encode(null);
     } else {
-        $file->size = ViewHelper::formatSize($file->size);
-        echo json_encode($file);
+        echo json_encode( $file->toArray() );
     }
 });
 

@@ -4,7 +4,7 @@ use Slim\Slim;
 use Slim\Views\Smarty;
 use Storage\Model\File;
 use Storage\Model\User;
-use Storage\Model\Captcha;
+use Storage\Model\FormWithCaptcha;
 use Storage\Model\Comment;
 use Storage\Model\LoginForm;
 use Storage\Model\MediaInfo;
@@ -126,9 +126,9 @@ $app->map('/login', function () use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/', function() use ($app) {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
-        exit();
+        $app->stop();
     }
     $isAjax = (isset($_GET['ajax'])) ? true : false;
     if (isset($_POST['upload'])) {
@@ -334,8 +334,8 @@ $app->post('/view/:id', function ($id) use ($app) {
     $postError = '';
     if (!$app->loginManager->loggedUser) {
         $author_id = null;
-        $captcha = new Captcha(
-                    array('passcode'=>$_POST['comment_form']['captcha'],)
+        $captcha = new FormWithCaptcha(
+                    array('captcha'=>$_POST['comment_form']['captcha'],)
                 );
         $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
     } else {

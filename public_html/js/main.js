@@ -32,9 +32,10 @@ window.onload = function () {
             if (this.readyState != 4) return;
             if (this.responseText != 'error') {
                 notice.innerHTML = 'File has been uploaded successfully';
-                console.log(this.responseText);
+                //console.log(this.responseText);
+                var id = this.responseText;
                 alert('File has been uploaded successfully');
-                window.location.href = decodeURI('/view?upload=ok');
+                window.location.href = decodeURI('/view/' + id);
             } else {
                 error.innerHTML = 'Error. Try again later.';
             }
@@ -46,7 +47,7 @@ window.onload = function () {
             progressBar.style.width = fullWidth * progress + 'px';
         };
 
-        xhr.open('POST', '/upload_file?ajax');
+        xhr.open('POST', '/?ajax');
         xhr.send(formData);
     };
 

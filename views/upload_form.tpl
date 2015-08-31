@@ -1,7 +1,7 @@
 {include file="header.tpl"}
 <div id="container-narrow">
     {include file="logo1.tpl"}
-    <form class="upload-form" name="upload" method="post" action="{$baseUrl}/upload_file" enctype="multipart/form-data">
+    <form class="upload-form" name="upload" method="post" action="{$baseUrl}/" enctype="multipart/form-data">
         <div class="input-file" id="fakeInputFile">
             <span class="input-file-name" id="inputFileName"></span>
         </div>
@@ -12,7 +12,7 @@
             Agree with TOS</label>
         </div>
         <input type="submit" value="Upload" class="big-button" id="send">
-        <div class="error" id="upload-error">{$uploadError}</div>
+        <div class="error" id="upload-error">{$uploadError|default:''}</div>
     </form>
     <div id="progressBox" class="progressBox">
         <div id="progressBar" class="progressBar"></div>

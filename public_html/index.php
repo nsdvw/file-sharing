@@ -74,25 +74,7 @@ $app->notFound(function () use ($app) {
 $app->get('/logout', function () use ($app) {
     $app->loginManager->logout();
     $app->loginManager->loggedUser = null;
-    $uploadError = '';
-    $app->render(
-        'upload_form.tpl',
-        array(
-            'uploadError'=>$uploadError,
-            'title'=>$title,
-        )
-    );
-});
-
-$app->get('/', function () use ($app) {
-    $uploadError = (isset($_GET['error']))
-                    ? 'File hasn\'t been uploaded, please try again later' : '';
-    $app->render(
-        'upload_form.tpl',
-        array(
-            'uploadError'=>$uploadError,
-        )
-    );
+    $app->render('upload_form.tpl');
 });
 
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
@@ -106,13 +88,7 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
 
 $app->map('/login', function () use ($app) {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $uploadError = '';
-        $app->render(
-            'upload_form.tpl',
-            array(
-                'uploadError'=>$uploadError,
-            )
-        );
+        $app->render('upload_form.tpl');
     } else {
         $loginForm = new LoginForm(
             array(
@@ -148,17 +124,27 @@ $app->map('/login', function () use ($app) {
     }
 })->via('GET', 'POST');
 
-$app->post('/upload_file', function() use ($app) {
-    $request_method = (isset($_GET['ajax'])) ? 'ajax' : 'direct';
+$app->map('/', function() use ($app) {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $app->render('upload_form.tpl');
+        exit();
+    }
+    $isAjax = (isset($_GET['ajax'])) ? true : false;
     if (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
         $tmp_name = $_FILES['upload']['tmp_name']['file1'];
         if ($error) {
-            if ($request_method == 'ajax') {
+            if ($isAjax) {
                 echo 'error';
             } else {
-                $app->response->redirect("/?error=$error");
+                $uploadError = 'File wasn\'t uploaded, please try again later';
+                $app->render(
+                    'upload_form.tpl',
+                    array(
+                        'uploadError'=>$uploadError,
+                    )
+                );
             }
         } else {
             $author_id = ($app->loginManager->loggedUser) ?
@@ -175,22 +161,28 @@ $app->post('/upload_file', function() use ($app) {
                     $path = ViewHelper::getPreviewPath($file->id);
                     PreviewGenerator::createPreview($file);
                 }
-                if ($request_method == 'ajax') {
-                    echo 'ok';
+                if ($isAjax) {
+                    echo $file->id;
                 } else {
-                    $app->response->redirect('/view/?upload=ok');
+                    $app->response->redirect("/view/{$file->id}");
                 }
             } else {
                 $app->connection->rollBack();
-                if ($request_method == 'ajax') {
+                if ($isAjax) {
                     echo 'error';
                 } else {
-                    $app->response->redirect("/?error=server_error");
+                    $uploadError = 'Server error, please try again later';
+                    $app->render(
+                        'upload_form.tpl',
+                        array(
+                            'uploadError'=>$uploadError,
+                        )
+                    );
                 }
             }
         }
     }
-});
+})->via('GET', 'POST');
 
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';

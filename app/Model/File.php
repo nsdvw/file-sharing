@@ -38,18 +38,14 @@ class File
             'oga'=>'audio/ogg',
         );
 
-    public static function fromUser(
-        $name,
-        $tmp_name,
-        $author_id = null )
+    public function __construct($name, $tmp_name, $author_id = null )
     {
-        $file = new self;
-        $file->name = $name;
-        $file->author_id = $author_id;
-        $file->size = filesize($tmp_name);
+        $this->name = $name;
+        $this->author_id = $author_id;
+        $this->size = filesize($tmp_name);
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $file->mime_type = $finfo->file($tmp_name);
-        $file->mediaInfo = MediaInfo::fromFile($tmp_name);
+        $this->mime_type = $finfo->file($tmp_name);
+        $this->mediaInfo = MediaInfo::fromFile($tmp_name);
         return $file;
     }
 

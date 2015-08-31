@@ -12,7 +12,7 @@ class Comment
     public $author_id;
     public $materialized_path;
     public $added;
-    public $level;
+    public $level; // уровень вложенности, удобен для подстановки в класс css
 
     public function fromForm(CommentForm $form)
     {

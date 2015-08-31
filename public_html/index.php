@@ -150,7 +150,7 @@ $app->map('/', function() use ($app) {
         } else {
             $author_id = ($app->loginManager->loggedUser) ?
                          $app->loginManager->loggedUser->id : null;
-            $file = File::fromUser($name, $tmp_name, $author_id);
+            $file = new File($name, $tmp_name, $author_id);
             $app->connection->beginTransaction();
             $app->fileMapper->save($file);
             if (move_uploaded_file(

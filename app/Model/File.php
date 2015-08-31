@@ -82,20 +82,19 @@ class File
 
     public function toArray()
     {
-        $json = array();
         foreach ($this as $propertyName => $propertyValue) {
             if ($propertyValue instanceof MediaInfo) {
                 foreach ($propertyValue as $key => $value) {
                     $mediaInfo[$key] = $value;
                 }
-                $json[$propertyName] = $mediaInfo;
+                $array[$propertyName] = $mediaInfo;
             } else {
                 if ($propertyName === 'size') {
                     $propertyValue = ViewHelper::formatSize($propertyValue);
                 }
-                $json[$propertyName] = $propertyValue;
+                $array[$propertyName] = $propertyValue;
             }
         }
-        return $json;
+        return $array;
     }
 }

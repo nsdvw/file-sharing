@@ -2,7 +2,7 @@
 header('Content-Type: image/jpeg');
 session_start();
 
-$captcha = imagecreatefromjpeg('noise.jpg');
+$captcha = imagecreatefromgif('noise.gif');
 $color = imagecolorallocate($captcha, 140, 140, 140);
 $letters = 5;
 $randomString = strtolower(substr(base64_encode(sha1(uniqid())), 0, $letters));
@@ -20,4 +20,4 @@ for ($i = 0; $i < $letters; $i++) {
         $randomString{$i});
     $x += $offset;
 }
-imagejpeg($captcha);
+imagegif($captcha);

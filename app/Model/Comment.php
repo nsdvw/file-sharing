@@ -14,20 +14,16 @@ class Comment
     public $added;
     public $level; // уровень вложенности, удобен для подстановки в класс css
 
-    public function fromForm(CommentForm $form)
+    protected $mapper;
+
+    public function fromForm(CommentForm $form, CommentMapper $mapper)
     {
+        $this->mapper = $mapper;
         $this->contents = $form->contents;
         $this->file_id = $form->file_id;
         $this->author_id = ($form->author_id) ? intval($form->author_id) : null;
-        $db_config = parse_ini_file(\BASE_DIR.'/config.ini');
-        $connection = new \PDO(
-                    $db_config['conn'],
-                    $db_config['user'],
-                    $db_config['pass']
-                );
-        $commentMapper = new CommentMapper($connection);
         if (!$form->reply_id) {
-            $lastCommentPath = $commentMapper->getLastCommentPath($this->file_id);
+            $lastCommentPath = $this->mapper->getLastCommentPath($this->file_id);
             if (!$lastCommentPath) {
                 $this->materialized_path = '1';
             } else {
@@ -35,9 +31,9 @@ class Comment
                 $this->materialized_path = strval(++$explode[0]);
             }
         } else {
-            $parentPath = $commentMapper->getCommentPathById($form->reply_id);
+            $parentPath = $this->mapper->getCommentPathById($form->reply_id);
             $lastReplyPath =
-                $commentMapper->getLastReplyPath($parentPath['comment_path']);
+                $this->mapper->getLastReplyPath($parentPath['comment_path']);
             $this->materialized_path = self::incrementPath(
                                             $parentPath['comment_path'],
                                             $lastReplyPath['comment_path']
@@ -59,7 +55,7 @@ class Comment
         }
     }
 
-    public static function getLevelFromPath($path)
+    public static function getLevel($path)
     {
         return count(explode('.', $path));
     }

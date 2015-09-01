@@ -211,7 +211,7 @@ $app->post('/reg', function () use ($app) {
 
 $app->get('/view', function() use ($app) {
     $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
-    $pager = new Pager($app->connection, $page);
+    $pager = new Pager($app->fileMapper, $page);
     $offset = ($page - 1) * Pager::$perPage;
     $list = $app->fileMapper->findAll($offset);
     $title = 'FileSharing &mdash; files';

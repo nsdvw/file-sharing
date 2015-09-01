@@ -10,6 +10,8 @@ class File
     public $size;
     public $mime_type;
     public $mediaInfo;
+    public $upload_time;
+    public $download_counter;
 
     protected function getSafeFields()
     {
@@ -19,7 +21,9 @@ class File
             'author_id',
             'size',
             'mime_type',
-            'media_info',
+            'mediaInfo',
+            'upload_time',
+            'download_counter',
         );
     }
 
@@ -38,14 +42,15 @@ class File
             'oga'=>'audio/ogg',
         );
 
-    public function __construct($name, $tmp_name, $author_id = null )
+    public function fromUser($name, $tmp_name, $author_id = null )
     {
-        $this->name = $name;
-        $this->author_id = $author_id;
-        $this->size = filesize($tmp_name);
+        $file = new self;
+        $file->name = $name;
+        $file->author_id = $author_id;
+        $file->size = filesize($tmp_name);
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $this->mime_type = $finfo->file($tmp_name);
-        $this->mediaInfo = MediaInfo::fromFile($tmp_name);
+        $file->mime_type = $finfo->file($tmp_name);
+        $file->mediaInfo = MediaInfo::fromFile($tmp_name);
         return $file;
     }
 

@@ -1,23 +1,11 @@
 <?php
 
-use Slim\Slim;
-use Slim\Views\Smarty;
 use Storage\Model\File;
-use Storage\Model\User;
-use Storage\Model\FormWithCaptcha;
 use Storage\Model\Comment;
-use Storage\Model\LoginForm;
-use Storage\Model\MediaInfo;
-use Storage\Model\CommentForm;
-use Storage\Model\RegisterForm;
-use Storage\Mapper\FileMapper;
-use Storage\Mapper\UserMapper;
-use Storage\Mapper\CommentMapper;
 use Storage\Helper\Pager;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
-use Storage\Auth\LoginManager;
 
 define('UPLOAD_DIR', 'upload');
 define('PREVIEW_DIR', 'preview');
@@ -26,9 +14,9 @@ define('BASE_DIR', '..');
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
-$app = new Slim(
+$app = new Slim\Slim(
     array(
-        'view' => new Smarty(),
+        'view' => new Slim\Views\Smarty(),
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
 ));
@@ -42,16 +30,16 @@ $app->container->singleton('connection', function () {
                 );
 });
 $app->container->singleton('fileMapper', function () use ($app) {
-    return new FileMapper($app->connection);
+    return new Storage\Mapper\FileMapper($app->connection);
 });
 $app->container->singleton('userMapper', function () use ($app) {
-    return new UserMapper($app->connection);
+    return new Storage\Mapper\UserMapper($app->connection);
 });
 $app->container->singleton('commentMapper', function () use ($app) {
-    return new CommentMapper($app->connection);
+    return new Storage\Mapper\CommentMapper($app->connection);
 });
 $app->container->singleton('loginManager', function () use ($app){
-    return new LoginManager($app->userMapper);
+    return new Storage\Auth\LoginManager($app->userMapper);
 });
 
 $app->view->appendData( array(
@@ -88,39 +76,27 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
 });
 
 $app->map('/login', function () use ($app) {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
     } else {
-        $loginForm = new LoginForm(
+        $loginForm = new Storage\Model\LoginForm(
             array(
                 'email'=>$_POST['login']['email'],
                 'password'=>$_POST['login']['password'],
             )
         );
         if ($loginForm->validate()) {
-            if (!$user = $app->userMapper->findByEmail($loginForm->email)) {
-                $loginError = 'user not found';
-            } else {
-                if ($user->hash !== sha1($user->salt . $loginForm->password)) {
-                    $loginError = 'password is wrong';
+            if ($user = $app->userMapper->findByEmail($loginForm->email)) {
+                if ($user->hash !==
+                    HashGenerator::generateHash($user->salt, $loginForm->password)) {
                 } else {
                     $app->loginManager->authorizeUser($user);
-                    $loginError = '';
                     $app->response->redirect('/login');
                 }
             }
-        } else {
-            $loginError = $loginForm->errorMessage;
         }
-        $loginEmail = $loginForm->email;
-        $loginPassword = $loginForm->password;
         $app->render(
-            'login.tpl',
-            array(
-                'loginError'=>$loginError,
-                'loginEmail'=>$loginEmail,
-                'loginPassword'=>$loginPassword,
-                )
+            'login.tpl', array('loginForm'=>$loginForm,)
         );
     }
 })->via('GET', 'POST');
@@ -150,7 +126,7 @@ $app->map('/', function() use ($app) {
         } else {
             $author_id = ($app->loginManager->loggedUser) ?
                          $app->loginManager->loggedUser->id : null;
-            $file = new File($name, $tmp_name, $author_id);
+            $file = File::fromUser($name, $tmp_name, $author_id);
             $app->connection->beginTransaction();
             $app->fileMapper->save($file);
             if (move_uploaded_file(
@@ -206,7 +182,7 @@ $app->get('/reg', function () use ($app) {
 });
 
 $app->post('/reg', function () use ($app) {  
-    $registerForm = new RegisterForm(
+    $registerForm = new Storage\Model\RegisterForm(
         array(
             'login'=>$_POST['register']['login'],
             'email'=>$_POST['register']['email'],
@@ -214,7 +190,7 @@ $app->post('/reg', function () use ($app) {
         )
     );
     if ($registerForm->validate()) {
-        $user = new User;
+        $user = new Storage\Model\User;
         $user->fromForm($registerForm);
         $app->userMapper->register($user);
         $app->loginManager->authorizeUser($user);
@@ -222,19 +198,12 @@ $app->post('/reg', function () use ($app) {
     } else {
         $title = 'FileSharing &mdash; registration';
         $bookmark = 'Sign up';
-        $registerError = $registerForm->errorMessage;
-        $registerLogin = $registerForm->login;
-        $registerEmail = $registerForm->email;
-        $registerPassword = $registerForm->password;
         $app->render(
             'register_form.tpl',
             array(
                 'title'=>$title,
                 'bookmark'=>$bookmark,
-                'registerError'=>$registerError,
-                'registerLogin'=>$registerLogin,
-                'registerEmail'=>$registerEmail,
-                'registerPassword'=>$registerPassword,
+                'registerForm'=>$registerForm,
             )
         );
     }
@@ -269,18 +238,19 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
     header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
         ViewHelper::getUploadPath($id, $name));
     header('Content-Disposition: attachment');
-    exit;
+    $app->stop();
 });
 
-$app->get('/view/:id', function ($id) use ($app) {
-    if (!$file = $app->fileMapper->findById($id)) {
-        $app->notFound();
-    }
+$app->map('/view/:id', function ($id) use ($app) {
     $title = 'FileSharing &mdash; file description';
     $bookmark = 'Files';
     $type = '';
     $path = '';
+    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
 
+    if (!$file = $app->fileMapper->findById($id)) {
+        $app->notFound();
+    }
     $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
@@ -305,14 +275,39 @@ $app->get('/view/:id', function ($id) use ($app) {
         $preview = false;
         $description = false;
     }
-
     $comments = $app->commentMapper->getComments($file->id);
     foreach ($comments as $comment) {
-        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
+        $comment->level = Comment::getLevel($comment->materialized_path);
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
-    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
+    $postError = '';
 
+    if ($app->request->isPost()) {
+        if (!$app->loginManager->loggedUser) {
+            $author_id = null;
+            $captcha = new Storage\Model\FormWithCaptcha(
+                        array('captcha'=>$_POST['comment_form']['captcha'],)
+                    );
+            $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
+        } else {
+            $author_id = $app->loginManager->loggedUser->id;
+        }
+        $form = new Storage\Model\CommentForm(
+                array(
+                    'contents'=>$_POST['comment_form']['contents'],
+                    'reply_id'=>$_POST['comment_form']['reply_id'],
+                    'file_id'=>$id,
+                    'author_id'=>$author_id,
+                ));
+        if (!$form->validate()) {
+            $postError = $form->errorMessage;
+        } else if (!$postError) {
+            $comment = new Comment;
+            $comment->fromForm($form, $app->commentMapper);
+            $app->commentMapper->save($comment);
+            $app->response->redirect('/view/'.$id);
+        }
+    }
     $app->render(
         'file_info.tpl',
         array(
@@ -325,93 +320,9 @@ $app->get('/view/:id', function ($id) use ($app) {
             'path'=>$path,
             'comments'=>$comments,
             'reply'=>$reply,
-            'postError'=>'',
-        )
-    );
-});
-
-$app->post('/view/:id', function ($id) use ($app) {
-    $postError = '';
-    if (!$app->loginManager->loggedUser) {
-        $author_id = null;
-        $captcha = new FormWithCaptcha(
-                    array('captcha'=>$_POST['comment_form']['captcha'],)
-                );
-        $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
-    } else {
-        $author_id = $app->loginManager->loggedUser->id;
-    }
-    $form = new CommentForm(
-            array(
-                'contents'=>$_POST['comment_form']['contents'],
-                'reply_id'=>$_POST['comment_form']['reply_id'],
-                'file_id'=>$id,
-                'author_id'=>$author_id,
-            ));
-    if (!$form->validate()) {
-        $postError = $form->errorMessage;
-    } else if (!$postError) {
-        $comment = new Comment;
-        $comment->fromForm($form);
-        $app->commentMapper->save($comment);
-        $app->response->redirect('/view/'.$id);
-    }
-    /***********************************************/
-    $title = 'FileSharing &mdash; file description';
-    $file = $app->fileMapper->findById($id);
-    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
-    $type = '';
-    $path = '';
-    if ($file->isImage()) {
-        $path = ViewHelper::getPreviewPath($id);
-        if (!PreviewGenerator::hasPreview($path)) {
-            PreviewGenerator::createPreview($file);
-        }
-        $preview = 'image_preview';
-        $description = 'image_description';
-    } elseif ($file->isVideo()) {
-        $preview = 'video_player';
-        $description = 'video_description';
-        $name = ViewHelper::getUploadName($file->id, $file->name);
-        $type = array_search($file->mime_type, $jPlayerTypes);
-        $path = '/' . UPLOAD_DIR . "/$name";
-    } elseif($file->isAudio()) {
-        $preview = 'audio_player';
-        $description = 'audio_description';
-        $name = ViewHelper::getUploadName($file->id, $file->name);
-        $type = array_search($file->mime_type, $jPlayerTypes);
-        $path = '/' . UPLOAD_DIR . "/$name";
-    } else {
-        $preview = false;
-        $description = false;
-    }
-
-    $comments = $app->commentMapper->getComments($file->id);
-    foreach ($comments as $comment) {
-        $comment->level = Comment::getLevelFromPath($comment->materialized_path);
-        $comment->author_id = $app->userMapper->findById($comment->author_id);
-    }
-    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
-
-    $app->render(
-        'file_info.tpl',
-        array(
-            'file'=>$file,
-            'title'=>$title,
-            'loginEmail'=>'',
-            'loginPassword'=>'',
-            'loginError'=>'',
-            'bookmark'=>'Files',
-            'preview'=>$preview,
-            'description'=>$description,
-            'type'=>$type,
-            'path'=>$path,
-            'comments'=>$comments,
-            'reply'=>$reply,
             'postError'=>$postError,
         )
     );
-
-});
+})->via('GET', 'POST');
 
 $app->run();

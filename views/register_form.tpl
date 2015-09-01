@@ -16,7 +16,8 @@
             </div>
             <div class="register-field-input">
                 <div>
-                    <input type="text" name="register[login]" value="{$registerLogin}">
+                    <input type="text" name="register[login]"
+                        value="{$registerForm->login|escape|default:''}">
                 </div>
                 <div class="register-field-error"></div>
             </div>
@@ -25,7 +26,8 @@
             </div>
             <div class="register-field-input">
                 <div>
-                    <input type="text" name="register[email]" value="{$registerEmail}">
+                    <input type="text" name="register[email]"
+                        value="{$registerForm->email|escape|default:''}">
                 </div>
             </div>
             <div class="register-field-name">
@@ -33,9 +35,12 @@
             </div>
             <div class="register-field-input">
                 <div>
-                    <input type="password" name="register[password]" value="{$registerPassword}">
+                    <input type="password" name="register[password]"
+                        value="{$registerForm->password|escape|default:''}">
                 </div>
-                <div class="register-field-error">{$registerError}</div>
+                <div class="register-field-error">
+                    {$registerForm|escape|default:''}
+                </div>
             </div>
             <div class="register-field-name"></div>
             <div class="register-field-input">

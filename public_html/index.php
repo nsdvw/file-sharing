@@ -211,8 +211,8 @@ $app->post('/reg', function () use ($app) {
 
 $app->get('/view', function() use ($app) {
     $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
-    $offset = ($page - 1) * Pager::PER_PAGE;
     $pager = new Pager($app->connection, $page);
+    $offset = ($page - 1) * Pager::$perPage;
     $list = $app->fileMapper->findAll($offset);
     $title = 'FileSharing &mdash; files';
     $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')

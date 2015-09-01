@@ -40,7 +40,7 @@ class FileMapper
         $sth->execute();
     }
 
-    public function findAll($offset = 0, $limit = Pager::PER_PAGE)
+    public function findAll($offset = 0, $limit = 20)
     {
         $sql = "SELECT id, name, upload_time, size, mime_type,
                        download_counter, author_id, mediaInfo

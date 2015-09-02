@@ -28,7 +28,9 @@
           {else}
           <div class="{if $bookmark == 'Account'}activeBookmark{else}inactiveBookmark{/if}">Account</div>
           <div class="inactiveBookmark">
-            <a href="{$baseUrl}/logout">Log out</a>
+            <form action="{$baseUrl}/logout" method="POST" name="logoutForm" class="logout-form">
+              <input type="submit" name="logoutForm[logout]" value="Logout">
+            </form>
           </div>
           {/if}
           <div class="clearDummy"></div>

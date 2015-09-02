@@ -3,6 +3,7 @@
 use Storage\Model\File;
 use Storage\Model\Comment;
 use Storage\Helper\Pager;
+use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
@@ -42,11 +43,20 @@ $app->container->singleton('loginManager', function () use ($app){
     return new Storage\Auth\LoginManager($app->userMapper);
 });
 
+if (!Token::issetToken()) {
+    $token = Token::generateToken();
+} else {
+    $token = Token::getToken();
+}
+$time = time() + 24*60*60;
+Token::setToken($token, $time);
+
 $app->view->appendData( array(
     'baseUrl' => $app->request->getUrl(),
     'loginManager' => $app->loginManager,
     'title'=>'FileSharing &mdash; upload file',
     'bookmark'=>'Upload',
+    'token'=>$token,
 ));
 
 $app->notFound(function () use ($app) {
@@ -59,10 +69,15 @@ $app->notFound(function () use ($app) {
     );
 });
 
-$app->get('/logout', function () use ($app) {
-    $app->loginManager->logout();
-    $app->loginManager->loggedUser = null;
-    $app->render('upload_form.tpl');
+$app->post('/logout', function () use ($app) {
+    /*if (!Token::issetToken()) {
+        $token = Token::generateToken();
+    } else {
+        $token = Token::getToken();
+    }
+    Token::setToken($token);*/
+    if (Token::checkToken()) $app->loginManager->logout();
+    $app->response->redirect('/');
 });
 
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {

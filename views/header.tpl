@@ -30,6 +30,8 @@
           <div class="inactiveBookmark">
             <form action="{$baseUrl}/logout" method="POST" name="logoutForm" class="logout-form">
               <input type="submit" name="logoutForm[logout]" value="Logout">
+              <input type="hidden" name="logoutForm[csrf_token]"
+                value="{$token|escape|default:''}">
             </form>
           </div>
           {/if}

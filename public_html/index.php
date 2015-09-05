@@ -61,21 +61,10 @@ $app->view->appendData( array(
 
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
-    $app->render(
-        '404.tpl',
-        array(
-            'title'=>$title,
-        )
-    );
+    $app->render('404.tpl', array('title'=>$title,) );
 });
 
 $app->post('/logout', function () use ($app) {
-    /*if (!Token::issetToken()) {
-        $token = Token::generateToken();
-    } else {
-        $token = Token::getToken();
-    }
-    Token::setToken($token);*/
     if (Token::checkToken()) $app->loginManager->logout();
     $app->response->redirect('/');
 });
@@ -205,8 +194,7 @@ $app->post('/reg', function () use ($app) {
         )
     );
     if ($registerForm->validate()) {
-        $user = new Storage\Model\User;
-        $user->fromForm($registerForm);
+        $user = $registerForm->getUser();
         $app->userMapper->register($user);
         $app->loginManager->authorizeUser($user);
         $app->response->redirect('/?register=ok');

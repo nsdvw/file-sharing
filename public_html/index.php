@@ -43,12 +43,9 @@ $app->container->singleton('loginManager', function () use ($app){
     return new Storage\Auth\LoginManager($app->userMapper);
 });
 
-if (!Token::issetToken()) {
-    $token = Token::generateToken();
-} else {
-    $token = Token::getToken();
-}
-$time = time() + 24*60*60;
+if (!Token::issetToken()) $token = Token::generateToken();
+else $token = Token::getToken();
+$time = time() + 24*3600;
 Token::setToken($token, $time);
 
 $app->view->appendData( array(

@@ -74,6 +74,20 @@
             </div>
         {/if}
         </div>
+        <script id="tpl-preview" type="text/x-template">
+            <img src="/preview/(#file.id#).txt" alt="preview" class="preview-image">
+            <div class="preview-name">
+                <a href="/view/(#file.id#)" target="_blank">(#file.name#)</a>
+            </div>
+            <div class="preview-size">Size: (#file.size#)</div>
+            <div class="preview-date">Uploaded: (#file.upload_time#)</div>
+            <div class="preview-downloads">Downloads: (#file.download_counter#)</div>
+            <div class="preview-format">Format: (#file.mime_type#)</div>
+            <div class="preview-resolution">Resolution: (#file.resolution#)</div>
+            <div class="preview-more">
+                <a href="/view/(#file.id#)" target="_blank">more...</a>
+            </div>
+        </script>
         <div class="preview" id="previewBox"></div>
         <div class="clearDummy"></div>
     </div>

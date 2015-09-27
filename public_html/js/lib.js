@@ -65,64 +65,28 @@ function createPreview(file) {
             previewBox.removeChild(previewBox.firstChild);
         } else break;
     }
-
-    if (['image/jpeg', 'image/gif', 'image/png'].indexOf(file.mime_type) >= 0) {
-        var img = document.createElement('img');
-        img.setAttribute('src', '/preview/' + file.id + '.txt');
-        img.setAttribute('alt', 'preview');
-        previewBox.appendChild(img);
+    var template = document.getElementById('tpl-preview').innerHTML;
+    if (['image/jpeg', 'image/gif', 'image/png'].indexOf(file.mime_type) < 0) {
+        template = template.replace(/<img.+class="preview-image".+/, '');
+        template = template.replace(/<div.+class="preview-resolution".+<\/div>/, '');
+    } else {
+        template = template.replace(/\(#file.resolution#\)/g,
+            file.mediaInfo.resolution_x + ' x ' + file.mediaInfo.resolution_y);
     }
+    template = template.replace(/\(#file.id#\)/g, file.id);
+    template = template.replace(/\(#file.name#\)/g, escapeHtml(file.name));
+    template = template.replace(/\(#file.size#\)/g, file.size);
+    template = template.replace(/\(#file.upload_time#\)/g, file.upload_time);
+    template = template.replace(/\(#file.download_counter#\)/g, file.download_counter);
+    template = template.replace(/\(#file.mime_type#\)/g, file.mime_type);
+    previewBox.innerHTML = template;
+}
 
-    var previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-name');
-    var link = document.createElement('a');
-    link.setAttribute('href', '/view/' + file.id);
-    link.setAttribute('target', '_blank');
-    var text = document.createTextNode(cropFilename(file.name, 30));
-    link.appendChild(text);
-    previewEl.appendChild(link);
-    previewBox.appendChild(previewEl);
-
-    previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-size');
-    text = document.createTextNode('Size: ' + file.size);
-    previewEl.appendChild(text);
-    previewBox.appendChild(previewEl);
-
-    previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-date');
-    text = document.createTextNode('Uploaded: ' + file.upload_time);
-    previewEl.appendChild(text);
-    previewBox.appendChild(previewEl);
-
-    previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-downloads');
-    text = document.createTextNode('Downloads: ' + file.download_counter);
-    previewEl.appendChild(text);
-    previewBox.appendChild(previewEl);
-
-    previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-format');
-    text = document.createTextNode('Format: ' + file.mime_type);
-    previewEl.appendChild(text);
-    previewBox.appendChild(previewEl);
-
-    if (['image/jpeg', 'image/gif', 'image/png'].indexOf(file.mime_type) >= 0) {
-        previewEl = document.createElement('div');
-        previewEl.setAttribute('class', 'preview-resolution');
-        text = document.createTextNode('Resolution: ' + file.mediaInfo.resolution_x
-                + ' x ' + file.mediaInfo.resolution_y);
-        previewEl.appendChild(text);
-        previewBox.appendChild(previewEl);
-    }
-
-    previewEl = document.createElement('div');
-    previewEl.setAttribute('class', 'preview-more');
-    link = document.createElement('a');
-    link.setAttribute('href', '/view/' + file.id);
-    link.setAttribute('target', '_blank');
-    text = document.createTextNode('more...');
-    link.appendChild(text);
-    previewEl.appendChild(link);
-    previewBox.appendChild(previewEl);
+function escapeHtml(text) {
+  return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 }

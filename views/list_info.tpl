@@ -34,9 +34,9 @@
             </div>
         </div>
         {/foreach}
-        {if $pageCount > 1}
+        {if $pager->pageCount > 1}
             <div class="pager">
-                {if $currentPage == 1}
+                {if $pager->currentPage == 1}
                 <div class="pager-first not-active">First</div>
                 <div class="pager-previous not-active">Previous</div>
                 {else}
@@ -44,13 +44,13 @@
                     <a href="{$baseUrl}/view?page=1">First</a>
                 </div>
                 <div class="pager-previous">
-                    <a href="{$baseUrl}/view?page={$currentPage - 1}">Previous</a>
+                    <a href="{$baseUrl}/view?page={$pager->currentPage - 1}">Previous</a>
                 </div>
                 {/if}
                 
                 <div class="pager-pages">
-                {for $i = $firstPage; $i lte $lastPage; $i++}
-                    {if $i == $currentPage}
+                {for $i = $pager->firstPage; $i lte $pager->lastPage; $i++}
+                    {if $i == $pager->currentPage}
                     <span class="pager-number current-page">{$i}</span>
                     {else}
                     <span class="pager-number">
@@ -60,12 +60,12 @@
                 {/for}
                 </div>
 
-                {if $currentPage != $pageCount}
+                {if $pager->currentPage != $pager->pageCount}
                 <div class="pager-last">
-                    <a href="{$baseUrl}/view?page={$pageCount}">Last</a>
+                    <a href="{$baseUrl}/view?page={$pager->pageCount}">Last</a>
                 </div>
                 <div class="pager-next">
-                    <a href="{$baseUrl}/view?page={$currentPage + 1}">Next</a>
+                    <a href="{$baseUrl}/view?page={$pager->currentPage + 1}">Next</a>
                 </div>
                 {else}
                 <div class="pager-last not-active">Last</div>

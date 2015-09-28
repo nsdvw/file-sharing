@@ -19,7 +19,7 @@
                     <input type="text" name="register[login]"
                         value="{$registerForm->login|escape|default:''}">
                 </div>
-                <div class="register-field-error"></div>
+                <div class="register-field-error">{$registerForm->errorMessage}</div>
             </div>
             <div class="register-field-name">
                 <label for="register[email]">Email:</label>

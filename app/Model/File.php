@@ -41,8 +41,12 @@ class File
             'webma'=>'audio/webm',
             'oga'=>'audio/ogg',
         );
+    public static function jPlayerTypes()
+    {
+        return array_merge(self::$audioTypes, self::$videoTypes);
+    }
 
-    public function fromUser($name, $tmp_name, $author_id = null )
+    public function fromUser($name, $tmp_name, $author_id = null)
     {
         $file = new self;
         $file->name = $name;

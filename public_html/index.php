@@ -165,19 +165,15 @@ $app->map('/', function() use ($app) {
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerError = '';
-    $registerLogin = '';
-    $registerEmail = '';
-    $registerPassword = '';
+    $registerForm = new Storage\Model\RegisterForm(array(
+        'errorMessage'=>'', 'login'=>'', 'email'=>'', 'password'=>'',
+    ));
     $app->render(
         'register_form.tpl',
         array(
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'registerError'=>$registerError,
-            'registerLogin'=>$registerLogin,
-            'registerEmail'=>$registerEmail,
-            'registerPassword'=>$registerPassword,
+            'registerForm'=>$registerForm,
         )
     );
 });
@@ -225,10 +221,7 @@ $app->get('/view', function() use ($app) {
             'title'=>$title,
             'noticeMessage'=>$noticeMessage,
             'bookmark'=>$bookmark,
-            'currentPage'=>$pager->currentPage,
-            'lastPage'=>$pager->lastPage,
-            'firstPage'=>$pager->firstPage,
-            'pageCount'=>$pager->pageCount,
+            'pager'=>$pager,
         )
     );
 });
@@ -244,53 +237,35 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
 $app->map('/view/:id', function ($id) use ($app) {
     $title = 'FileSharing &mdash; file description';
     $bookmark = 'Files';
-    $type = '';
-    $path = '';
     $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
 
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
-    $jPlayerTypes = array_merge(File::$audioTypes, File::$videoTypes);
     if ($file->isImage()) {
         $path = ViewHelper::getPreviewPath($id);
         if (!PreviewGenerator::hasPreview($path)) {
             PreviewGenerator::createPreview($file);
         }
-        $preview = 'image_preview';
-        $description = 'image_description';
-    } elseif ($file->isVideo()) {
-        $preview = 'video_player';
-        $description = 'video_description';
-        $name = ViewHelper::getUploadName($file->id, $file->name);
-        $type = array_search($file->mime_type, $jPlayerTypes);
-        $path = '/' . UPLOAD_DIR . "/$name";
-    } elseif($file->isAudio()) {
-        $preview = 'audio_player';
-        $description = 'audio_description';
-        $name = ViewHelper::getUploadName($file->id, $file->name);
-        $type = array_search($file->mime_type, $jPlayerTypes);
-        $path = '/' . UPLOAD_DIR . "/$name";
-    } else {
-        $preview = false;
-        $description = false;
     }
     $comments = $app->commentMapper->getComments($file->id);
     foreach ($comments as $comment) {
         $comment->level = Comment::getLevel($comment->materialized_path);
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
-    $postError = '';
 
+    $form = new Storage\Model\CommentForm(
+        array('contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''));
     if ($app->request->isPost()) {
         if (!$app->loginManager->loggedUser) {
             $author_id = null;
             $captcha = new Storage\Model\FormWithCaptcha(
                         array('captcha'=>$_POST['comment_form']['captcha'],)
                     );
-            $postError = ($captcha->validate()) ? '' : $captcha->errorMessage; 
+            $captchaError = ($captcha->validate()) ? '' : $captcha->errorMessage;
         } else {
             $author_id = $app->loginManager->loggedUser->id;
+            $captchaError = '';
         }
         $form = new Storage\Model\CommentForm(
                 array(
@@ -299,9 +274,8 @@ $app->map('/view/:id', function ($id) use ($app) {
                     'file_id'=>$id,
                     'author_id'=>$author_id,
                 ));
-        if (!$form->validate()) {
-            $postError = $form->errorMessage;
-        } else if (!$postError) {
+        if ($form->validate()) $form->errorMessage = $captchaError;
+        if (!$form->errorMessage) {
             $comment = new Comment;
             $comment->fromForm($form, $app->commentMapper);
             $app->commentMapper->save($comment);
@@ -314,13 +288,9 @@ $app->map('/view/:id', function ($id) use ($app) {
             'file'=>$file,
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'preview'=>$preview,
-            'description'=>$description,
-            'type'=>$type,
-            'path'=>$path,
             'comments'=>$comments,
             'reply'=>$reply,
-            'postError'=>$postError,
+            'form'=>$form,
         )
     );
 })->via('GET', 'POST');

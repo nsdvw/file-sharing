@@ -1,8 +1,10 @@
-<?php namespace Storage\Helper;
+<?php
+
+namespace Storage\Helper;
 
 class Pager
 {
-    public static $perPage = 20;
+    public static $perPage;
     public $linksCount = 6;
     public $currentPage;
     public $pageCount;
@@ -22,8 +24,6 @@ class Pager
         $this->linksCount = $this->getLinksCount();
         $this->firstPage = $this->getFirstPage();
         $this->lastPage = $this->getLastPage();
-        /* хуита какая-то, сам вижу, но не знаю, как исправить.
-        знал бы как, сделал бы */
     }
 
     protected function getPageCount()

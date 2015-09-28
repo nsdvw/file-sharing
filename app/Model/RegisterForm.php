@@ -7,6 +7,7 @@ class RegisterForm extends Form
     public $login;
     public $email;
     public $password;
+    protected $fields = array('login', 'email', 'password');
 
     public function rules()
     {

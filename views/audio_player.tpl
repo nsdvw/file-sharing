@@ -42,11 +42,13 @@
 $(document).ready(function(){
   $("#jquery_jplayer_1").jPlayer({
     ready: function () {
-      $(this).jPlayer("setMedia", { '{$type}':'{$path}' });
+      $(this).jPlayer("setMedia", {
+          '{array_search($file->mime_type, \Storage\Model\File::jPlayerTypes())}':
+          '/{\UPLOAD_DIR}/{\Storage\Helper\ViewHelper::getUploadName($file->id, $file->name)}' });
   },
   cssSelectorAncestor: "#jp_container_1",
   swfPath: "/js",
-  supplied: '{$type}',
+  supplied: '{array_search($file->mime_type, \Storage\Model\File::jPlayerTypes())}',
   useStateClassSkin: true,
   autoBlur: false,
   smoothPlayBar: true,

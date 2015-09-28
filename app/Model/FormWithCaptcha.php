@@ -5,6 +5,7 @@ namespace Storage\Model;
 class FormWithCaptcha extends Form
 {
     public $captcha;
+    protected $fields = array('captcha');
 
     public function rules()
     {

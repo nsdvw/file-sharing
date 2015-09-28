@@ -10,8 +10,12 @@
         <td class="property">File type</td>
         <td class="value">{$file->mime_type}</td>
     </tr>
-    {if $description !== false}
-        {include file="$description.tpl"}
+    {if $file->isImage()}
+        {include file="image_description.tpl"}
+    {elseif $file->isVideo()}
+        {include file="video_description.tpl"}
+    {elseif $file->isAudio()}
+        {include file="audio_description.tpl"}
     {/if}
     <tr>
         <td class="property">Downloads</td>
@@ -37,8 +41,12 @@
     </tr>
 </table>
 
-{if $preview !== false}
-    {include file="$preview.tpl"}
+{if $file->isImage()}
+    {include file="image_preview.tpl"}
+{elseif $file->isVideo()}
+    {include file="video_player.tpl"}
+{elseif $file->isAudio()}
+    {include file="audio_player.tpl"}
 {/if}
 
 <form action="" method="POST" name="comment_form" class="comment-form">
@@ -47,7 +55,7 @@
             class="comment-area"></textarea>
         <input type="hidden" name="comment_form[reply_id]" value="{$reply}">
     </div>
-    <div class="c-error">{$postError}</div>
+    <div class="c-error">{$form->errorMessage}</div>
     {if $loginManager->loggedUser === null}
         <div class="c-captcha">
             <img src="{$baseUrl}/image/captcha_generator.php" alt="captcha"><br>

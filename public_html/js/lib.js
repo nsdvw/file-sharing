@@ -36,9 +36,15 @@ function updateCounter() {
     counter.innerHTML = String(Number(counter.innerHTML) + 1);
 }
 
+function hasClass(el, className) {
+    var array = el.className.split(/\s/);
+    if (array.indexOf(className) === -1) return false;
+    return true; 
+}
+
 function addClass(el, addClass) {
     var oldClassName = (el.hasAttribute('class')) ? el.getAttribute('class') : '';
-    if (oldClassName.indexOf(addClass) > -1) return;
+    if (hasClass(el, addClass)) return;
     var newClassName = oldClassName + ' ' + addClass;
     el.setAttribute('class', newClassName);
 }

@@ -8,6 +8,7 @@ class CommentForm extends Form
     public $author_id;
     public $file_id;
     public $reply_id;
+    protected $fields = array('contents', 'author_id', 'file_id', 'reply_id');
 
     public function rules()
     {

@@ -18,8 +18,9 @@ for (var i=0; i < files.length; i++) {
 				var currentChild = this.childNodes[j];
 				if (currentChild.nodeType == 1) {
 					if (currentChild.hasAttribute('class') &&
-						currentChild.getAttribute('class').indexOf('file-icon') != -1) {
-						addClass(currentChild, 'file-icon-revert');
+						hasClass(currentChild, 'file-icon')) {
+							console.log(currentChild);
+							addClass(currentChild, 'file-icon-revert');
 					}
 				}
 			}

@@ -3,11 +3,12 @@
 class Form
 {
     public $errorMessage;
+    protected $fields = array();
 
     public function __construct(array $fields)
     {
         foreach ($fields as $field=>$value) {
-            $this->$field = trim($value);
+            if (in_array($field, $this->fields)) $this->$field = trim($value);
         }
     }
 

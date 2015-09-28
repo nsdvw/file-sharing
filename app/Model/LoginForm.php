@@ -4,6 +4,7 @@ class LoginForm extends Form
 {
     public $email;
     public $password;
+    protected $fields = array('email', 'password');
 
     public function rules()
     {

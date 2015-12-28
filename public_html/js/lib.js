@@ -37,7 +37,7 @@ function updateCounter() {
 }
 
 function hasClass(el, className) {
-    var array = el.className.split(/\s/);
+    var array = el.className.split(/\s+/);
     if (array.indexOf(className) === -1) return false;
     return true; 
 }

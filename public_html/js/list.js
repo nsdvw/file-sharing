@@ -16,12 +16,11 @@ for (var i=0; i < files.length; i++) {
 			}
 			for (var j=0; j < this.childNodes.length; j++) {
 				var currentChild = this.childNodes[j];
-				if (currentChild.nodeType == 1) {
-					if (currentChild.hasAttribute('class') &&
-						hasClass(currentChild, 'file-icon')) {
-							console.log(currentChild);
-							addClass(currentChild, 'file-icon-revert');
-					}
+				if (currentChild.nodeType !== 1) continue;
+				if (currentChild.hasAttribute('class') &&
+					hasClass(currentChild, 'file-icon')) {
+						console.log(currentChild);
+						addClass(currentChild, 'file-icon-revert');
 				}
 			}
 		}

@@ -4,6 +4,7 @@ namespace Storage\Auth;
 
 use Storage\Mapper\UserMapper;
 use Storage\Model\User;
+use Storage\Helper\HashGenerator;
 
 class LoginManager
 {
@@ -22,7 +23,7 @@ class LoginManager
         setcookie('hash', '');
     }
 
-    protected function getLoggedUser()
+    public function getLoggedUser()
     {
         if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
             return null;
@@ -35,8 +36,23 @@ class LoginManager
         }
     }
 
-    public function authorizeUser(User $user)
+    public function validateUser($form)
     {
+        $user = $this->mapper->findByEmail($form->email);
+        if ($user->hash ===
+            HashGenerator::generateHash($user->salt, $form->password)) {
+            $this->loggedUser = $user;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function authorizeUser(User $user = null)
+    {
+        if (!$user) {
+            $user = $this->loggedUser;
+        }
         setcookie('id', $user->id, time() + 3600 * 24 * 7);
         setcookie('hash', $user->hash, time() + 3600 * 24 * 7);
     }

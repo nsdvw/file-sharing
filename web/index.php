@@ -146,37 +146,6 @@ $app->map('/', function() use ($app) {
                     );
                 }
             }
-/*            
-            $author_id = ($app->loginManager->loggedUser) ?
-                         $app->loginManager->loggedUser->id : null;
-            $file = File::fromUser($name, $tempName, $author_id);
-            $app->connection->beginTransaction();
-            $app->fileMapper->save($file);
-            if (move_uploaded_file(
-                $tempName,
-                ViewHelper::getUploadPath($file->id, $file->name)))
-            {
-                $app->connection->commit();
-                if ($file->isImage()) {
-                    $path = ViewHelper::getPreviewPath($file->id);
-                    PreviewGenerator::createPreview($file);
-                }
-                if ($isAjax) {
-                    echo $file->id;
-                } else {
-                    $app->response->redirect("/view/{$file->id}");
-                }
-            } else {
-                $app->connection->rollBack();
-                if ($isAjax) {
-                    echo 'error';
-                } else {
-                    $uploadError = 'File wasn\'t uploaded, please try again later';
-                    $app->render(
-                        'upload_form.tpl', ['uploadError' => $uploadError]
-                    );
-                }
-            }*/
         }
     }
 })->via('GET', 'POST');

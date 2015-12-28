@@ -1,12 +1,23 @@
 <?php
+namespace Storage;
 
+use Slim\Slim;
+use Slim\Views\Smarty;
 use Storage\Model\File;
 use Storage\Model\Comment;
+use Storage\Model\LoginForm;
+use Storage\Model\CommentForm;
+use Storage\Model\FormWithCaptcha;
+use Storage\Model\RegisterForm;
 use Storage\Helper\Pager;
 use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
+use Storage\Mapper\FileMapper;
+use Storage\Mapper\UserMapper;
+use Storage\Mapper\CommentMapper;
+use Storage\Auth\LoginManager;
 
 define('UPLOAD_DIR', 'upload');
 define('PREVIEW_DIR', 'preview');
@@ -15,32 +26,32 @@ define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
-$app = new Slim\Slim(
+$app = new Slim(
     array(
-        'view' => new Slim\Views\Smarty(),
+        'view' => new Smarty(),
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
 ));
 
 $app->container->singleton('connection', function () {
     $db_config = parse_ini_file(BASE_DIR.'/config.ini');
-    return new PDO(
+    return new \PDO(
                     $db_config['conn'],
                     $db_config['user'],
                     $db_config['pass']
                 );
 });
 $app->container->singleton('fileMapper', function () use ($app) {
-    return new Storage\Mapper\FileMapper($app->connection);
+    return new FileMapper($app->connection);
 });
 $app->container->singleton('userMapper', function () use ($app) {
-    return new Storage\Mapper\UserMapper($app->connection);
+    return new UserMapper($app->connection);
 });
 $app->container->singleton('commentMapper', function () use ($app) {
-    return new Storage\Mapper\CommentMapper($app->connection);
+    return new CommentMapper($app->connection);
 });
 $app->container->singleton('loginManager', function () use ($app){
-    return new Storage\Auth\LoginManager($app->userMapper);
+    return new LoginManager($app->userMapper);
 });
 
 $token = Token::init();
@@ -79,7 +90,7 @@ $app->map('/login', function () use ($app) {
     if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
     } else {
-        $loginForm = new Storage\Model\LoginForm(
+        $loginForm = new LoginForm(
             array(
                 'email'=>$_POST['login']['email'],
                 'password'=>$_POST['login']['password'],
@@ -90,7 +101,7 @@ $app->map('/login', function () use ($app) {
                 $app->loginManager->authorizeUser();
                 $app->response->redirect('/login');
             } else {
-                $loginForm->errorMessage = Storage\Model\LoginForm::WRONG_PASSWORD;
+                $loginForm->errorMessage = LoginForm::WRONG_PASSWORD;
             }
         }
         $app->render(
@@ -162,7 +173,7 @@ $app->map('/', function() use ($app) {
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerForm = new Storage\Model\RegisterForm(array(
+    $registerForm = new RegisterForm(array(
         'errorMessage'=>'', 'login'=>'', 'email'=>'', 'password'=>'',
     ));
     $app->render(
@@ -176,7 +187,7 @@ $app->get('/reg', function () use ($app) {
 });
 
 $app->post('/reg', function () use ($app) {  
-    $registerForm = new Storage\Model\RegisterForm(
+    $registerForm = new RegisterForm(
         array(
             'login'=>$_POST['register']['login'],
             'email'=>$_POST['register']['email'],
@@ -251,12 +262,12 @@ $app->map('/view/:id', function ($id) use ($app) {
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
 
-    $form = new Storage\Model\CommentForm(
+    $form = new CommentForm(
         array('contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''));
     if ($app->request->isPost()) {
         if (!$app->loginManager->loggedUser) {
             $author_id = null;
-            $captcha = new Storage\Model\FormWithCaptcha(
+            $captcha = new FormWithCaptcha(
                         array('captcha'=>$_POST['comment_form']['captcha'],)
                     );
             $captchaError = ($captcha->validate()) ? '' : $captcha->errorMessage;
@@ -264,7 +275,7 @@ $app->map('/view/:id', function ($id) use ($app) {
             $author_id = $app->loginManager->loggedUser->id;
             $captchaError = '';
         }
-        $form = new Storage\Model\CommentForm(
+        $form = new CommentForm(
                 array(
                     'contents'=>$_POST['comment_form']['contents'],
                     'reply_id'=>$_POST['comment_form']['reply_id'],

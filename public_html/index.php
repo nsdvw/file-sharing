@@ -11,7 +11,7 @@ use Storage\Helper\PreviewGenerator;
 define('UPLOAD_DIR', 'upload');
 define('PREVIEW_DIR', 'preview');
 define('DOWNLOAD_DIR', 'download');
-define('BASE_DIR', '..');
+define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
@@ -43,10 +43,7 @@ $app->container->singleton('loginManager', function () use ($app){
     return new Storage\Auth\LoginManager($app->userMapper);
 });
 
-if (!Token::issetToken()) $token = Token::generateToken();
-else $token = Token::getToken();
-$time = time() + 24*3600;
-Token::setToken($token, $time);
+$token = Token::init();
 
 $app->view->appendData( array(
     'baseUrl' => $app->request->getUrl(),
@@ -62,7 +59,9 @@ $app->notFound(function () use ($app) {
 });
 
 $app->post('/logout', function () use ($app) {
-    if (Token::checkToken()) $app->loginManager->logout();
+    if (Token::checkToken()) {
+        $app->loginManager->logout();
+    }
     $app->response->redirect('/');
 });
 
@@ -70,7 +69,7 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     header('Content-Type: application/json');
     $file = $app->fileMapper->findById($id);
     if (!$file) {
-        echo json_encode(null);
+        echo json_encode("{\"error\": \"File not found\"}");
     } else {
         echo json_encode( $file->toArray() );
     }
@@ -87,17 +86,15 @@ $app->map('/login', function () use ($app) {
             )
         );
         if ($loginForm->validate()) {
-            if ($user = $app->userMapper->findByEmail($loginForm->email)) {
-                if ($user->hash !==
-                    HashGenerator::generateHash($user->salt, $loginForm->password)) {
-                } else {
-                    $app->loginManager->authorizeUser($user);
-                    $app->response->redirect('/login');
-                }
+            if ($app->loginManager->validateUser($loginForm)) {
+                $app->loginManager->authorizeUser();
+                $app->response->redirect('/login');
+            } else {
+                $loginForm->errorMessage = Storage\Model\LoginForm::WRONG_PASSWORD;
             }
         }
         $app->render(
-            'login.tpl', array('loginForm'=>$loginForm,)
+            'login.tpl', array('loginForm'=>$loginForm)
         );
     }
 })->via('GET', 'POST');

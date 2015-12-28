@@ -14,6 +14,7 @@ use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
 use Storage\Helper\HashGenerator;
 use Storage\Helper\PreviewGenerator;
+use Storage\Helper\FileUploadService;
 use Storage\Mapper\FileMapper;
 use Storage\Mapper\UserMapper;
 use Storage\Mapper\CommentMapper;
@@ -26,12 +27,13 @@ define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
+$config = require BASE_DIR . DIRECTORY_SEPARATOR . 'config.php';
+
 $app = new Slim([
         'view' => new Smarty(),
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
 ]);
-$config = require BASE_DIR . DIRECTORY_SEPARATOR . 'config.php';
 
 $app->container->singleton('connection', function () use ($config) {
     return new \PDO( $config['conn'], $config['user'], $config['pass'] );
@@ -45,8 +47,11 @@ $app->container->singleton('userMapper', function () use ($app) {
 $app->container->singleton('commentMapper', function () use ($app) {
     return new CommentMapper($app->connection);
 });
-$app->container->singleton('loginManager', function () use ($app){
+$app->container->singleton('loginManager', function () use ($app) {
     return new LoginManager($app->userMapper);
+});
+$app->container->singleton('fileUploadService', function () use ($app) {
+    return new FileUploadService($app->fileMapper);
 });
 
 $token = Token::init();
@@ -84,23 +89,23 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
 $app->map('/login', function () use ($app) {
     if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
-    } else {
-        $loginForm = new LoginForm([
-            'email'=>$_POST['login']['email'],
-            'password'=>$_POST['login']['password'],
-        ]);
-        if ($loginForm->validate()) {
-            if ($app->loginManager->validateUser($loginForm)) {
-                $app->loginManager->authorizeUser();
-                $app->response->redirect('/login');
-            } else {
-                $loginForm->errorMessage = LoginForm::WRONG_PASSWORD;
-            }
-        }
-        $app->render(
-            'login.tpl', ['loginForm' => $loginForm]
-        );
+        $app->stop();
     }
+    $loginForm = new LoginForm([
+        'email'=>$_POST['login']['email'],
+        'password'=>$_POST['login']['password'],
+    ]);
+    if ($loginForm->validate()) {
+        if ($app->loginManager->validateUser($loginForm)) {
+            $app->loginManager->authorizeUser();
+            $app->response->redirect('/login');
+        } else {
+            $loginForm->errorMessage = LoginForm::WRONG_PASSWORD;
+        }
+    }
+    $app->render(
+        'login.tpl', ['loginForm' => $loginForm]
+    );
 })->via('GET', 'POST');
 
 $app->map('/', function() use ($app) {
@@ -112,22 +117,43 @@ $app->map('/', function() use ($app) {
     if (isset($_POST['upload'])) {
         $error = $_FILES['upload']['error']['file1'];
         $name = $_FILES['upload']['name']['file1'];
-        $tmp_name = $_FILES['upload']['tmp_name']['file1'];
+        $tempName = $_FILES['upload']['tmp_name']['file1'];
         if ($error) {
             if ($isAjax) {
                 echo 'error';
             } else {
                 $uploadError = 'File wasn\'t uploaded, please try again later';
-                $app->render('upload_form.tpl', ['uploadError' => $uploadError]);
+                $app->render('upload_form.tpl', ['uploadError'=>$uploadError]);
             }
         } else {
+            $author_id = ($app->loginManager->loggedUser)
+                         ? $app->loginManager->loggedUser->id
+                         : null;
+            $file = File::fromUser($name, $tempName, $author_id);
+            if ($app->fileUploadService->upload($file, $tempName)) {
+                if ($isAjax) {
+                    echo $file->id;
+                } else {
+                    $app->response->redirect("/view/{$file->id}");
+                }
+            } else {
+                if ($isAjax) {
+                    echo 'error';
+                } else {
+                    $uploadError = 'File wasn\'t uploaded, please try again later';
+                    $app->render(
+                        'upload_form.tpl', ['uploadError' => $uploadError]
+                    );
+                }
+            }
+/*            
             $author_id = ($app->loginManager->loggedUser) ?
                          $app->loginManager->loggedUser->id : null;
-            $file = File::fromUser($name, $tmp_name, $author_id);
+            $file = File::fromUser($name, $tempName, $author_id);
             $app->connection->beginTransaction();
             $app->fileMapper->save($file);
             if (move_uploaded_file(
-                $tmp_name,
+                $tempName,
                 ViewHelper::getUploadPath($file->id, $file->name)))
             {
                 $app->connection->commit();
@@ -145,12 +171,12 @@ $app->map('/', function() use ($app) {
                 if ($isAjax) {
                     echo 'error';
                 } else {
-                    $uploadError = 'Server error, please try again later';
+                    $uploadError = 'File wasn\'t uploaded, please try again later';
                     $app->render(
                         'upload_form.tpl', ['uploadError' => $uploadError]
                     );
                 }
-            }
+            }*/
         }
     }
 })->via('GET', 'POST');

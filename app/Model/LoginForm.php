@@ -2,6 +2,8 @@
 
 class LoginForm extends Form
 {
+    const WRONG_PASSWORD = 'wrong password';
+
     public $email;
     public $password;
     protected $fields = array('email', 'password');

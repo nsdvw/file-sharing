@@ -4,6 +4,18 @@ namespace Storage\Helper;
 
 class Token
 {
+    public static function init()
+    {
+        if (!self::issetToken()) {
+            $token = self::generateToken();
+        } else {
+            $token = self::getToken();
+        }
+        $time = time() + 24*3600;
+        self::setToken($token, $time);
+        return $token;
+    }
+
     public static function generateToken()
     {
         $salt = HashGenerator::generateSalt();
@@ -29,7 +41,7 @@ class Token
         if (!isset($_POST['logoutForm']['csrf_token'])) return false;
         $postToken = $_POST['logoutForm']['csrf_token'];
         $cookieToken = self::getToken();
-        if ($postToken != $cookieToken) return false;
+        if ($postToken !== $cookieToken) return false;
         return true;
     }
 }

@@ -32,14 +32,10 @@ $app = new Slim(
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
 ));
+$config = require BASE_DIR . DIRECTORY_SEPARATOR . 'config.php';
 
-$app->container->singleton('connection', function () {
-    $db_config = parse_ini_file(BASE_DIR.'/config.ini');
-    return new \PDO(
-                    $db_config['conn'],
-                    $db_config['user'],
-                    $db_config['pass']
-                );
+$app->container->singleton('connection', function () use ($config) {
+    return new \PDO( $config['conn'], $config['user'], $config['pass'] );
 });
 $app->container->singleton('fileMapper', function () use ($app) {
     return new FileMapper($app->connection);

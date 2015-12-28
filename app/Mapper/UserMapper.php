@@ -3,15 +3,8 @@ namespace Storage\Mapper;
 
 use Storage\Model\User;
 
-class UserMapper
+class UserMapper extends AbstractMapper
 {
-    protected $connection;
-
-    public function __construct(\PDO $connection)
-    {
-        $this->connection = $connection;
-    }
-
     public function register(User $user)
     {
         $sql = "INSERT INTO user (login, email, salt, hash)

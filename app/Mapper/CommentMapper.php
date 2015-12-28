@@ -3,15 +3,8 @@ namespace Storage\Mapper;
 
 use Storage\Model\Comment;
 
-class CommentMapper
+class CommentMapper extends AbstractMapper
 {
-    protected $connection;
-
-    public function __construct(\PDO $connection)
-    {
-        $this->connection = $connection;
-    }
-
     public function getComments($file_id)
     {
         $sql = "SELECT id, contents, file_id, author_id, materialized_path, added

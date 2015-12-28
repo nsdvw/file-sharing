@@ -5,15 +5,8 @@ use Storage\Helper\Pager;
 use Storage\Model\MediaInfo;
 use Storage\Model\File;
 
-class FileMapper
+class FileMapper extends AbstractMapper
 {
-    protected $connection;
-
-    public function __construct(\PDO $connection)
-    {
-        $this->connection = $connection;
-    }
-
     public function save(File $file)
     {
         $sql =

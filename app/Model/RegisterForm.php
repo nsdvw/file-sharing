@@ -1,4 +1,6 @@
-<?php namespace Storage\Model;
+<?php
+
+namespace Storage\Model;
 
 use Storage\Helper\HashGenerator;
 

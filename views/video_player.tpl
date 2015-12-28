@@ -50,7 +50,7 @@ $(document).ready(function(){
     ready: function () {
         $(this).jPlayer("setMedia", {
           '{array_search($file->mime_type, \Storage\Model\File::jPlayerTypes())}':
-          '/{\UPLOAD_DIR}/{\Storage\Helper\ViewHelper::getUploadName($file->id, $file->name)}' });
+          '/{\Storage\Helper\ViewHelper::getUploadPath($file->id, $file->name)}' });
     },
     cssSelectorAncestor: "#jp_container_1",
     swfPath: "/js",

@@ -39,7 +39,9 @@ class LoginManager
     public function validateUser($form)
     {
         $user = $this->mapper->findByEmail($form->email);
-        if ($user->hash ===
+        if ($user === false) {
+            return false;
+        } elseif ($user->hash ===
             HashGenerator::generateHash($user->salt, $form->password)) {
             $this->loggedUser = $user;
             return true;

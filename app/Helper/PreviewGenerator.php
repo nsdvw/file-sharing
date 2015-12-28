@@ -1,4 +1,5 @@
-<?php namespace Storage\Helper;
+<?php
+namespace Storage\Helper;
 
 use Storage\Model\File;
 

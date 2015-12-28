@@ -1,4 +1,5 @@
-<?php namespace Storage\Mapper;
+<?php
+namespace Storage\Mapper;
 
 use Storage\Helper\Pager;
 use Storage\Model\MediaInfo;

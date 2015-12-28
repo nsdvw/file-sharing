@@ -1,9 +1,10 @@
-<?php namespace Storage\Model;
+<?php
+namespace Storage\Model;
 
 class Form
 {
     public $errorMessage;
-    protected $fields = array();
+    protected $fields = [];
 
     public function __construct(array $fields)
     {

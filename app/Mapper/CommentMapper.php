@@ -1,5 +1,4 @@
 <?php
-
 namespace Storage\Mapper;
 
 use Storage\Model\Comment;

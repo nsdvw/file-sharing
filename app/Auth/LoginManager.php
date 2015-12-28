@@ -1,5 +1,4 @@
 <?php
-
 namespace Storage\Auth;
 
 use Storage\Mapper\UserMapper;

@@ -1,5 +1,4 @@
 <?php
-
 namespace Storage\Helper;
 
 class Pager

@@ -1,4 +1,5 @@
-<?php namespace Storage\Model;
+<?php
+namespace Storage\Model;
 
 class User
 {

@@ -1,17 +1,16 @@
 <?php
-
 namespace Storage\Model;
 
 class FormWithCaptcha extends Form
 {
     public $captcha;
-    protected $fields = array('captcha');
+    protected $fields = ['captcha'];
 
     public function rules()
     {
-        return array(
-            'captcha' => array('notEmpty'=>true, 'captcha'=>true),
-        );
+        return [
+            'captcha' => ['notEmpty'=>true, 'captcha'=>true],
+        ];
     }
 
     public function validateCaptcha($field)

@@ -26,12 +26,11 @@ define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
-$app = new Slim(
-    array(
+$app = new Slim([
         'view' => new Smarty(),
         'templates.path' => BASE_DIR.'/views',
         'debug' => true,
-));
+]);
 $config = require BASE_DIR . DIRECTORY_SEPARATOR . 'config.php';
 
 $app->container->singleton('connection', function () use ($config) {
@@ -52,17 +51,17 @@ $app->container->singleton('loginManager', function () use ($app){
 
 $token = Token::init();
 
-$app->view->appendData( array(
+$app->view->appendData([
     'baseUrl' => $app->request->getUrl(),
     'loginManager' => $app->loginManager,
     'title'=>'FileSharing &mdash; upload file',
     'bookmark'=>'Upload',
     'token'=>$token,
-));
+]);
 
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
-    $app->render('404.tpl', array('title'=>$title,) );
+    $app->render('404.tpl', ['title'=>$title] );
 });
 
 $app->post('/logout', function () use ($app) {
@@ -86,12 +85,10 @@ $app->map('/login', function () use ($app) {
     if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
     } else {
-        $loginForm = new LoginForm(
-            array(
-                'email'=>$_POST['login']['email'],
-                'password'=>$_POST['login']['password'],
-            )
-        );
+        $loginForm = new LoginForm([
+            'email'=>$_POST['login']['email'],
+            'password'=>$_POST['login']['password'],
+        ]);
         if ($loginForm->validate()) {
             if ($app->loginManager->validateUser($loginForm)) {
                 $app->loginManager->authorizeUser();
@@ -101,7 +98,7 @@ $app->map('/login', function () use ($app) {
             }
         }
         $app->render(
-            'login.tpl', array('loginForm'=>$loginForm)
+            'login.tpl', ['loginForm' => $loginForm]
         );
     }
 })->via('GET', 'POST');
@@ -121,12 +118,7 @@ $app->map('/', function() use ($app) {
                 echo 'error';
             } else {
                 $uploadError = 'File wasn\'t uploaded, please try again later';
-                $app->render(
-                    'upload_form.tpl',
-                    array(
-                        'uploadError'=>$uploadError,
-                    )
-                );
+                $app->render('upload_form.tpl', ['uploadError' => $uploadError]);
             }
         } else {
             $author_id = ($app->loginManager->loggedUser) ?
@@ -155,10 +147,7 @@ $app->map('/', function() use ($app) {
                 } else {
                     $uploadError = 'Server error, please try again later';
                     $app->render(
-                        'upload_form.tpl',
-                        array(
-                            'uploadError'=>$uploadError,
-                        )
+                        'upload_form.tpl', ['uploadError' => $uploadError]
                     );
                 }
             }
@@ -169,27 +158,23 @@ $app->map('/', function() use ($app) {
 $app->get('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerForm = new RegisterForm(array(
+    $registerForm = new RegisterForm([
         'errorMessage'=>'', 'login'=>'', 'email'=>'', 'password'=>'',
-    ));
+    ]);
     $app->render(
-        'register_form.tpl',
-        array(
+        'register_form.tpl', [
             'title'=>$title,
             'bookmark'=>$bookmark,
             'registerForm'=>$registerForm,
-        )
-    );
+    ]);
 });
 
 $app->post('/reg', function () use ($app) {  
-    $registerForm = new RegisterForm(
-        array(
-            'login'=>$_POST['register']['login'],
-            'email'=>$_POST['register']['email'],
-            'password'=>$_POST['register']['password'],
-        )
-    );
+    $registerForm = new RegisterForm([
+        'login'=>$_POST['register']['login'],
+        'email'=>$_POST['register']['email'],
+        'password'=>$_POST['register']['password'],
+    ]);
     if ($registerForm->validate()) {
         $user = $registerForm->getUser();
         $app->userMapper->register($user);
@@ -199,13 +184,11 @@ $app->post('/reg', function () use ($app) {
         $title = 'FileSharing &mdash; registration';
         $bookmark = 'Sign up';
         $app->render(
-            'register_form.tpl',
-            array(
+            'register_form.tpl', [
                 'title'=>$title,
                 'bookmark'=>$bookmark,
                 'registerForm'=>$registerForm,
-            )
-        );
+        ]);
     }
 });
 
@@ -219,15 +202,13 @@ $app->get('/view', function() use ($app) {
                     ? "File has been uploaded successfully" : '';
     $bookmark = 'Files';
     $app->render(
-        'list_info.tpl',
-        array(
+        'list_info.tpl', [
             'list'=>$list,
             'title'=>$title,
             'noticeMessage'=>$noticeMessage,
             'bookmark'=>$bookmark,
             'pager'=>$pager,
-        )
-    );
+    ]);
 });
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
@@ -258,26 +239,26 @@ $app->map('/view/:id', function ($id) use ($app) {
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
 
-    $form = new CommentForm(
-        array('contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''));
+    $form = new CommentForm([
+        'contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''
+    ]);
     if ($app->request->isPost()) {
         if (!$app->loginManager->loggedUser) {
             $author_id = null;
-            $captcha = new FormWithCaptcha(
-                        array('captcha'=>$_POST['comment_form']['captcha'],)
-                    );
+            $captcha = new FormWithCaptcha([
+                'captcha' => $_POST['comment_form']['captcha']
+            ]);
             $captchaError = ($captcha->validate()) ? '' : $captcha->errorMessage;
         } else {
             $author_id = $app->loginManager->loggedUser->id;
             $captchaError = '';
         }
-        $form = new CommentForm(
-                array(
+        $form = new CommentForm([
                     'contents'=>$_POST['comment_form']['contents'],
                     'reply_id'=>$_POST['comment_form']['reply_id'],
                     'file_id'=>$id,
                     'author_id'=>$author_id,
-                ));
+                ]);
         if ($form->validate()) $form->errorMessage = $captchaError;
         if (!$form->errorMessage) {
             $comment = new Comment;
@@ -287,16 +268,14 @@ $app->map('/view/:id', function ($id) use ($app) {
         }
     }
     $app->render(
-        'file_info.tpl',
-        array(
+        'file_info.tpl', [
             'file'=>$file,
             'title'=>$title,
             'bookmark'=>$bookmark,
             'comments'=>$comments,
             'reply'=>$reply,
             'form'=>$form,
-        )
-    );
+    ]);
 })->via('GET', 'POST');
 
 $app->run();

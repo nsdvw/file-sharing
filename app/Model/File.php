@@ -1,4 +1,5 @@
-<?php namespace Storage\Model;
+<?php
+namespace Storage\Model;
 
 use Storage\Helper\ViewHelper;
 
@@ -15,7 +16,7 @@ class File
 
     protected function getSafeFields()
     {
-        return array(
+        return [
             'id',
             'name',
             'author_id',
@@ -24,23 +25,25 @@ class File
             'mediaInfo',
             'upload_time',
             'download_counter',
-        );
+        ];
     }
 
-    public static $videoTypes = array(
-            'webmv'=>'video/webm',
-            'm4v'=>'video/mp4',
-            'ogv'=>'video/ogg',
-            'flv'=>'video/x-flv',
-        );
-    public static $audioTypes = array(
-            'mp3'=>'audio/mpeg',
-            'm4a'=>'audio/mp4',
-            'wav'=>'audio/x-wav',
-            'fla'=>'audio/x-flv',
-            'webma'=>'audio/webm',
-            'oga'=>'audio/ogg',
-        );
+    public static $videoTypes = [
+        'webmv'=>'video/webm',
+        'm4v'=>'video/mp4',
+        'ogv'=>'video/ogg',
+        'flv'=>'video/x-flv',
+    ];
+
+    public static $audioTypes = [
+        'mp3'=>'audio/mpeg',
+        'm4a'=>'audio/mp4',
+        'wav'=>'audio/x-wav',
+        'fla'=>'audio/x-flv',
+        'webma'=>'audio/webm',
+        'oga'=>'audio/ogg',
+    ];
+
     public static function jPlayerTypes()
     {
         return array_merge(self::$audioTypes, self::$videoTypes);
@@ -60,7 +63,7 @@ class File
 
     public function isImage()
     {
-        $types = array('image/jpeg', 'image/png', 'image/gif');
+        $types = ['image/jpeg', 'image/png', 'image/gif'];
         return in_array($this->mime_type, $types);
     }
 
@@ -76,24 +79,24 @@ class File
 
     public function isText()
     {
-        $types = array(
+        $types = [
             'text/plain',
             'application/xml',
             'text/rtf',
             'text/php',
             'text/html',
             'text/x-php',
-        );
+        ];
         return in_array($this->mime_type, $types);
     }
 
     public function isArchive()
     {
-        $types = array(
+        $types = [
             'application/zip',
             'application/gzip',
             'application/x-gzip',
-        );
+        ];
         return in_array($this->mime_type, $types);
     }
 

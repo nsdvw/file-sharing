@@ -7,7 +7,8 @@ class HashGenerator
     
     public static function getCharacters()
     {
-        return '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                . '~`!@#$%^&*()-=+_][{}|?><';
     }
 
     public static function generateSalt()

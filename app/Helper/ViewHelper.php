@@ -1,6 +1,8 @@
 <?php
 namespace Storage\Helper;
 
+use Storage\Model\File;
+
 class ViewHelper
 {
     public static function getUploadName($id, $name)
@@ -46,5 +48,15 @@ class ViewHelper
     public static function getDetailViewUrl($id)
     {
         return \DIRECTORY_SEPARATOR . 'view' . \DIRECTORY_SEPARATOR . $id;
+    }
+
+    public static function createPreviewIfNecessary(File $file)
+    {
+        if ($file->isImage()) {
+            $path = self::getPreviewPath($file->id);
+            if (!PreviewGenerator::hasPreview($path)) {
+                PreviewGenerator::createPreview($file);
+            }
+        }
     }
 }

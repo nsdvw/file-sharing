@@ -75,7 +75,6 @@ class FileMapper extends AbstractMapper
         $sql = "SELECT COUNT(*) as page_count FROM file";
         $sth = $this->connection->prepare($sql);
         $sth->execute();
-        $res = $sth->fetch(\PDO::FETCH_ASSOC);
-        return $res['page_count'];
+        return $sth->fetchColumn();
     }
 }

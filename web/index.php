@@ -27,7 +27,7 @@ define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
 $loader = require BASE_DIR.'/vendor/autoload.php';
-$config = require BASE_DIR . DIRECTORY_SEPARATOR . 'config.php';
+$config = require BASE_DIR.'/config.php';
 
 $app = new Slim([
         'view' => new Smarty(),
@@ -79,6 +79,7 @@ $app->post('/logout', function () use ($app) {
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     header('Content-Type: application/json');
     $file = $app->fileMapper->findById($id);
+    ViewHelper::createPreviewIfNecessary($file);
     if (!$file) {
         echo json_encode("{\"error\": \"File not found\"}");
     } else {
@@ -113,38 +114,41 @@ $app->map('/', function() use ($app) {
         $app->render('upload_form.tpl');
         $app->stop();
     }
-    $isAjax = (isset($_GET['ajax'])) ? true : false;
-    if (isset($_POST['upload'])) {
-        $error = $_FILES['upload']['error']['file1'];
-        $name = $_FILES['upload']['name']['file1'];
-        $tempName = $_FILES['upload']['tmp_name']['file1'];
-        if ($error) {
+    $isAjax = ($app->request->get('ajax') !== null) ? true : false;
+    if ($app->request->post('upload') === null) {
+        $uploadError = 'Invalid request: wrong form was sent';
+        $app->render('upload_form.tpl', ['uploadError'=>$uploadError]);
+        $app->stop();
+    }
+    $error = $_FILES['upload']['error']['file1'];
+    $name = $_FILES['upload']['name']['file1'];
+    $tempName = $_FILES['upload']['tmp_name']['file1'];
+    if ($error) {
+        if ($isAjax) {
+            echo 'error';
+        } else {
+            $uploadError = 'File wasn\'t uploaded, please try again later';
+            $app->render('upload_form.tpl', ['uploadError'=>$uploadError]);
+        }
+    } else {
+        $author_id = ($app->loginManager->loggedUser)
+                     ? $app->loginManager->loggedUser->id
+                     : null;
+        $file = File::fromUser($name, $tempName, $author_id);
+        if ($app->fileUploadService->upload($file, $tempName)) {
+            if ($isAjax) {
+                echo $file->id;
+            } else {
+                $app->response->redirect("/view/{$file->id}");
+            }
+        } else {
             if ($isAjax) {
                 echo 'error';
             } else {
                 $uploadError = 'File wasn\'t uploaded, please try again later';
-                $app->render('upload_form.tpl', ['uploadError'=>$uploadError]);
-            }
-        } else {
-            $author_id = ($app->loginManager->loggedUser)
-                         ? $app->loginManager->loggedUser->id
-                         : null;
-            $file = File::fromUser($name, $tempName, $author_id);
-            if ($app->fileUploadService->upload($file, $tempName)) {
-                if ($isAjax) {
-                    echo $file->id;
-                } else {
-                    $app->response->redirect("/view/{$file->id}");
-                }
-            } else {
-                if ($isAjax) {
-                    echo 'error';
-                } else {
-                    $uploadError = 'File wasn\'t uploaded, please try again later';
-                    $app->render(
-                        'upload_form.tpl', ['uploadError' => $uploadError]
-                    );
-                }
+                $app->render(
+                    'upload_form.tpl', ['uploadError' => $uploadError]
+                );
             }
         }
     }
@@ -188,12 +192,12 @@ $app->post('/reg', function () use ($app) {
 });
 
 $app->get('/view', function() use ($app) {
-    $page = (isset($_GET['page'])) ? intval($_GET['page']) : 1;
+    $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
     $pager = new Pager($app->fileMapper, $page);
     $offset = ($page - 1) * Pager::$perPage;
     $list = $app->fileMapper->findAll($offset);
     $title = 'FileSharing &mdash; files';
-    $noticeMessage = (isset($_GET['upload']) and $_GET['upload'] == 'ok')
+    $noticeMessage = ($app->request->get('page') === 'ok')
                     ? "File has been uploaded successfully" : '';
     $bookmark = 'Files';
     $app->render(
@@ -208,8 +212,7 @@ $app->get('/view', function() use ($app) {
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
-    header('X-SendFile: '.'..'.DIRECTORY_SEPARATOR.
-        ViewHelper::getUploadPath($id, $name));
+    header('X-SendFile: ../'.ViewHelper::getUploadPath($id, $name));
     header('Content-Disposition: attachment');
     $app->stop();
 });
@@ -217,23 +220,16 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
 $app->map('/view/:id', function ($id) use ($app) {
     $title = 'FileSharing &mdash; file description';
     $bookmark = 'Files';
-    $reply = (isset($_GET['reply'])) ? intval($_GET['reply']) : '';
-
+    $reply = $app->request->get('reply') ? intval($app->request->get('reply')) : '';
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
-    if ($file->isImage()) {
-        $path = ViewHelper::getPreviewPath($id);
-        if (!PreviewGenerator::hasPreview($path)) {
-            PreviewGenerator::createPreview($file);
-        }
-    }
+    ViewHelper::createPreviewIfNecessary($file);
     $comments = $app->commentMapper->getComments($file->id);
     foreach ($comments as $comment) {
         $comment->level = Comment::getLevel($comment->materialized_path);
         $comment->author_id = $app->userMapper->findById($comment->author_id);
     }
-
     $form = new CommentForm([
         'contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''
     ]);

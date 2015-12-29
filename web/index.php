@@ -32,7 +32,9 @@ $app = new Slim([
 ]);
 
 $app->container->singleton('connection', function () use ($config) {
-    return new \PDO( $config['conn'], $config['user'], $config['pass'] );
+    $dbh = new \PDO( $config['conn'], $config['user'], $config['pass'] );
+    $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    return $dbh;
 });
 $app->container->singleton('fileMapper', function () use ($app) {
     return new FileMapper($app->connection);

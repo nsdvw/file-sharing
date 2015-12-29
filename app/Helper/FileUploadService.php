@@ -22,10 +22,6 @@ class FileUploadService
             ViewHelper::getUploadPath($file->id, $file->name)
         )) {
             $this->mapper->commit();
-            if ($file->isImage()) {
-                $path = ViewHelper::getPreviewPath($file->id);
-                PreviewGenerator::createPreview($file);
-            }
             return true;
         } else {
             $this->mapper->rollBack();

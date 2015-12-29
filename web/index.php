@@ -20,18 +20,14 @@ use Storage\Mapper\UserMapper;
 use Storage\Mapper\CommentMapper;
 use Storage\Auth\LoginManager;
 
-define('UPLOAD_DIR', 'upload');
-define('PREVIEW_DIR', 'preview');
-define('DOWNLOAD_DIR', 'download');
-define('BASE_DIR', dirname(__DIR__));
 mb_internal_encoding('UTF-8');
 
-$loader = require BASE_DIR.'/vendor/autoload.php';
-$config = require BASE_DIR.'/config.php';
+$loader = require '../vendor/autoload.php';
+$config = require '../config.php';
 
 $app = new Slim([
         'view' => new Smarty(),
-        'templates.path' => BASE_DIR.'/views',
+        'templates.path' => '../views',
         'debug' => true,
 ]);
 

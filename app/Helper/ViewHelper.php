@@ -31,23 +31,22 @@ class ViewHelper
 
     public static function getDownloadUrl($id, $name)
     {
-        return \DOWNLOAD_DIR . \DIRECTORY_SEPARATOR . $id .
-                                \DIRECTORY_SEPARATOR . $name;
+        return "download/{$id}/{$name}";
     }
 
     public static function getUploadPath($id, $name)
     {
-        return \UPLOAD_DIR.\DIRECTORY_SEPARATOR.self::getUploadName($id, $name);
+        return 'upload/' . self::getUploadName($id, $name);
     }
 
     public static function getPreviewPath($id)
     {
-        return \PREVIEW_DIR.\DIRECTORY_SEPARATOR.self::getPreviewName($id);
+        return 'preview/' . self::getPreviewName($id);
     }
 
     public static function getDetailViewUrl($id)
     {
-        return \DIRECTORY_SEPARATOR . 'view' . \DIRECTORY_SEPARATOR . $id;
+        return "/view/{$id}";
     }
 
     public static function createPreviewIfNecessary(File $file)

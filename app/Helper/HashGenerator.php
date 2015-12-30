@@ -3,7 +3,7 @@ namespace Storage\Helper;
 
 class HashGenerator
 {
-    const SALT_LENGTH = 10;
+    const SALT_LENGTH = 40;
     
     public static function getCharacters()
     {

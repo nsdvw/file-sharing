@@ -1,32 +1,19 @@
 <?php
 namespace Storage;
 
-use Slim\Slim;
-use Slim\Views\Smarty;
-use Storage\Model\File;
 use Storage\Model\Comment;
-use Storage\Model\LoginForm;
 use Storage\Model\CommentForm;
-use Storage\Model\FormWithCaptcha;
-use Storage\Model\RegisterForm;
 use Storage\Helper\Pager;
 use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
-use Storage\Helper\HashGenerator;
-use Storage\Helper\PreviewGenerator;
-use Storage\Helper\FileUploadService;
-use Storage\Mapper\FileMapper;
-use Storage\Mapper\UserMapper;
-use Storage\Mapper\CommentMapper;
-use Storage\Auth\LoginManager;
 
 mb_internal_encoding('UTF-8');
 
 $loader = require '../vendor/autoload.php';
 $config = require '../config.php';
 
-$app = new Slim([
-        'view' => new Smarty(),
+$app = new \Slim\Slim([
+        'view' => new \Slim\Views\Smarty(),
         'templates.path' => '../views',
         'debug' => true,
 ]);
@@ -37,19 +24,19 @@ $app->container->singleton('connection', function () use ($config) {
     return $dbh;
 });
 $app->container->singleton('fileMapper', function () use ($app) {
-    return new FileMapper($app->connection);
+    return new \Storage\Mapper\FileMapper($app->connection);
 });
 $app->container->singleton('userMapper', function () use ($app) {
-    return new UserMapper($app->connection);
+    return new \Storage\Mapper\UserMapper($app->connection);
 });
 $app->container->singleton('commentMapper', function () use ($app) {
-    return new CommentMapper($app->connection);
+    return new \Storage\Mapper\CommentMapper($app->connection);
 });
 $app->container->singleton('loginManager', function () use ($app) {
-    return new LoginManager($app->userMapper);
+    return new \Storage\Auth\LoginManager($app->userMapper);
 });
 $app->container->singleton('fileUploadService', function () use ($app) {
-    return new FileUploadService($app->fileMapper);
+    return new \Storage\Helper\FileUploadService($app->fileMapper);
 });
 
 $token = Token::init();
@@ -77,7 +64,7 @@ $app->post('/logout', function () use ($app) {
 $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     header('Content-Type: application/json');
     $file = $app->fileMapper->findById($id);
-    ViewHelper::createPreviewIfNecessary($file);
+    ViewHelper::createPreviewChecker($file);
     if (!$file) {
         echo json_encode("{\"error\": \"File not found\"}");
     } else {
@@ -85,39 +72,12 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     }
 });
 
-$app->map('/login', function () use ($app) {
-    if ($app->request->isGet()) {
-        $app->render('upload_form.tpl');
-        $app->stop();
-    }
-    $loginForm = new LoginForm([
-        'email'=>$_POST['login']['email'],
-        'password'=>$_POST['login']['password'],
-    ]);
-    if ($loginForm->validate()) {
-        if ($app->loginManager->validateUser($loginForm)) {
-            $app->loginManager->authorizeUser();
-            $app->response->redirect('/login');
-        } else {
-            $loginForm->errorMessage = LoginForm::WRONG_PASSWORD;
-        }
-    }
-    $app->render(
-        'login.tpl', ['loginForm' => $loginForm]
-    );
-})->via('GET', 'POST');
-
 $app->map('/', function() use ($app) {
     if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
         $app->stop();
     }
     $isAjax = ($app->request->get('ajax') !== null) ? true : false;
-    if ($app->request->post('upload') === null) {
-        $uploadError = 'Invalid request: wrong form was sent';
-        $app->render('upload_form.tpl', ['uploadError'=>$uploadError]);
-        $app->stop();
-    }
     $error = $_FILES['upload']['error']['file1'];
     $name = $_FILES['upload']['name']['file1'];
     $tempName = $_FILES['upload']['tmp_name']['file1'];
@@ -132,7 +92,7 @@ $app->map('/', function() use ($app) {
         $author_id = ($app->loginManager->loggedUser)
                      ? $app->loginManager->loggedUser->id
                      : null;
-        $file = File::fromUser($name, $tempName, $author_id);
+        $file = \Storage\Model\File::fromUser($name, $tempName, $author_id);
         if ($app->fileUploadService->upload($file, $tempName)) {
             if ($isAjax) {
                 echo $file->id;
@@ -152,42 +112,35 @@ $app->map('/', function() use ($app) {
     }
 })->via('GET', 'POST');
 
-$app->get('/reg', function () use ($app) {
+$app->map('/login', function () use ($app) {
+    $loginForm = new \Storage\Model\LoginForm($app->request);
+    if ($app->request->isPost()) {
+        if ($app->loginManager->validateLoginForm($loginForm)) {
+            $app->loginManager->authorizeUser($loginForm->getUser());
+            $app->response->redirect('/');
+        }
+    }
+    $app->render('login.tpl', ['loginForm' => $loginForm]);
+})->via('GET', 'POST');
+
+$app->map('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerForm = new RegisterForm([
-        'errorMessage'=>'', 'login'=>'', 'email'=>'', 'password'=>'',
-    ]);
+    $registerForm = new \Storage\Model\RegisterForm($app->request);
+    if ($app->request->isPost()) {
+        if ($app->loginManager->validateRegisterForm($registerForm)) {
+            $app->userMapper->register($registerForm->getUser());
+            $app->loginManager->authorizeUser($registerForm->getUser());
+            $app->response->redirect('/');
+        }
+    }
     $app->render(
         'register_form.tpl', [
-            'title'=>$title,
-            'bookmark'=>$bookmark,
-            'registerForm'=>$registerForm,
+            'registerForm' => $registerForm,
+            'title' => $title,
+            'bookmark' => $bookmark,
     ]);
-});
-
-$app->post('/reg', function () use ($app) {  
-    $registerForm = new RegisterForm([
-        'login'=>$_POST['register']['login'],
-        'email'=>$_POST['register']['email'],
-        'password'=>$_POST['register']['password'],
-    ]);
-    if ($registerForm->validate()) {
-        $user = $registerForm->getUser();
-        $app->userMapper->register($user);
-        $app->loginManager->authorizeUser($user);
-        $app->response->redirect('/?register=ok');
-    } else {
-        $title = 'FileSharing &mdash; registration';
-        $bookmark = 'Sign up';
-        $app->render(
-            'register_form.tpl', [
-                'title'=>$title,
-                'bookmark'=>$bookmark,
-                'registerForm'=>$registerForm,
-        ]);
-    }
-});
+})->via('GET', 'POST');
 
 $app->get('/view', function() use ($app) {
     $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
@@ -222,38 +175,22 @@ $app->map('/view/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
-    ViewHelper::createPreviewIfNecessary($file);
-    $comments = $app->commentMapper->getComments($file->id);
-    foreach ($comments as $comment) {
-        $comment->level = Comment::getLevel($comment->materialized_path);
-        $comment->author_id = $app->userMapper->findById($comment->author_id);
-    }
-    $form = new CommentForm([
-        'contents'=>'','reply_id'=>'','file_id'=>'','author_id'=>''
-    ]);
+    ViewHelper::createPreviewChecker($file);
+    $pageViewService = new \Storage\Helper\PageViewService(
+        $app->commentMapper,
+        $app->userMapper
+    );
+    $commentsAndAuthors = $pageViewService->getCommentsAndAuthors($id);
+    $loggedUserID = $app->loginManager->loggedUser
+                ? $app->loginManager->loggedUser->id : null;
+    $commentForm = new CommentForm($app->request, $file->id, $loggedUserID);
     if ($app->request->isPost()) {
-        if (!$app->loginManager->loggedUser) {
-            $author_id = null;
-            $captcha = new FormWithCaptcha([
-                'captcha' => $_POST['comment_form']['captcha']
-            ]);
-            $captchaError = ($captcha->validate()) ? '' : $captcha->errorMessage;
-        } else {
-            $author_id = $app->loginManager->loggedUser->id;
-            $captchaError = '';
+        if (!$loggedUserID) {
+            $commentForm->setCaptchaRequired();
         }
-        $form = new CommentForm([
-                    'contents'=>$_POST['comment_form']['contents'],
-                    'reply_id'=>$_POST['comment_form']['reply_id'],
-                    'file_id'=>$id,
-                    'author_id'=>$author_id,
-                ]);
-        if ($form->validate()) $form->errorMessage = $captchaError;
-        if (!$form->errorMessage) {
-            $comment = new Comment;
-            $comment->fromForm($form, $app->commentMapper);
-            $app->commentMapper->save($comment);
-            $app->response->redirect('/view/'.$id);
+        if ($commentForm->validate()) {
+            $app->commentMapper->save($commentForm->getComment());
+            $app->redirect($app->request->getResourceUri());
         }
     }
     $app->render(
@@ -261,9 +198,9 @@ $app->map('/view/:id', function ($id) use ($app) {
             'file'=>$file,
             'title'=>$title,
             'bookmark'=>$bookmark,
-            'comments'=>$comments,
+            'commentsAndAuthors'=>$commentsAndAuthors,
             'reply'=>$reply,
-            'form'=>$form,
+            'form'=>$commentForm,
     ]);
 })->via('GET', 'POST');
 

@@ -1,16 +1,13 @@
 <?php
 namespace Storage\Model;
 
-class Form
+abstract class AbstractForm
 {
     public $errorMessage;
-    protected $fields = [];
 
-    public function __construct(array $fields)
+    public function setErrorMessage($errorMessage)
     {
-        foreach ($fields as $field=>$value) {
-            if (in_array($field, $this->fields)) $this->$field = trim($value);
-        }
+        $this->errorMessage = $errorMessage;
     }
 
     public function validate()
@@ -18,8 +15,8 @@ class Form
         $rules = $this->rules();
         foreach ($rules as $field=>$list) {
             foreach ($list as $rule=>$attributes) {
-                $rule = 'validate' . ucfirst($rule);
-                if ( !$this->$rule($field, $attributes) ) return false;
+                $validator = 'validate' . ucfirst($rule);
+                if ( !$this->$validator($field, $attributes) ) return false;
             }
         }
         return true;
@@ -56,7 +53,7 @@ class Form
     {
         $regExp = '/^[^@\s]+@[^@\s]+\.[^@\s]+$/ui';
         if (!preg_match($regExp, $this->$field)) {
-            $this->errorMessage = "Incorrect email";
+            $this->errorMessage = 'Incorrect email';
             return false;
         }
         return true;

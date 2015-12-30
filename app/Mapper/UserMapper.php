@@ -41,4 +41,28 @@ class UserMapper extends AbstractMapper
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
         return $sth->fetch();
     }
+
+    public function findAllByID(array $ids)
+    {
+        $ids = array_filter(array_unique($ids));
+        if (!$ids) {
+            return $ids;
+        }
+        $ids = implode(',', array_filter($ids));
+        $sql = "SELECT id, login, email FROM user WHERE id IN ({$ids})";
+        $sth = $this->connection->prepare($sql);
+        $sth->execute();
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        return $sth->fetchAll();
+    }
+
+    public function findAllByIDindexed(array $ids)
+    {
+        $users = $this->findAllByID($ids);
+        $indexedArray = [];
+        foreach ($users as $user) {
+            $indexedArray[$user->id] = $user;
+        }
+        return $indexedArray;
+    }
 }

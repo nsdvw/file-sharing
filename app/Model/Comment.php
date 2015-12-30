@@ -11,11 +11,11 @@ class Comment
     public $author_id;
     public $materialized_path;
     public $added;
-    public $level; // уровень вложенности, удобен для подстановки в класс css
+    public $level;
 
-    protected $mapper;
+    // protected $mapper;
 
-    public function fromForm(CommentForm $form, CommentMapper $mapper)
+/*    public function fromForm(CommentForm $form, CommentMapper $mapper)
     {
         $this->mapper = $mapper;
         $this->contents = $form->contents;
@@ -57,5 +57,5 @@ class Comment
     public static function getLevel($path)
     {
         return count(explode('.', $path));
-    }
+    }*/
 }

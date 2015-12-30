@@ -66,17 +66,17 @@
 </form>
 
 <div class="comments">
-    {foreach $comments as $comment}
-        <div class="comment level-{$comment->level}">
+    {foreach $commentsAndAuthors as $couple}
+        <div class="comment level-{$couple['comment']->level}">
             <div class="c-title">
                 <span class="c-author">
-                    {$comment->author_id->login|default:'Anonymous'|escape}
+                    {$couple['author']->login|default:'Anonymous'|escape}
                 </span>
-                <span class="c-added">{$comment->added}</span>
+                <span class="c-added">{$couple['comment']->added}</span>
             </div>
-            <div class="c-text">{$comment->contents|escape}</div>
+            <div class="c-text">{$couple['comment']->contents|escape}</div>
             <div class="c-reply">
-                <a href="{$baseUrl}/view/{$file->id}?reply={$comment->id}">Reply</a>
+                <a href="{$baseUrl}/view/{$file->id}?reply={$couple['comment']->id}">Reply</a>
             </div>
         </div>
     {/foreach}

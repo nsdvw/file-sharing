@@ -1,15 +1,43 @@
 <?php
 namespace Storage\Model;
 
-class LoginForm extends Form
+use Slim\Http\Request;
+use Storage\Helper\HashGenerator;
+
+class LoginForm extends AbstractForm implements LoginableInterface
 {
-    const WRONG_PASSWORD = 'wrong password';
+    const USER_NOT_FOUND = 'User not found';
+    const WRONG_PASSWORD = 'Wrong password';
+
+    private $user;
 
     public $email;
     public $password;
-    protected $fields = ['email', 'password'];
 
-    public function rules()
+    public function __construct(Request $request)
+    {
+        $loginData = $request->post('login');
+        $this->email = isset($loginData['email']) ? $loginData['email'] : null;
+        $this->password =
+            isset($loginData['password']) ? $loginData['password'] : null;
+    }
+
+    public function validatePassword($user = null)
+    {
+        if (!$this->user = $user) {
+            $this->errorMessage = self::USER_NOT_FOUND;
+            return false;
+        } elseif (
+            $user->hash !==
+            HashGenerator::generateHash($user->salt, $this->password)
+        ) {
+            $this->errorMessage = self::WRONG_PASSWORD;
+            return false;
+        }
+        return true;
+    }
+
+    protected function rules()
     {
         return [
             'email' =>
@@ -17,5 +45,10 @@ class LoginForm extends Form
             'password' =>
                 ['notEmpty' => true, 'minLength' => 5, 'maxLength' => 50],
         ];
+    }
+
+    public function getUser()
+    {
+        return $this->user;
     }
 }

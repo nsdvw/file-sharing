@@ -49,7 +49,7 @@ class ViewHelper
         return "/view/{$id}";
     }
 
-    public static function createPreviewIfNecessary(File $file)
+    public static function createPreviewChecker(File $file)
     {
         if ($file->isImage()) {
             $path = self::getPreviewPath($file->id);

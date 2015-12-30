@@ -16,7 +16,9 @@ abstract class AbstractForm
         foreach ($rules as $field=>$list) {
             foreach ($list as $rule=>$attributes) {
                 $validator = 'validate' . ucfirst($rule);
-                if ( !$this->$validator($field, $attributes) ) return false;
+                if ( !$this->$validator($field, $attributes) ) {
+                    return false;
+                }
             }
         }
         return true;

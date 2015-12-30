@@ -35,9 +35,6 @@ $app->container->singleton('commentMapper', function () use ($app) {
 $app->container->singleton('loginManager', function () use ($app) {
     return new \Storage\Auth\LoginManager($app->userMapper);
 });
-$app->container->singleton('fileUploadService', function () use ($app) {
-    return new \Storage\Helper\FileUploadService($app->fileMapper);
-});
 
 $token = Token::init();
 
@@ -81,6 +78,7 @@ $app->map('/', function() use ($app) {
     $error = $_FILES['upload']['error']['file1'];
     $name = $_FILES['upload']['name']['file1'];
     $tempName = $_FILES['upload']['tmp_name']['file1'];
+    $fileUploadService = new \Storage\Helper\FileUploadService($app->fileMapper);
     if ($error) {
         if ($isAjax) {
             echo 'error';
@@ -93,7 +91,7 @@ $app->map('/', function() use ($app) {
                      ? $app->loginManager->loggedUser->id
                      : null;
         $file = \Storage\Model\File::fromUser($name, $tempName, $author_id);
-        if ($app->fileUploadService->upload($file, $tempName)) {
+        if ($fileUploadService->upload($file, $tempName)) {
             if ($isAjax) {
                 echo $file->id;
             } else {
@@ -165,7 +163,6 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
     header('X-SendFile: ../'.ViewHelper::getUploadPath($id, $name));
     header('Content-Disposition: attachment');
-    $app->stop();
 });
 
 $app->map('/view/:id', function ($id) use ($app) {

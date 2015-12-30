@@ -1,10 +1,10 @@
 <?php
-namespace Storage\Model;
+namespace Storage\Form;
 
 use Slim\Http\Request;
 use Storage\Helper\HashGenerator;
 
-class LoginForm extends AbstractForm implements LoginableInterface
+class LoginForm extends AbstractForm
 {
     const USER_NOT_FOUND = 'User not found';
     const WRONG_PASSWORD = 'Wrong password';

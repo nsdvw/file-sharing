@@ -1,5 +1,5 @@
 <?php
-namespace Storage\Model;
+namespace Storage\Form;
 
 abstract class AbstractFormWithCaptcha
 {

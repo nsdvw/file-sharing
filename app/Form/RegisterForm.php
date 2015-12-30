@@ -1,10 +1,10 @@
 <?php
-namespace Storage\Model;
+namespace Storage\Form;
 
 use Slim\Http\Request;
 use Storage\Helper\HashGenerator;
 
-class RegisterForm extends AbstractForm implements RegisterableInterface
+class RegisterForm extends AbstractForm
 {
     const NOT_UNIQUE = 'User with such email is already exists';
 

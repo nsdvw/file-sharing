@@ -1,7 +1,8 @@
 <?php
-namespace Storage\Model;
+namespace Storage\Form;
 
 use Slim\Http\Request;
+use Storage\Model\Comment;
 
 class CommentForm extends AbstractFormWithCaptcha
 {

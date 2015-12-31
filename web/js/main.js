@@ -30,14 +30,12 @@ window.onload = function () {
 
         xhr.onreadystatechange = function () {
             if (this.readyState != 4) return;
-            if (this.responseText != 'error') {
-                notice.innerHTML = 'File has been uploaded successfully';
-                //console.log(this.responseText);
-                var id = this.responseText;
-                alert('File has been uploaded successfully');
-                window.location.href = decodeURI('/view/' + id);
+            var response = JSON.parse(this.responseText);
+            if (response.error !== null) {
+                error.innerHTML = response.error;
             } else {
-                error.innerHTML = 'Error. Try again later.';
+                var id = response.text;
+                window.location.href = decodeURI('/view/' + id);
             }
         };
 

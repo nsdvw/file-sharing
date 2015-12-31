@@ -6,6 +6,7 @@ use Storage\Form\CommentForm;
 use Storage\Helper\Pager;
 use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
+use Storage\Helper\JsonEncoder;
 
 mb_internal_encoding('UTF-8');
 
@@ -69,7 +70,65 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
     }
 });
 
-$app->map('/', function() use ($app) {
+$app->map('/', function () use ($app) {
+    $isAjax = ($app->request->get('ajax') !== null) ? true : false;
+    $author_id = $app->loginManager->getUserID();
+    $uploadForm = new \Storage\Form\UploadForm($app->request, $_FILES, $author_id);
+    $fileUploadService = new \Storage\Helper\FileUploadService($app->fileMapper);
+    if ($app->request->isPost()) {
+        if ($uploadForm->validate() and $fileUploadService->upload($uploadForm)) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo JsonEncoder::createResponse($uploadForm->getFile()->id);
+                $app->stop();
+            } else {
+                $app->response->redirect(
+                    ViewHelper::getDetailViewUrl($uploadForm->getFile()->id)
+                );
+            }
+        } else {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo JsonEncoder::createResponse(null, $uploadForm->errorMessage);
+                $app->stop();
+            }
+        }
+    }
+    $app->render('upload_form.tpl', ['uploadForm' => $uploadForm]);
+})->via('GET', 'POST');
+
+/*$app->map('/', function () use ($app) {
+    $isAjax = ($app->request->get('ajax') !== null) ? true : false;
+    $author_id = $app->loginManager->getUserID();
+    $uploadForm = new \Storage\Form\UploadForm(
+        $app->request,
+        $_FILES,
+        $author_id,
+        $isAjax
+    );
+    $fileUploadService = new \Storage\Helper\FileUploadService($app->fileMapper);
+    if ($app->request->isPost()) {
+        if ($uploadForm->validate()) {
+            if ($fileUploadService->upload($uploadForm)) {
+                if ($isAjax) {
+                    echo $uploadForm->getFile()->id;
+                } else {
+                    $app->response->redirect('/view/'.$uploadForm->getFile()->id);
+                }
+            }
+        }
+    }
+
+   else {
+        if ($isAjax) {
+            echo 'error';
+        } else {
+            $app->render('upload_form.tpl', ['uploadError' => $uploadError]);
+        }
+    }
+})->via('GET', 'POST');*/
+
+/*$app->map('/', function() use ($app) {
     if ($app->request->isGet()) {
         $app->render('upload_form.tpl');
         $app->stop();
@@ -108,7 +167,7 @@ $app->map('/', function() use ($app) {
             }
         }
     }
-})->via('GET', 'POST');
+})->via('GET', 'POST');*/
 
 $app->map('/login', function () use ($app) {
     $loginForm = new \Storage\Form\LoginForm($app->request);

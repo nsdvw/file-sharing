@@ -2,6 +2,7 @@
 namespace Storage\Mapper;
 
 use Storage\Helper\Pager;
+use Storage\Helper\JsonEncoder;
 use Storage\Model\MediaInfo;
 use Storage\Model\File;
 
@@ -19,7 +20,7 @@ class FileMapper extends AbstractMapper
         $sth->bindValue(':author_id', $file->author_id, \PDO::PARAM_INT);
         $sth->bindValue(':size', $file->size, \PDO::PARAM_INT);
         $sth->bindValue(':mime_type', $file->mime_type, \PDO::PARAM_STR);
-        $mediaInfo = json_encode($file->mediaInfo);
+        $mediaInfo = JsonEncoder::encode($file->mediaInfo);
         $sth->bindValue(':mediaInfo', $mediaInfo, \PDO::PARAM_STR);
         $sth->execute();
         $file->id = $this->connection->lastInsertId();
@@ -27,8 +28,9 @@ class FileMapper extends AbstractMapper
 
     public function updateCounter($id)
     {
-        $sql = "UPDATE file SET download_counter = download_counter + 1
-        WHERE id = :id";
+        $sql = "UPDATE file
+                SET download_counter = download_counter + 1
+                WHERE id = :id";
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':id', $id, \PDO::PARAM_INT);
         $sth->execute();
@@ -47,7 +49,7 @@ class FileMapper extends AbstractMapper
         $list = $sth->fetchAll(\PDO::FETCH_CLASS, '\Storage\Model\File');
         foreach ($list as $row) {
             $row->mediaInfo = MediaInfo::fromDataBase(
-                json_decode($row->mediaInfo)
+                JsonEncoder::decode($row->mediaInfo)
             );
         }
         return $list;
@@ -64,8 +66,11 @@ class FileMapper extends AbstractMapper
         $sth->execute();
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\File');
         $row = $sth->fetch();
+        if ($row == null) {
+            return $row;
+        }
         $row->mediaInfo = MediaInfo::fromDataBase(
-            json_decode($row->mediaInfo)
+            JsonEncoder::decode($row->mediaInfo)
         );
         return $row;
     }

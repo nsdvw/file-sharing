@@ -3,6 +3,7 @@ namespace Storage\Form;
 
 use Slim\Http\Request;
 use Storage\Helper\HashGenerator;
+use Storage\Model\User;
 
 class RegisterForm extends AbstractForm
 {
@@ -13,8 +14,6 @@ class RegisterForm extends AbstractForm
     public $password;
 
     private $user;
-
-    protected $fields = ['login', 'email', 'password'];
 
     public function __construct(Request $request)
     {

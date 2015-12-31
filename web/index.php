@@ -2,7 +2,7 @@
 namespace Storage;
 
 use Storage\Model\Comment;
-use Storage\Model\CommentForm;
+use Storage\Form\CommentForm;
 use Storage\Helper\Pager;
 use Storage\Helper\Token;
 use Storage\Helper\ViewHelper;
@@ -111,7 +111,7 @@ $app->map('/', function() use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
-    $loginForm = new \Storage\Model\LoginForm($app->request);
+    $loginForm = new \Storage\Form\LoginForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateLoginForm($loginForm)) {
             $app->loginManager->authorizeUser($loginForm->getUser());
@@ -124,7 +124,7 @@ $app->map('/login', function () use ($app) {
 $app->map('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerForm = new \Storage\Model\RegisterForm($app->request);
+    $registerForm = new \Storage\Form\RegisterForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateRegisterForm($registerForm)) {
             $app->userMapper->register($registerForm->getUser());

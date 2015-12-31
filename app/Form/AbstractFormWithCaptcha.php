@@ -10,7 +10,7 @@ abstract class AbstractFormWithCaptcha extends AbstractForm
         $this->captchaRequired = $boolean;
     }
 
-    public function validateCaptcha($field)
+    protected function validateCaptcha($field)
     {
         session_start();
         if (!$this->captchaRequired) {

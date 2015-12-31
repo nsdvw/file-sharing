@@ -5,11 +5,6 @@ abstract class AbstractForm
 {
     public $errorMessage;
 
-    public function setErrorMessage($errorMessage)
-    {
-        $this->errorMessage = $errorMessage;
-    }
-
     public function validate()
     {
         $rules = $this->rules();
@@ -24,7 +19,7 @@ abstract class AbstractForm
         return true;
     }
 
-    public function validateNotEmpty($field, $flag = true)
+    protected function validateNotEmpty($field, $flag = true)
     {
         if (empty($this->$field)) {
             $this->errorMessage = "$field can't be empty";
@@ -33,7 +28,7 @@ abstract class AbstractForm
         return true;
     }
 
-    public function validateMaxLength($field, $maxLength)
+    protected function validateMaxLength($field, $maxLength)
     {
         if (mb_strlen($this->$field) > $maxLength) {
             $this->errorMessage = "$field must be maximum $maxLength symbols";
@@ -42,7 +37,7 @@ abstract class AbstractForm
         return true;
     }
 
-    public function validateMinLength($field, $minLength)
+    protected function validateMinLength($field, $minLength)
     {
         if (mb_strlen($this->$field) < $minLength) {
             $this->errorMessage = "$field must be minimum $minLength symbols";
@@ -51,7 +46,7 @@ abstract class AbstractForm
         return true;
     }
 
-    public function validateIsEmail($field, $flag = true)
+    protected function validateIsEmail($field, $flag = true)
     {
         $regExp = '/^[^@\s]+@[^@\s]+\.[^@\s]+$/ui';
         if (!preg_match($regExp, $this->$field)) {

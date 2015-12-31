@@ -4,12 +4,12 @@ namespace Storage\Auth;
 use Storage\Mapper\UserMapper;
 use Storage\Model\User;
 use Storage\Helper\HashGenerator;
-use Storage\Model\LoginForm;
-use Storage\Model\RegisterForm;
+use Storage\Form\LoginForm;
+use Storage\Form\RegisterForm;
 
 class LoginManager
 {
-    protected $mapper;
+    private $mapper;
 
     public $loggedUser = null;
 

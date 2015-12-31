@@ -14,8 +14,6 @@ class CommentForm extends AbstractFormWithCaptcha
 
     private $comment;
 
-    protected $fields = ['contents', 'author_id', 'file_id', 'reply_id', 'captcha'];
-
     public function __construct(Request $request, $file_id, $author_id = null)
     {
         $commentData = $request->post('comment_form');

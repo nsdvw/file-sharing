@@ -8,11 +8,11 @@
         <div class="input-button">+</div>
         <input type="file" required id="file1" name="upload[file1]">
         <div class="agree"><label>
-            <input type="checkbox" name="upload[agree]" checked id="agreeBox">
+            <input type="checkbox" name="upload[agree]" id="agreeBox" checked>
             Agree with TOS</label>
         </div>
         <input type="submit" value="Upload" class="big-button" id="send">
-        <div class="error" id="upload-error">{$uploadError|default:''}</div>
+        <div class="error" id="upload-error">{$uploadForm->errorMessage|default:''}</div>
     </form>
     <div id="progressBox" class="progressBox">
         <div id="progressBar" class="progressBar"></div>

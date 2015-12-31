@@ -14,7 +14,7 @@ class File
     public $upload_time;
     public $download_counter;
 
-    protected function getSafeFields()
+    private function getPublicFields()
     {
         return [
             'id',
@@ -47,18 +47,6 @@ class File
     public static function jPlayerTypes()
     {
         return array_merge(self::$audioTypes, self::$videoTypes);
-    }
-
-    public function fromUser($name, $tmp_name, $author_id = null)
-    {
-        $file = new self;
-        $file->name = $name;
-        $file->author_id = $author_id;
-        $file->size = filesize($tmp_name);
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $file->mime_type = $finfo->file($tmp_name);
-        $file->mediaInfo = MediaInfo::fromFile($tmp_name);
-        return $file;
     }
 
     public function isImage()
@@ -111,7 +99,7 @@ class File
             } else {
                 if ($propertyName === 'size')
                     $propertyValue = ViewHelper::formatSize($propertyValue);
-                if ( in_array($propertyName, $this->getSafeFields()) )
+                if ( in_array($propertyName, $this->getPublicFields()) )
                     $array[$propertyName] = $propertyValue;
             }
         }

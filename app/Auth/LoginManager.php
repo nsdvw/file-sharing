@@ -60,4 +60,20 @@ class LoginManager
         setcookie('id', $user->id, time() + 3600*24*7);
         setcookie('hash', $user->hash, time() + 3600*24*7);
     }
+
+    public function getUserID()
+    {
+        if ($this->isLogged()) {
+            return $this->loggedUser->id;
+        }
+        return null;
+    }
+
+    public function isLogged()
+    {
+        if ($this->loggedUser !== null) {
+            return true;
+        }
+        return false;
+    }
 }

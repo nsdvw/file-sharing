@@ -1,0 +1,43 @@
+{% extends "main.twig" %}
+
+{% block title %} FileSharing &mdash; upload file {% endblock title %}
+{% block head %}
+  <link rel="stylesheet" href="/css/main.css">
+  <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
+  <script src="/js/lib.js"></script>
+<script src="/js/main.js"></script>
+{% endblock head %}
+
+{% block uploadBookmarkClass %}activeBookmark{% endblock uploadBookmarkClass %}
+{% block filesBookmarkClass %}inactiveBookmark{% endblock filesBookmarkClass %}
+{% block tosBookmarkClass %}inactiveBookmark{% endblock tosBookmarkClass %}
+{% block signupBookmarkClass %}inactiveBookmark{% endblock signupBookmarkClass %}
+{% block accountBookmarkClass %}inactiveBookmark{% endblock accountBookmarkClass %}
+
+{% block content %}
+  <div id="container-narrow">
+    {% include "logo1.twig" %}
+    <form class="upload-form" name="upload" method="post" action="/"
+      enctype="multipart/form-data">
+      <div class="input-file" id="fakeInputFile">
+          <span class="input-file-name" id="inputFileName"></span>
+      </div>
+      <div class="input-button">+</div>
+      <input type="file" required id="file1" name="upload[file1]">
+      <div class="agree"><label>
+          <input type="checkbox" name="upload[agree]" id="agreeBox" checked>
+          Agree with TOS</label>
+      </div>
+      <input type="submit" value="Upload" class="big-button" id="send">
+      <div class="error" id="upload-error">
+        {{ uploadForm.errorMessage|default('') }}
+      </div>
+    </form>
+    <div id="progressBox" class="progressBox">
+        <div id="progressBar" class="progressBar"></div>
+    </div>
+    <div id="notice"></div>
+  </div>
+{% endblock content %}

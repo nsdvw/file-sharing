@@ -14,10 +14,10 @@ $loader = require '../vendor/autoload.php';
 $config = require '../config.php';
 
 $app = new \Slim\Slim([
-        'view' => new \Slim\Views\Smarty(),
+        'view' => new \Slim\Views\Twig(),
         'templates.path' => '../views',
-        'debug' => true,
 ]);
+// $app->view()->parserOptions = ['cache' => '../twig_cache'];
 
 $app->container->singleton('connection', function () use ($config) {
     $dbh = new \PDO( $config['conn'], $config['user'], $config['pass'] );
@@ -38,14 +38,6 @@ $app->container->singleton('loginManager', function () use ($app) {
 });
 
 $token = Token::init();
-
-$app->view->appendData([
-    'baseUrl' => $app->request->getUrl(),
-    'loginManager' => $app->loginManager,
-    'title'=>'FileSharing &mdash; upload file',
-    'bookmark'=>'Upload',
-    'token'=>$token,
-]);
 
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';
@@ -94,7 +86,7 @@ $app->map('/', function () use ($app) {
             }
         }
     }
-    $app->render('upload_form.tpl', ['uploadForm' => $uploadForm]);
+    $app->render('upload_form.twig', ['uploadForm' => $uploadForm]);
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
@@ -153,8 +145,6 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
 });
 
 $app->map('/view/:id', function ($id) use ($app) {
-    $title = 'FileSharing &mdash; file description';
-    $bookmark = 'Files';
     $reply = $app->request->get('reply') ? intval($app->request->get('reply')) : '';
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
@@ -178,10 +168,7 @@ $app->map('/view/:id', function ($id) use ($app) {
         }
     }
     $app->render(
-        'file_info.tpl', [
-            'file'=>$file,
-            'title'=>$title,
-            'bookmark'=>$bookmark,
+        'file_info.twig', [
             'commentsAndAuthors'=>$commentsAndAuthors,
             'reply'=>$reply,
             'form'=>$commentForm,

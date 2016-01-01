@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock title %}</title>
+  {% block head %}{% endblock head %}
+</head>
+<body>
+  <div id="wrapper">
+    <header>
+      <div id="mainMenu">
+        <div class="menuItems">
+          <div class={% block uploadBookmarkClass %}{% endblock uploadBookmarkClass %}>
+            <a href="/">Upload</a>
+          </div>
+          <div class={% block filesBookmarkClass %}{% endblock filesBookmarkClass %}>
+            <a href="/view">Files</a>
+          </div>
+          {% if loginManager.loggedUser is null %}
+          <div class={% block tosBookmarkClass %}{% endblock tosBookmarkClass %}>TOS</div>
+          <div class={% block signupBookmarkClass %}{% endblock signupBookmarkClass %}>
+            <a href="/reg">Sign up</a>
+          </div>
+          {% else %}
+          <div class={% block accountBookmarkClass %}{% endblock accountBookmarkClass %}>
+            Account
+          </div>
+          <div class="inactiveBookmark">
+            <form action="/logout" method="POST" name="logoutForm" class="logout-form">
+              <input type="submit" name="logoutForm[logout]" value="Logout">
+              <input type="hidden" name="logoutForm[csrf_token]"
+                value="{{ token|default('') }}">
+            </form>
+          </div>
+          {% endif %}
+          <div class="clearDummy"></div>
+        </div>
+      </div>
+    </header>
+    {% if loginManager.loggedUser is null %}
+    <div class="authentication">
+      <form action="/login" method="post" name="login" class="loginForm">
+        <input type="text" name="login[email]"
+            placeholder="email" value="{{ loginForm.email|default('') }}">
+        <input type="password" name="login[password]" placeholder="password"
+            value="{{ loginForm.password|default('') }}">
+        <input type="submit" value="Login" class="small-button">
+        <div class="loginError">{{ loginForm.errorMessage|default('') }}</div>
+      </form>
+    </div>
+    {% endif %}
+    
+    {% block content %}{% endblock content %}
+
+  </div>
+  <footer>
+    <div class="footerContent">
+      <div class="footerLinks">
+          <a href="/">Main</a> | <a href="/view">Files</a>
+          | TOS | Sign Up | Premium | About
+      </div>
+      <div class="copyright">Created by Me, 2014-{{"now"|date("Y")}} &copy;
+        All rights reserved
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

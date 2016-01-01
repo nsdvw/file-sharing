@@ -3,26 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}{% endblock title %}</title>
-  {% block head %}{% endblock head %}
+  {% block head %}
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/js/lib.js"></script>
+  {% endblock head %}
 </head>
 <body>
   <div id="wrapper">
     <header>
       <div id="mainMenu">
         <div class="menuItems">
-          <div class={% block uploadBookmarkClass %}{% endblock uploadBookmarkClass %}>
+          <div class="{% block uploadBookmarkClass %}{% endblock uploadBookmarkClass %}">
             <a href="/">Upload</a>
           </div>
-          <div class={% block filesBookmarkClass %}{% endblock filesBookmarkClass %}>
+          <div class="{% block filesBookmarkClass %}{% endblock filesBookmarkClass %}">
             <a href="/view">Files</a>
           </div>
           {% if loginManager.loggedUser is null %}
-          <div class={% block tosBookmarkClass %}{% endblock tosBookmarkClass %}>TOS</div>
-          <div class={% block signupBookmarkClass %}{% endblock signupBookmarkClass %}>
+          <div class="{% block tosBookmarkClass %}{% endblock tosBookmarkClass %}">TOS</div>
+          <div class="{% block signupBookmarkClass %}{% endblock signupBookmarkClass %}">
             <a href="/reg">Sign up</a>
           </div>
           {% else %}
-          <div class={% block accountBookmarkClass %}{% endblock accountBookmarkClass %}>
+          <div class="{% block accountBookmarkClass %}{% endblock accountBookmarkClass %}">
             Account
           </div>
           <div class="inactiveBookmark">

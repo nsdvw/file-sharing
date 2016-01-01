@@ -18,6 +18,13 @@ $app = new \Slim\Slim([
         'templates.path' => '../views',
 ]);
 // $app->view()->parserOptions = ['cache' => '../twig_cache'];
+$function = new \Twig_SimpleFunction(
+    'callStaticMethod',
+    function ($class, $method, array $args) {
+        return call_user_func_array("{$class}::{$method}", $args);
+});
+$app->view()->getInstance()->addFunction($function);
+$app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Text());
 
 $app->container->singleton('connection', function () use ($config) {
     $dbh = new \PDO( $config['conn'], $config['user'], $config['pass'] );
@@ -172,6 +179,7 @@ $app->map('/view/:id', function ($id) use ($app) {
             'commentsAndAuthors'=>$commentsAndAuthors,
             'reply'=>$reply,
             'form'=>$commentForm,
+            'file'=>$file,
     ]);
 })->via('GET', 'POST');
 

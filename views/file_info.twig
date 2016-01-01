@@ -1,0 +1,104 @@
+{% extends "main.twig" %}
+
+{% block title %} FileSharing &mdash; file description {% endblock title %}
+{% block head %}
+    {{ parent() }}
+    <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
+    <script src="/js/detail_view.js"></script>
+{% endblock head %}
+
+{% block uploadBookmarkClass %}inactiveBookmark{% endblock uploadBookmarkClass %}
+{% block filesBookmarkClass %}activeBookmark{% endblock filesBookmarkClass %}
+{% block tosBookmarkClass %}inactiveBookmark{% endblock tosBookmarkClass %}
+{% block signupBookmarkClass %}inactiveBookmark{% endblock signupBookmarkClass %}
+{% block accountBookmarkClass %}inactiveBookmark{% endblock accountBookmarkClass %}
+
+{% block content %}
+<div id="container-wide">
+<div class="caption">File description</div>
+<table class="description">
+    <tr>
+        <td class="property">Name</td>
+        <td class="value">{{ file.name | truncate(50) }}</td>
+    </tr>
+    <tr>
+        <td class="property">File type</td>
+        <td class="value">{{ file.mime_type }}</td>
+    </tr>
+    {% if file.isImage() %}
+        {% include "image_description.twig" %}
+    {% elseif file.isVideo() %}
+        {% include "video_description.twig" %}
+    {% elseif file.isAudio() %}
+        {% include "audio_description.twig" %}
+    {% endif %}
+    <tr>
+        <td class="property">Downloads</td>
+        <td class="value" id="counter">{{ file.download_counter }}</td>
+    </tr>
+    <tr>
+        <td class="property">Uploaded</td>
+        <td class="value">{{ file.upload_time }}</td>
+    </tr>
+    <tr>
+        <td class="property">Size</td>
+        <td class="value">
+            {{ callStaticMethod('\\Storage\\Helper\\ViewHelper', 'formatSize', [file.size]) }}
+        </td>
+    </tr>
+    <tr>
+        <td class="property"></td>
+        <td class="value">
+            <a href="/{{callStaticMethod(
+                '\\Storage\\Helper\\ViewHelper',
+                'getDownLoadUrl',
+                [file.id, file.name])}}"
+                id="dowloadLink">download</a>
+        </td>
+    </tr>
+</table>
+
+{% if file.isImage() %}
+    {% include "image_preview.twig" %}
+{# {% elseif file.isVideo() %}
+    {% include "video_player.twig" %}
+{% elseif file.isAudio() %}
+    {% include "audio_player.twig" %} #}
+{% endif %}
+
+<form action="" method="POST" name="comment_form" class="comment-form">
+    <div>
+        <textarea name="comment_form[contents]" placeholder="Leave a comment..."
+            class="comment-area"></textarea>
+        <input type="hidden" name="comment_form[reply_id]" value="{{ reply }}">
+    </div>
+    <div class="c-error">{{ form.errorMessage }}</div>
+    {% if loginManager.islogged() %}
+        <div class="c-captcha">
+            <img src="/image/captcha_generator.php" alt="captcha"><br>
+            <input type="text" name="comment_form[captcha]">
+        </div>
+    {% endif %}
+    <input type="submit" class="small-button" value="send">
+</form>
+
+<div class="comments">
+    {% for couple in commentsAndAuthors %}
+        <div class="comment level-{{couple['comment'].level}}">
+            <div class="c-title">
+                <span class="c-author">
+                    {{ couple['author'].login|default('Anonymous') }}
+                </span>
+                <span class="c-added">{{ couple['comment'].added }}</span>
+            </div>
+            <div class="c-text">{{ couple['comment'].contents }}</div>
+            <div class="c-reply">
+                <a href="/view/{{file.id}}?reply={{couple['comment'].id}}">Reply</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+</div>
+{% endblock content %}

@@ -1,0 +1,14 @@
+html, body {
+    height: 100%;
+}
+.wrapper-1 {
+    min-height: 100%;
+    margin-bottom: -80px;
+}
+.wrapper-2 {
+    padding-bottom: 80px;
+}
+.footer {
+    text-align: center;
+    padding: 15px 0;
+}

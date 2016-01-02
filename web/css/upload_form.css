@@ -1,0 +1,32 @@
+#uploadForm {
+    max-width: 800px;
+    margin: 100px auto 0px;
+    text-align: center;
+}
+#uploadForm .form-group {
+    margin: 5px auto 15px;
+}
+#uploadForm .text-danger {
+    font-weight: bold;
+}
+.box label {
+    font-size: 16px;
+    color: #333;
+    border: 1px dashed #999;
+    margin-bottom: 20px;
+}
+.box .help-block {
+    padding: 30px;
+}
+.box label:hover, input[type="file"]:focus + label {
+    color: #616161;
+}
+.box label .glyphicon.glyphicon-upload {
+    padding-right: 0.6rem;
+    font-size: 1.5rem;
+}
+@media (max-width: 768px) {
+    #uploadForm {
+        margin: 0 auto;
+    }
+}

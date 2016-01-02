@@ -2,17 +2,62 @@
 
 {% block title %} FileSharing &mdash; file description {% endblock title %}
 {% block head %}
-    {{ parent() }}
-    <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
-    <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
-    <script src="/js/detail_view.js"></script>
+  {{ parent() }}
+  <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
+  <link rel="stylesheet" href="/css/file-description.css">
 {% endblock head %}
 
-{% block uploadBookmarkClass %}inactiveBookmark{% endblock uploadBookmarkClass %}
-{% block filesBookmarkClass %}activeBookmark{% endblock filesBookmarkClass %}
-{% block tosBookmarkClass %}inactiveBookmark{% endblock tosBookmarkClass %}
-{% block signupBookmarkClass %}inactiveBookmark{% endblock signupBookmarkClass %}
-{% block accountBookmarkClass %}inactiveBookmark{% endblock accountBookmarkClass %}
+{% block content %}
+  <div class="container">
+    <div class="file-description table-responsive panel panel-primary">
+      <div class="panel-heading">File description</div>
+      <table class="table">
+        <tr>
+          <td>Name</td>
+          <td>{{ file.name|truncate(50) }}</td>
+        </tr>
+        <tr>
+          <td>File type</td>
+          <td>{{ file.mime_type }}</td>
+        </tr>
+        <tr>
+          <td>Downloads</td>
+          <td>{{ file.download_counter }}</td>
+        </tr>
+        <tr>
+          <td>Uploaded</td>
+          <td>{{ file.upload_time }}</td>
+        </tr>
+        <tr>
+          <td>Size</td>
+          <td>{{ callStaticMethod('\\Storage\\Helper\\ViewHelper', 'formatSize', [file.size]) }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <a href="/{{callStaticMethod(
+                    '\\Storage\\Helper\\ViewHelper',
+                    'getDownLoadUrl',
+                    [file.id, file.name])}}"
+                    id="dowloadLink">download
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div><!-- div.table-responsive -->
+  </div><!-- div.container -->
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+{#
 
 {% block content %}
 <div id="container-wide">
@@ -61,10 +106,10 @@
 
 {% if file.isImage() %}
     {% include "image_preview.twig" %}
-{# {% elseif file.isVideo() %}
+{% elseif file.isVideo() %}
     {% include "video_player.twig" %}
 {% elseif file.isAudio() %}
-    {% include "audio_player.twig" %} #}
+    {% include "audio_player.twig" %}
 {% endif %}
 
 <form action="" method="POST" name="comment_form" class="comment-form">
@@ -102,3 +147,5 @@
 
 </div>
 {% endblock content %}
+
+#}

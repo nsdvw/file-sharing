@@ -4,21 +4,31 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "72868a3f078f4e3d57cea1db2098b615",
-    "content-hash": "5fafffb88923cca9c1e4b86aea8e28c4",
+    "hash": "9c14fa7cd77f0346bf4eeb574f7a55c1",
+    "content-hash": "1d63e5035675af251f6b4f05903bb1ca",
     "packages": [
         {
+            "name": "codepo8/CustomFileInputs",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codepo8/CustomFileInputs",
+                "reference": "master"
+            },
+            "type": "library"
+        },
+        {
             "name": "components/jquery",
-            "version": "2.1.4",
+            "version": "1.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/jquery.git",
-                "reference": "7b1d1104656a092423fbfba13c5920e9bbba290c"
+                "reference": "e7c492908a9746439e20b19a671c5001e8832732"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/7b1d1104656a092423fbfba13c5920e9bbba290c",
-                "reference": "7b1d1104656a092423fbfba13c5920e9bbba290c",
+                "url": "https://api.github.com/repos/components/jquery/zipball/e7c492908a9746439e20b19a671c5001e8832732",
+                "reference": "e7c492908a9746439e20b19a671c5001e8832732",
                 "shasum": ""
             },
             "type": "component",
@@ -29,9 +39,9 @@
                     ],
                     "files": [
                         "jquery.min.js",
-                        "jquery.min.map",
                         "jquery-migrate.js",
-                        "jquery-migrate.min.js"
+                        "jquery-migrate.min.js",
+                        "jquery.min.map"
                     ]
                 }
             },
@@ -47,20 +57,20 @@
             ],
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
-            "time": "2015-05-08 05:04:47"
+            "time": "2015-06-08 13:35:17"
         },
         {
             "name": "james-heinrich/getid3",
-            "version": "v1.9.9",
+            "version": "v1.9.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JamesHeinrich/getID3.git",
-                "reference": "c34fb84e295477cc1865b2ea4dad2d13452058d1"
+                "reference": "da7c657f2bcc865ef1bef53cf90c2638f344469b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/c34fb84e295477cc1865b2ea4dad2d13452058d1",
-                "reference": "c34fb84e295477cc1865b2ea4dad2d13452058d1",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/da7c657f2bcc865ef1bef53cf90c2638f344469b",
+                "reference": "da7c657f2bcc865ef1bef53cf90c2638f344469b",
                 "shasum": ""
             },
             "require": {
@@ -83,7 +93,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2014-12-18 16:39:41"
+            "time": "2015-12-24 10:50:02"
         },
         {
             "name": "slim/slim",
@@ -183,6 +193,57 @@
                 "templating"
             ],
             "time": "2014-12-09 23:48:51"
+        },
+        {
+            "name": "twbs/bootstrap",
+            "version": "v3.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "reference": "81df608a40bf0629a1dc08e584849bb1e43e0b7a",
+                "shasum": ""
+            },
+            "replace": {
+                "twitter/bootstrap": "self.version"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jacob Thornton",
+                    "email": "jacobthornton@gmail.com"
+                },
+                {
+                    "name": "Mark Otto",
+                    "email": "markdotto@gmail.com"
+                }
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "homepage": "http://getbootstrap.com",
+            "keywords": [
+                "JS",
+                "css",
+                "framework",
+                "front-end",
+                "less",
+                "mobile-first",
+                "responsive",
+                "web"
+            ],
+            "time": "2015-11-24 19:37:05"
         },
         {
             "name": "twig/extensions",

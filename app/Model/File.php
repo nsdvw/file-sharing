@@ -49,6 +49,11 @@ class File
         return array_merge(self::$audioTypes, self::$videoTypes);
     }
 
+    public static function jPlayerMediaType($fileType)
+    {
+        return array_search( $fileType, self::jPlayerTypes() );
+    }
+
     public function isImage()
     {
         $types = ['image/jpeg', 'image/png', 'image/gif'];

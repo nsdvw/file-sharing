@@ -4,7 +4,6 @@
 {% block head %}
   {{ parent() }}
   <link type="text/css" href="/vendor-css/jplayer.blue.monday.min.css" rel="stylesheet">
-  <!-- <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet"> -->
   <script type="text/javascript" src="/vendor-js/jquery.jplayer.min.js"></script>
   <link rel="stylesheet" href="/css/file-description.css">
 {% endblock head %}
@@ -63,6 +62,8 @@
         {% include "image_preview.twig" %}
     {% elseif file.isVideo() %}
         {% include "video_player.twig" %}
+    {% elseif file.isAudio() %}
+        {% include "audio_player.twig" %}
     {% endif %}
 
   </div><!-- div.container -->

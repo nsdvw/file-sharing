@@ -1,6 +1,12 @@
 .file-description {
-    margin: auto;
+    margin: 30px auto;
     float: none;
+}
+.file-description img {
+    margin: 5px auto;
+}
+#jp_container_1 {
+    margin: auto;
 }
 @media (min-width: 992px) {
     .file-description {
@@ -17,4 +23,3 @@
         width: 100%;
     }
 }
-

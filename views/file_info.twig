@@ -3,8 +3,9 @@
 {% block title %} FileSharing &mdash; file description {% endblock title %}
 {% block head %}
   {{ parent() }}
-  <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet">
-  <script type="text/javascript" src="/js/jquery.jplayer.min.js"></script>
+  <link type="text/css" href="/vendor-css/jplayer.blue.monday.min.css" rel="stylesheet">
+  <!-- <link type="text/css" href="/css/jplayer.pink.flag.min.css" rel="stylesheet"> -->
+  <script type="text/javascript" src="/vendor-js/jquery.jplayer.min.js"></script>
   <link rel="stylesheet" href="/css/file-description.css">
 {% endblock head %}
 
@@ -21,6 +22,13 @@
           <td>File type</td>
           <td>{{ file.mime_type }}</td>
         </tr>
+        {% if file.isImage() %}
+            {% include "image_description.twig" %}
+        {% elseif file.isVideo() %}
+            {% include "video_description.twig" %}
+        {% elseif file.isAudio() %}
+            {% include "audio_description.twig" %}
+        {% endif %}
         <tr>
           <td>Downloads</td>
           <td>{{ file.download_counter }}</td>
@@ -31,7 +39,11 @@
         </tr>
         <tr>
           <td>Size</td>
-          <td>{{ callStaticMethod('\\Storage\\Helper\\ViewHelper', 'formatSize', [file.size]) }}</td>
+          <td>{{ callStaticMethod(
+            '\\Storage\\Helper\\ViewHelper',
+            'formatSize',
+            [file.size]) }}
+          </td>
         </tr>
         <tr>
           <td></td>
@@ -46,6 +58,13 @@
         </tr>
       </table>
     </div><!-- div.table-responsive -->
+
+    {% if file.isImage() %}
+        {% include "image_preview.twig" %}
+    {% elseif file.isVideo() %}
+        {% include "video_player.twig" %}
+    {% endif %}
+
   </div><!-- div.container -->
 {% endblock content %}
 

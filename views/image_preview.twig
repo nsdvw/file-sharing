@@ -1,15 +1,15 @@
-<div class="caption">Image preview</div>
-<div class="image-preview">
+<div class="file-description panel panel-primary">
+    <div class="panel-heading">Image preview</div>
     <a href="/{{callStaticMethod(
         '\\Storage\\Helper\\ViewHelper',
         'getUploadPath',
         [file.id, file.name]) }}"
         target="_blank">
-        <img src="../{{callStaticMethod(
+        <img src="/{{callStaticMethod(
             '\\Storage\\Helper\\ViewHelper',
             'getPreviewPath',
             [file.id]) }}"
-            alt="image">
-        <br>in full resolution
+            alt="image preview"
+            class="img-responsive center-block img-rounded">
     </a>
 </div>

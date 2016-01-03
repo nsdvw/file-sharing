@@ -16,3 +16,6 @@ html, body {
 .navbar-inverse .navbar-brand {
     color: #ddd;
 }
+.navbar.navbar-inverse.navbar-static-top {
+    margin-bottom: 0;
+}

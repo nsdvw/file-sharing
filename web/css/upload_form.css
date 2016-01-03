@@ -9,6 +9,11 @@
 #uploadForm .text-danger {
     font-weight: bold;
 }
+#uploadForm .progress {
+    width: 400px;
+    margin: auto;
+    display: none;
+}
 .box label {
     font-size: 16px;
     color: #333;

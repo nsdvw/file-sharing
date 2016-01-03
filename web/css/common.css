@@ -12,3 +12,7 @@ html, body {
     text-align: center;
     padding: 15px 0;
 }
+.navbar-inverse .navbar-nav>li>a,
+.navbar-inverse .navbar-brand {
+    color: #ddd;
+}

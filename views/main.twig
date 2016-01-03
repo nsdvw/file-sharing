@@ -30,7 +30,11 @@
             <ul class="nav navbar-nav">
               <li><a href="/view">Files</a></li>
               {% if loginManager.isLogged() %}
-                <li><a href="/account">Account</a></li>
+                <li>
+                  <a href="/account">
+                    <span class="glyphicon glyphicon-cog">Profile</span>
+                  </a>
+                </li>
               {% else %}
                 <li><a href="/tos">TOS</a></li>
               {% endif %}
@@ -45,8 +49,16 @@
                   </form>
                 </li>
               {% else %}
-                <li><a href="/login">Sign in</a></li>
-                <li><a href="/reg">Sign up</a></li>
+                <li>
+                  <a href="/login">
+                    <span class="glyphicon glyphicon-log-in"></span> Log in
+                  </a>
+                </li>
+                <li>
+                  <a href="/reg">
+                    <span class="glyphicon glyphicon-user"></span> Sign up
+                  </a>
+                </li>
               {% endif %}
             </ul>
           </div><!-- navbar-collapse -->

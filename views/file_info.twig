@@ -66,10 +66,46 @@
         {% include "audio_player.twig" %}
     {% endif %}
 
+    <form action="" method="POST" name="comment_form"
+        class="comment-form file-description clearfix" id="commentForm">
+        <div class="form-group">
+            <textarea name="comment_form[contents]" placeholder="Leave a comment..."
+                class="comment-area form-control" rows="3"></textarea>
+            <input type="hidden" name="comment_form[reply_id]" value="{{ reply }}">
+        </div>
+        <p class="text-danger">{{ form.errorMessage }}</p>
+        {% if not loginManager.islogged() %}
+            <div class="comment-captcha">
+                <img src="/image/captcha_generator.php" alt="captcha"><br>
+                <input type="text" name="comment_form[captcha]">
+            </div>
+        {% endif %}
+        <input type="submit" value="send" class="btn btn-primary">
+    </form>
+
+    <div class="file-description comments">
+    {% for couple in commentsAndAuthors %}
+        <div class="media alert alert-info level-{{couple['comment'].level}}">
+            <div class="media-left">
+                <span class="glyphicon glyphicon-comment"></span>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">
+                    {{ couple['author'].login|default('Anonymous') }}
+                </h4>
+                <p class="comment-text">{{ couple['comment'].contents }}</p>
+                <span class="added">{{ couple['comment'].added }}</span>
+                <span class="reply">
+                    <a href="/view/{{file.id}}?reply={{couple['comment'].id}}">Reply</a>
+                </span>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
   </div><!-- div.container -->
+
 {% endblock content %}
-
-
 
 
 

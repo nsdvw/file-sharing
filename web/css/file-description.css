@@ -5,8 +5,27 @@
 .file-description img {
     margin: 5px auto;
 }
-#jp_container_1 {
+#jp_container_1, .comment-form {
     margin: auto;
+}
+.added {
+    font-size: 12px;
+    font-weight: bold;
+}
+.reply {
+    float: right;
+}
+.level-1 {
+    margin-left: 0px;
+}
+.level-2 {
+    margin-left: 30px;
+}
+.level-3 {
+    margin-left: 60px;
+}
+#commentForm input[type="submit"] {
+    float: right;
 }
 @media (min-width: 992px) {
     .file-description {

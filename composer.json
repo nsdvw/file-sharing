@@ -11,6 +11,18 @@
                     "reference": "master"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "happyworm/jplayer",
+                "version": "2.9.2",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/happyworm/jPlayer",
+                    "reference": "v2.9"
+                }
+            }
         }
     ],
     "require": {
@@ -21,7 +33,8 @@
         "james-heinrich/getid3": "^1.9",
         "twig/twig": "^1.23",
         "twig/extensions": "^1.3",
-        "codepo8/CustomFileInputs": "*"
+        "codepo8/CustomFileInputs": "*",
+        "happyworm/jplayer": "~2.9"
     },
     "autoload": {
         "psr-4": {

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9c14fa7cd77f0346bf4eeb574f7a55c1",
-    "content-hash": "1d63e5035675af251f6b4f05903bb1ca",
+    "hash": "13d9a307cd8f21208dff9a590ad4dfce",
+    "content-hash": "b52e5fbe2dee38e3acfd912977897af3",
     "packages": [
         {
             "name": "codepo8/CustomFileInputs",
@@ -58,6 +58,16 @@
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
             "time": "2015-06-08 13:35:17"
+        },
+        {
+            "name": "happyworm/jplayer",
+            "version": "2.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/happyworm/jPlayer",
+                "reference": "v2.9"
+            },
+            "type": "library"
         },
         {
             "name": "james-heinrich/getid3",

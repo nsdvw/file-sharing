@@ -19,11 +19,13 @@ class CommentForm extends AbstractFormWithCaptcha
         $commentData = $request->post('comment_form');
         $this->contents = isset($commentData['contents'])
                           ? $commentData['contents'] : null;
-        $this->reply_id = $request->get('reply');
+        $this->reply_id = intval($request->get('reply'))
+                          ? intval($request->get('reply')) : null;
         $this->file_id = $file_id;
         $this->author_id = $author_id;
         $this->captcha = isset($commentData['captcha'])
                          ? $commentData['captcha'] : null;
+        $this->comment = new Comment;
     }
 
     public function rules()
@@ -38,11 +40,12 @@ class CommentForm extends AbstractFormWithCaptcha
 
     public function getComment()
     {
-        $this->comment = new Comment;
-        $this->comment->contents = $this->contents;
-        $this->comment->author_id = $this->author_id;
-        $this->comment->file_id = $this->file_id;
-        $this->comment->parent_id = $this->reply_id;
+        if ($this->comment->contents == null) {
+            $this->comment->contents = $this->contents;
+            $this->comment->author_id = $this->author_id;
+            $this->comment->file_id = $this->file_id;
+            $this->comment->parent_id = $this->reply_id;
+        }
         return $this->comment;
     }
 }

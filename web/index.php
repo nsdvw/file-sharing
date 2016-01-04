@@ -126,21 +126,14 @@ $app->map('/reg', function () use ($app) {
     ]);
 })->via('GET', 'POST');
 
-$app->get('/view', function() use ($app) {
+$app->get('/view', function () use ($app) {
     $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
     $pager = new Pager($app->fileMapper, $page);
     $offset = ($page - 1) * Pager::$perPage;
     $list = $app->fileMapper->findAll($offset);
-    $title = 'FileSharing &mdash; files';
-    $noticeMessage = ($app->request->get('page') === 'ok')
-                    ? "File has been uploaded successfully" : '';
-    $bookmark = 'Files';
     $app->render(
-        'list_info.tpl', [
+        'list_info.twig', [
             'list'=>$list,
-            'title'=>$title,
-            'noticeMessage'=>$noticeMessage,
-            'bookmark'=>$bookmark,
             'pager'=>$pager,
     ]);
 });

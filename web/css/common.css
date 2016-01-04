@@ -19,3 +19,25 @@ html, body {
 .navbar.navbar-inverse.navbar-static-top {
     margin-bottom: 0;
 }
+.file-description {
+    margin: 30px auto;
+    float: none;
+}
+.invisible {
+    display: none;
+}
+@media (min-width: 992px) {
+    .file-description {
+        width: 66%;
+    }
+}
+@media (min-width: 767px) and (max-width: 991px) {
+    .file-description {
+        width: 90%;
+    }
+}
+@media (max-width: 768px) {
+    .file-description {
+        width: 100%;
+    }
+}

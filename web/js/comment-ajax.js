@@ -1,10 +1,13 @@
 $(function () {
     $("#commentForm").on("submit", function (event) {
         event.preventDefault();
+        var errorBox = $("#commentForm .text-danger");
+        if (!validateCommentForm()) {
+            return;
+        }
         var form = document.forms.comment_form;
         var formData = new FormData(form);
         var replyID = form.querySelector(".replyID").value;
-        var errorBox = $("#commentForm .text-danger");
         errorBox.text("");
         $.ajax({
             "method": "POST",
@@ -54,4 +57,21 @@ function appendComment(templateSelector, form, comment, author) {
             $("#commentForm ~ .media[data-level=" + level + "]")
         );
     }
+}
+
+function validateCommentForm() {
+    var errorBox = $("#commentForm .text-danger");
+    var textarea = $("#commentForm .comment-area").val();
+    var captcha = $("#commentForm input[type=text]").val();
+    if (textarea == "") {
+        errorBox.text("Message is empty!");
+        return false;
+    } else if (captcha == "") {
+        errorBox.text("Captcha required");
+        return false;
+    } else if (textarea.length > 10000) {
+        errorBox.text("Message is too long");
+        return false;
+    }
+    return true;
 }

@@ -49,6 +49,11 @@ class ViewHelper
         return "/view/{$id}";
     }
 
+    public static function getPagerLink($number)
+    {
+        return "/view?page={$number}";
+    }
+
     public static function createPreviewChecker(File $file)
     {
         if ($file->isImage()) {

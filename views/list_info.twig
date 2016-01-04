@@ -67,30 +67,42 @@
 
     <div class="row">
         <nav class="col-md-9 center-block my-pager">
-            <ul class="pagination pagination-sm">
-            {% if pager.currentPage == 1 %}
+           <ul class="pagination pagination-sm">
+            {% if pager.currentPage == pager.getFirstPage() %}
                 <li class="disabled">
                     <a href=".">&laquo;</a>
                 </li>
             {% else %}
                 <li>
-                    <a href="/view?page={{ pager.currentPage - 1 }}">&laquo;</a>
+                    <a href="{{ callStaticMethod(
+                        '\\Storage\\Helper\\ViewHelper',
+                        'getPagerLink',
+                        [ pager.getPrevPage() ]
+                    ) }}">&laquo;</a>
                 </li>
             {% endif %}
             
-            {% for i in range(pager.firstPage, pager.lastPage) %}
+            {% for i in range(pager.getFirstPage(), pager.getLastPage()) %}
                 {% if i == pager.currentPage %}
                     <li class="active"><a href="">{{ i }}</a></li>
                 {% else %}
                     <li>
-                        <a href="/view?page={{ i }}">{{ i }}</a>
+                        <a href="{{ callStaticMethod(
+                            '\\Storage\\Helper\\ViewHelper',
+                            'getPagerLink',
+                            [ i ]
+                        ) }}">{{ i }}</a>
                     </li>
                 {% endif %}
             {% endfor %}
 
-            {% if pager.currentPage != pager.pageCount %}
+            {% if pager.currentPage != pager.getLastPage() %}
                 <li>
-                    <a href="/view?page={{ pager.currentPage + 1 }}">Next</a>
+                    <a href="{{ callStaticMethod(
+                        '\\Storage\\Helper\\ViewHelper',
+                        'getPagerLink',
+                        [ pager.getNextPage() ]
+                    ) }}">&raquo;</a>
                 </li>
             {% else %}
                 <li class="disabled"><a href="">&raquo;</a></li>

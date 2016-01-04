@@ -128,9 +128,8 @@ $app->map('/reg', function () use ($app) {
 
 $app->get('/view', function () use ($app) {
     $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
-    $pager = new Pager($app->fileMapper, $page);
-    $offset = ($page - 1) * Pager::$perPage;
-    $list = $app->fileMapper->findAll($offset);
+    $pager = new Pager( $page, $app->fileMapper->getFileCount(), 10 );
+    $list = $app->fileMapper->findAll($pager->getOffset(), $pager->perPage);
     $app->render(
         'list_info.twig', [
             'list'=>$list,

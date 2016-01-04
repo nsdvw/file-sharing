@@ -3,51 +3,67 @@ namespace Storage\Helper;
 
 class Pager
 {
-    public static $perPage;
-    public $linksCount = 6;
     public $currentPage;
-    public $pageCount;
-    public $firstPage;
-    public $lastPage;
-    protected $mapper;
+    public $totalItemCount;
+    public $perPage;
+    public $linksCount;
+
+    private $maxLinksCount;
 
     public function __construct(
-        \Storage\Mapper\FileMapper $mapper,
-        $currentPage = 1, $perPage = 20, $linksCount = 6)
-    {
-        $this->mapper = $mapper;
-        $this->currentPage = $currentPage;
-        static::$perPage = $perPage;
-        $this->linksCount = $linksCount;
-        $this->pageCount = $this->getPageCount();
-        $this->linksCount = $this->getLinksCount();
-        $this->firstPage = $this->getFirstPage();
-        $this->lastPage = $this->getLastPage();
+        $currentPage,
+        $totalItemCount,
+        $perPage = 15,
+        $maxLinksCount = 6
+    ) {
+        $this->currentPage = intval($currentPage);
+        $this->totalItemCount = intval($totalItemCount);
+        $this->perPage = $perPage;
+        $this->maxLinksCount = $maxLinksCount;
+        $pageCount = $this->getPageCount();
+        $this->linksCount = $this->getLinksCount($pageCount);
     }
 
-    protected function getPageCount()
+    public function getPrevPage()
     {
-        return intval(ceil($this->mapper->getFileCount() / static::$perPage));
+        return $this->currentPage - 1;
     }
 
-    protected function getLinksCount()
+    public function getNextPage()
     {
-        return ($this->linksCount > $this->pageCount)
-            ? $this->pageCount
-            : $this->linksCount;
+        return $this->currentPage + 1;
     }
 
-    protected function getFirstPage()
+    public function getFirstPage()
     {
-        return ($this->currentPage + $this->linksCount - 1 <= $this->pageCount)
+        return
+            $this->currentPage + $this->linksCount - 1 <= $this->getPageCount()
             ? $this->currentPage
-            : $this->pageCount - $this->linksCount + 1;
+            : $this->getPageCount() - $this->linksCount + 1;
     }
 
-    protected function getLastPage()
+    public function getLastPage()
     {
-        return ($this->currentPage + $this->linksCount - 1 <= $this->pageCount)
-            ? $this->firstPage + $this->linksCount - 1
-            : $this->pageCount;
+        return
+            $this->currentPage + $this->linksCount - 1 <= $this->getPageCount()
+            ? $this->getFirstPage() + $this->linksCount - 1
+            : $this->getPageCount();
+    }
+
+    public function getOffset()
+    {
+        return ($this->currentPage - 1) * $this->perPage;
+    }
+
+    private function getPageCount()
+    {
+        return intval(ceil($this->totalItemCount / $this->perPage));
+    }
+
+    private function getLinksCount($pageCount)
+    {
+        return ($this->maxLinksCount > $pageCount)
+            ? $pageCount
+            : $this->maxLinksCount;
     }
 }

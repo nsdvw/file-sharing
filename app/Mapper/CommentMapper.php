@@ -47,6 +47,8 @@ class CommentMapper extends AbstractMapper
         $sth->bindValue(':parent_id', $comment->parent_id, \PDO::PARAM_STR);
         $sth->execute();
         $comment->id = $this->connection->lastInsertId();
+        $comment->added = date('Y-m-d H:i:s');
+        $comment->level = $this->getLevel($comment->materialized_path);
     }
 
     public function getLastCommentPath($file_id)

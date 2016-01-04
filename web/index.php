@@ -153,6 +153,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app){
 
 $app->map('/view/:id', function ($id) use ($app) {
     $reply = $app->request->get('reply') ? intval($app->request->get('reply')) : '';
+    $isAjax = ($app->request->get('ajax') !== null) ? true : false;
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
@@ -162,8 +163,8 @@ $app->map('/view/:id', function ($id) use ($app) {
         $app->userMapper
     );
     $commentsAndAuthors = $pageViewService->getCommentsAndAuthors($id);
-    $loggedUserID = $app->loginManager->loggedUser
-                ? $app->loginManager->loggedUser->id : null;
+    $loggedUserID = $app->loginManager->isLogged()
+                ? $app->loginManager->getUserID() : null;
     $commentForm = new CommentForm($app->request, $file->id, $loggedUserID);
     if ($app->request->isPost()) {
         if (!$loggedUserID) {
@@ -171,7 +172,22 @@ $app->map('/view/:id', function ($id) use ($app) {
         }
         if ($commentForm->validate()) {
             $app->commentMapper->save($commentForm->getComment());
-            $app->redirect($app->request->getResourceUri());
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo JsonEncoder::createResponse([
+                    'comment'=>$commentForm->getComment(),
+                    'author'=>$app->loginManager->getLoggedUser(),
+                ]);
+                $app->stop();
+            } else {
+                $app->redirect($app->request->getResourceUri());
+            }
+        } else {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo JsonEncoder::createResponse(null, $commentForm->errorMessage);
+                $app->stop();
+            }
         }
     }
     $app->render(

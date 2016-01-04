@@ -1,4 +1,0 @@
-<tr>
-    <td class="property">Play time</td>
-    <td class="value">{{ file.mediaInfo.playtime }}</td>
-</tr>

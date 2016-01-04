@@ -17,7 +17,6 @@ $(function () {
         $("#commentForm .replyID").attr("value", "");
         var replyButton = $("#reply");
         replyButton.addClass("invisible");
-        //$(".reply-container", replyButton).text("");
     });
 
 });

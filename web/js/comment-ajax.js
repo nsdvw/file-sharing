@@ -20,7 +20,7 @@ $(function () {
             } else {
                 var comment = response.text.comment;
                 var author = response.text.author;
-                appendComment("#commentTemplate", comment, author);
+                appendComment("#commentTemplate", $(form), comment, author);
                 form.reset();
             }
         }).fail(function (response) {
@@ -29,12 +29,14 @@ $(function () {
     });
 });
 
-function appendComment(templateSelector, comment, author) {
+function appendComment(templateSelector, form, comment, author) {
     var template = $(templateSelector).html();
-    var indexOfLevel = template.indexOf("{level}");
-    template = template.substring(0, indexOfLevel)
-            + comment.level
-            + template.substring(indexOfLevel + 7);
+    for (var i = 0; i < 2; i++) {
+        var indexOfLevel = template.indexOf("{level}");
+        template = template.substring(0, indexOfLevel)
+                + comment.level
+                + template.substring(indexOfLevel + 7);
+    }
     template = $(template);
     author = author || 'Anonymous';
     $(".media-heading", template).text(author);
@@ -44,5 +46,12 @@ function appendComment(templateSelector, comment, author) {
         .attr("href", "/view/" + comment.file_id + "?reply=" + comment.id)
         .attr("data-reply-id", comment.id)
         .html("#" + comment.id + " Reply");
-    $("#comments").append(template);
+    if ( form.is(":first-child") ) {
+        $("#comments").append(template);
+    } else {
+        var level = form.prev().data("level");
+        template.insertBefore(
+            $("#commentForm ~ .media[data-level=" + level + "]")
+        );
+    }
 }

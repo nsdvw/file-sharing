@@ -92,7 +92,8 @@
         </form>
 
         <script type="text/template" id="commentTemplate">
-            <div class="media alert alert-info level-{level}">
+            <div class="media alert alert-info level-{level}"
+                data-level="{level}">
                 <div class="media-left">
                     <span class="glyphicon glyphicon-comment"></span>
                 </div>
@@ -106,7 +107,8 @@
         </script>
 
         {% for couple in commentsAndAuthors %}
-        <div class="media alert alert-info level-{{couple['comment'].level}}">
+        <div class="media alert alert-info level-{{couple['comment'].level}}"
+            data-level="{{couple['comment'].level}}">
             <div class="media-left">
                 <span class="glyphicon glyphicon-comment"></span>
             </div>

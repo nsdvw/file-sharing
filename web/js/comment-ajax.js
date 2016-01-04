@@ -20,11 +20,13 @@ $(function () {
         }).done(function (response) {
             if (response.error) {
                 errorBox.text(response.error);
+                refreshCaptcha();
             } else {
                 var comment = response.text.comment;
                 var author = response.text.author;
                 appendComment("#commentTemplate", $(form), comment, author);
                 form.reset();
+                refreshCaptcha();
             }
         }).fail(function (response) {
             errorBox.text("Server error " + response.status + ", please try again later");
@@ -74,4 +76,8 @@ function validateCommentForm() {
         return false;
     }
     return true;
+}
+
+function refreshCaptcha() {
+    $("#captcha-img").attr("src", "/image/captcha_generator.php");
 }

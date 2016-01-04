@@ -24,8 +24,25 @@
 .level-3 {
     margin-left: 60px;
 }
+.comment-captcha {
+    position: relative;
+}
 #commentForm input[type="submit"] {
     float: right;
+}
+#commentForm input[type="text"] {
+    width: 240px;
+}
+#reply {
+    position: absolute;
+    right: 0px;
+    top: 5px;
+}
+/*#reply[data-reply-id=""] {
+    display: none;
+}*/
+.invisible {
+    display: none;
 }
 @media (min-width: 992px) {
     .file-description {

@@ -8,12 +8,12 @@
 {% endblock head %}
 
 {% block content %}
-<div class="container content">
+<div class="container">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-9 center-block content">
             <div class="table-responsive panel panel-primary">
                 <div class="panel-heading">Recently uploaded files</div>
-                <table class="table table-hover">
+                <table class="table table-hover table-condensed">
                     <tr>
                         <th>Name</th>
                         <th>Uploaded</th>
@@ -39,7 +39,7 @@
                                 '\\Storage\\Helper\\ViewHelper',
                                 'getDetailViewUrl',
                                 [file.id]
-                            ) }}">{{ file.name|truncate(40) }}</a>
+                            ) }}">{{ file.name|truncate(30) }}</a>
                         </td>
                         <td>{{ file.upload_time }}</td>
                         <td>
@@ -50,110 +50,54 @@
                             ) }}                            
                         </td>
                         <td>
+                            <a href="/{{callStaticMethod(
+                            '\\Storage\\Helper\\ViewHelper',
+                            'getDownLoadUrl',
+                            [file.id, file.name])}}"
+                            id="dowloadLink">
                             <span class="glyphicon glyphicon-floppy-disk"></span>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
             </div><!-- .table-responsive -->
         </div><!-- .col-md-9 -->
-        <div class="col-md-3">
-            Click on file item to see description.
-        </div>
     </div><!-- .row -->
+
+    <div class="row">
+        <nav class="col-md-9 center-block my-pager">
+            <ul class="pagination pagination-sm">
+            {% if pager.currentPage == 1 %}
+                <li class="disabled">
+                    <a href=".">&laquo;</a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="/view?page={{ pager.currentPage - 1 }}">&laquo;</a>
+                </li>
+            {% endif %}
+            
+            {% for i in range(pager.firstPage, pager.lastPage) %}
+                {% if i == pager.currentPage %}
+                    <li class="active"><a href="">{{ i }}</a></li>
+                {% else %}
+                    <li>
+                        <a href="/view?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pager.currentPage != pager.pageCount %}
+                <li>
+                    <a href="/view?page={{ pager.currentPage + 1 }}">Next</a>
+                </li>
+            {% else %}
+                <li class="disabled"><a href="">&raquo;</a></li>
+            {% endif %}
+            </ul>
+        </nav><!-- pagination -->
+    </div><!-- row -->
+
 </div><!-- .container -->
 {% endblock content %}
-
-
-
-{#
-<div id="container-wide">
-    <div class="content">
-        <div class="notice" id="notice">{$noticeMessage}</div>
-        <div class="files-list">
-        {foreach $list as $file}
-        <div class="file-item file-nonselected" data-id="{$file->id}">
-            <div class="file-icon
-                {if $file->isImage()}file-icon-image
-                {elseif $file->isVideo()}file-icon-video
-                {elseif $file->isAudio()}file-icon-audio
-                {elseif $file->isText()}file-icon-text
-                {elseif $file->isArchive()}file-icon-archive
-                {else}file-icon-none
-                {/if}">
-            </div>
-            <div class="file-name">
-                <a href="{$baseUrl}{\Storage\Helper\ViewHelper::getDetailViewUrl($file->id)}" target="_blank">
-                    {$file->name|truncate:30|escape}
-                </a>
-            </div>
-            <div class="file-date">{$file->upload_time}</div>
-            <div class="file-size">
-                {\Storage\Helper\ViewHelper::formatSize($file->size)}
-            </div>
-            <div class="file-download-icon">
-                <a href="{\Storage\Helper\ViewHelper::getDownloadUrl($file->id,$file->name)}"></a>
-            </div>
-        </div>
-        {/foreach}
-        {if $pager->pageCount > 1}
-            <div class="pager">
-                {if $pager->currentPage == 1}
-                <div class="pager-first not-active">First</div>
-                <div class="pager-previous not-active">Previous</div>
-                {else}
-                <div class="pager-first">
-                    <a href="{$baseUrl}/view?page=1">First</a>
-                </div>
-                <div class="pager-previous">
-                    <a href="{$baseUrl}/view?page={$pager->currentPage - 1}">Previous</a>
-                </div>
-                {/if}
-                
-                <div class="pager-pages">
-                {for $i = $pager->firstPage; $i lte $pager->lastPage; $i++}
-                    {if $i == $pager->currentPage}
-                    <span class="pager-number current-page">{$i}</span>
-                    {else}
-                    <span class="pager-number">
-                        <a href="{$baseUrl}/view?page={$i}">{$i}</a>
-                    </span>
-                    {/if}
-                {/for}
-                </div>
-
-                {if $pager->currentPage != $pager->pageCount}
-                <div class="pager-last">
-                    <a href="{$baseUrl}/view?page={$pager->pageCount}">Last</a>
-                </div>
-                <div class="pager-next">
-                    <a href="{$baseUrl}/view?page={$pager->currentPage + 1}">Next</a>
-                </div>
-                {else}
-                <div class="pager-last not-active">Last</div>
-                <div class="pager-next not-active">Next</div>
-                {/if}
-            </div>
-        {/if}
-        </div>
-        <script id="tpl-preview" type="text/x-template">
-            <img src="/preview/(#file.id#).txt" alt="preview" class="preview-image">
-            <div class="preview-name">
-                <a href="/view/(#file.id#)" target="_blank">(#file.name#)</a>
-            </div>
-            <div class="preview-size">Size: (#file.size#)</div>
-            <div class="preview-date">Uploaded: (#file.upload_time#)</div>
-            <div class="preview-downloads">Downloads: (#file.download_counter#)</div>
-            <div class="preview-format">Format: (#file.mime_type#)</div>
-            <div class="preview-resolution">Resolution: (#file.resolution#)</div>
-            <div class="preview-more">
-                <a href="/view/(#file.id#)" target="_blank">more...</a>
-            </div>
-        </script>
-        <div class="preview" id="previewBox"></div>
-        <div class="clearDummy"></div>
-    </div>
-</div>
-<script src="{$baseUrl}/js/list.js"></script>
-
-#}

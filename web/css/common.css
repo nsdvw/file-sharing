@@ -19,10 +19,6 @@ html, body {
 .navbar.navbar-inverse.navbar-static-top {
     margin-bottom: 0;
 }
-.file-description {
-    margin: 30px auto;
-    float: none;
-}
 .invisible {
     display: none;
 }

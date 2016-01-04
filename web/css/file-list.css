@@ -1,6 +1,10 @@
-.content.container {
+.content {
     margin-top: 50px;
+    float: none;
 }
 .icon-type {
     margin: 0 10px;
+}
+.my-pager {
+    float: none;
 }

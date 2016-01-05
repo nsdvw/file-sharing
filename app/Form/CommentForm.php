@@ -1,8 +1,8 @@
 <?php
-namespace Storage\Form;
+namespace FileSharing\Form;
 
 use Slim\Http\Request;
-use Storage\Model\Comment;
+use FileSharing\Model\Comment;
 
 class CommentForm extends AbstractFormWithCaptcha
 {

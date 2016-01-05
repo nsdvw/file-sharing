@@ -1,12 +1,12 @@
 <div class="file-description panel panel-primary">
     <div class="panel-heading">Image preview</div>
     <a href="/{{callStaticMethod(
-        '\\Storage\\Helper\\ViewHelper',
+        '\\FileSharing\\Helper\\ViewHelper',
         'getUploadPath',
         [file.id, file.name]) }}"
         target="_blank">
         <img src="/{{callStaticMethod(
-            '\\Storage\\Helper\\ViewHelper',
+            '\\FileSharing\\Helper\\ViewHelper',
             'getPreviewPath',
             [file.id]) }}"
             alt="image preview"

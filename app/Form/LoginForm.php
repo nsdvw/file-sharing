@@ -1,8 +1,8 @@
 <?php
-namespace Storage\Form;
+namespace FileSharing\Form;
 
 use Slim\Http\Request;
-use Storage\Helper\HashGenerator;
+use FileSharing\Helper\HashGenerator;
 
 class LoginForm extends AbstractForm
 {

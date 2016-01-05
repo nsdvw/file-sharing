@@ -1,7 +1,7 @@
 <?php
-namespace Storage\Helper;
+namespace FileSharing\Helper;
 
-use Storage\Model\File;
+use FileSharing\Model\File;
 
 class PreviewGenerator
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Storage\Mapper;
+namespace FileSharing\Mapper;
 
 interface TransactionableInterface
 {

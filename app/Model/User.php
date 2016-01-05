@@ -1,5 +1,5 @@
 <?php
-namespace Storage\Model;
+namespace FileSharing\Model;
 
 class User
 {

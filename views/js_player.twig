@@ -4,16 +4,16 @@ $(document).ready(function(){
     ready: function () {
       $(this).jPlayer("setMedia", {
         "{{ callStaticMethod(
-            '\\Storage\\Model\\File',
+            '\\FileSharing\\Model\\File',
             'jPlayerMediaType',
             [file.mime_type] ) }}":
-        "/{{ callStaticMethod('\\Storage\\Helper\\ViewHelper', 'getUploadPath', [file.id, file.name]) }}"
+        "/{{ callStaticMethod('\\FileSharing\\Helper\\ViewHelper', 'getUploadPath', [file.id, file.name]) }}"
       });
     },
     cssSelectorAncestor: "#jp_container_1",
     swfPath: "/vendor-js",
     supplied: "{{ callStaticMethod(
-              '\\Storage\\Model\\File',
+              '\\FileSharing\\Model\\File',
               'jPlayerMediaType',
               [file.mime_type] ) }}",
     useStateClassSkin: true,

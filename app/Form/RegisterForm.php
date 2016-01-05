@@ -1,9 +1,9 @@
 <?php
-namespace Storage\Form;
+namespace FileSharing\Form;
 
 use Slim\Http\Request;
-use Storage\Helper\HashGenerator;
-use Storage\Model\User;
+use FileSharing\Helper\HashGenerator;
+use FileSharing\Model\User;
 
 class RegisterForm extends AbstractForm
 {

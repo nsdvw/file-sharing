@@ -1,9 +1,9 @@
 <?php
-namespace Storage\Helper;
+namespace FileSharing\Helper;
 
-use Storage\Model\File;
-use Storage\Mapper\FileMapper;
-use Storage\Form\UploadForm;
+use FileSharing\Model\File;
+use FileSharing\Mapper\FileMapper;
+use FileSharing\Form\UploadForm;
 
 class FileUploadService
 {

@@ -38,7 +38,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Storage\\": "app"
+            "FileSharing\\": "app"
         }
     },
     "scripts": {

@@ -1,5 +1,5 @@
 <?php
-namespace Storage\Form;
+namespace FileSharing\Form;
 
 abstract class AbstractFormWithCaptcha extends AbstractForm
 {

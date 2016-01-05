@@ -1,10 +1,10 @@
 <?php
-namespace Storage\Mapper;
+namespace FileSharing\Mapper;
 
-use Storage\Helper\Pager;
-use Storage\Helper\JsonEncoder;
-use Storage\Model\MediaInfo;
-use Storage\Model\File;
+use FileSharing\Helper\Pager;
+use FileSharing\Helper\JsonEncoder;
+use FileSharing\Model\MediaInfo;
+use FileSharing\Model\File;
 
 class FileMapper extends AbstractMapper
 {
@@ -46,7 +46,7 @@ class FileMapper extends AbstractMapper
         $sth->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $sth->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $sth->execute();
-        $list = $sth->fetchAll(\PDO::FETCH_CLASS, '\Storage\Model\File');
+        $list = $sth->fetchAll(\PDO::FETCH_CLASS, '\FileSharing\Model\File');
         foreach ($list as $row) {
             $row->mediaInfo = MediaInfo::fromDataBase(
                 JsonEncoder::decode($row->mediaInfo)
@@ -64,7 +64,7 @@ class FileMapper extends AbstractMapper
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':id', $id, \PDO::PARAM_INT);
         $sth->execute();
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\File');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\File');
         $row = $sth->fetch();
         if ($row == null) {
             return $row;

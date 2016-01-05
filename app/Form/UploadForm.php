@@ -1,8 +1,8 @@
 <?php
-namespace Storage\Form;
+namespace FileSharing\Form;
 
-use Storage\Model\File;
-use Storage\Model\MediaInfo;
+use FileSharing\Model\File;
+use FileSharing\Model\MediaInfo;
 use Slim\Http\Request;
 
 class UploadForm extends AbstractForm

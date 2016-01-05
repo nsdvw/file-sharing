@@ -1,7 +1,7 @@
 <?php
-namespace Storage\Mapper;
+namespace FileSharing\Mapper;
 
-use Storage\Model\User;
+use FileSharing\Model\User;
 
 class UserMapper extends AbstractMapper
 {
@@ -26,7 +26,7 @@ class UserMapper extends AbstractMapper
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':email', $email, \PDO::PARAM_STR);
         $sth->execute();
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\User');
         return $sth->fetch();
     }
 
@@ -38,7 +38,7 @@ class UserMapper extends AbstractMapper
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':id', $id, \PDO::PARAM_INT);
         $sth->execute();
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\User');
         return $sth->fetch();
     }
 
@@ -52,7 +52,7 @@ class UserMapper extends AbstractMapper
         $sql = "SELECT id, login, email FROM user WHERE id IN ({$ids})";
         $sth = $this->connection->prepare($sql);
         $sth->execute();
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\User');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\User');
         return $sth->fetchAll();
     }
 

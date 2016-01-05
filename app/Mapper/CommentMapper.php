@@ -1,7 +1,7 @@
 <?php
-namespace Storage\Mapper;
+namespace FileSharing\Mapper;
 
-use Storage\Model\Comment;
+use FileSharing\Model\Comment;
 
 class CommentMapper extends AbstractMapper
 {
@@ -12,7 +12,7 @@ class CommentMapper extends AbstractMapper
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':file_id', $file_id, \PDO::PARAM_INT);
         $sth->execute();
-        $sth->setFetchMode(\PDO::FETCH_CLASS, '\Storage\Model\Comment');
+        $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\Comment');
         $comments = $sth->fetchAll();
         foreach ($comments as $comment) {
             $comment->level = $this->getLevel($comment->materialized_path);

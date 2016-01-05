@@ -1,12 +1,12 @@
 <?php
-namespace Storage;
+namespace FileSharing;
 
-use Storage\Model\Comment;
-use Storage\Form\CommentForm;
-use Storage\Helper\Pager;
-use Storage\Helper\Token;
-use Storage\Helper\ViewHelper;
-use Storage\Helper\JsonEncoder;
+use FileSharing\Model\Comment;
+use FileSharing\Form\CommentForm;
+use FileSharing\Helper\Pager;
+use FileSharing\Helper\Token;
+use FileSharing\Helper\ViewHelper;
+use FileSharing\Helper\JsonEncoder;
 
 mb_internal_encoding('UTF-8');
 
@@ -32,16 +32,16 @@ $app->container->singleton('connection', function () use ($config) {
     return $dbh;
 });
 $app->container->singleton('fileMapper', function () use ($app) {
-    return new \Storage\Mapper\FileMapper($app->connection);
+    return new Mapper\FileMapper($app->connection);
 });
 $app->container->singleton('userMapper', function () use ($app) {
-    return new \Storage\Mapper\UserMapper($app->connection);
+    return new Mapper\UserMapper($app->connection);
 });
 $app->container->singleton('commentMapper', function () use ($app) {
-    return new \Storage\Mapper\CommentMapper($app->connection);
+    return new Mapper\CommentMapper($app->connection);
 });
 $app->container->singleton('loginManager', function () use ($app) {
-    return new \Storage\Auth\LoginManager($app->userMapper);
+    return new Auth\LoginManager($app->userMapper);
 });
 
 $token = Token::init();
@@ -76,8 +76,8 @@ $app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
 $app->map('/', function () use ($app) {
     $isAjax = ($app->request->get('ajax') !== null) ? true : false;
     $author_id = $app->loginManager->getUserID();
-    $uploadForm = new \Storage\Form\UploadForm($app->request, $_FILES, $author_id);
-    $fileUploadService = new \Storage\Helper\FileUploadService($app->fileMapper);
+    $uploadForm = new Form\UploadForm($app->request, $_FILES, $author_id);
+    $fileUploadService = new Helper\FileUploadService($app->fileMapper);
     if ($app->request->isPost()) {
         if ($uploadForm->validate() and $fileUploadService->upload($uploadForm)) {
             if ($isAjax) {
@@ -101,7 +101,7 @@ $app->map('/', function () use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
-    $loginForm = new \Storage\Form\LoginForm($app->request);
+    $loginForm = new Form\LoginForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateLoginForm($loginForm)) {
             $app->loginManager->authorizeUser($loginForm->getUser());
@@ -114,7 +114,7 @@ $app->map('/login', function () use ($app) {
 $app->map('/reg', function () use ($app) {
     $title = 'FileSharing &mdash; registration';
     $bookmark = 'Sign up';
-    $registerForm = new \Storage\Form\RegisterForm($app->request);
+    $registerForm = new Form\RegisterForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateRegisterForm($registerForm)) {
             $app->userMapper->register($registerForm->getUser());
@@ -132,7 +132,7 @@ $app->map('/reg', function () use ($app) {
 
 $app->get('/view', function () use ($app) {
     $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
-    $pager = new Pager( $page, $app->fileMapper->getFileCount(), 10 );
+    $pager = new Pager( $page, $app->fileMapper->getFileCount(), 15 );
     $list = $app->fileMapper->findAll($pager->getOffset(), $pager->perPage);
     $app->render(
         'list_info.twig', [
@@ -154,7 +154,7 @@ $app->map('/view/:id', function ($id) use ($app) {
         $app->notFound();
     }
     ViewHelper::createPreviewChecker($file);
-    $pageViewService = new \Storage\Helper\PageViewService(
+    $pageViewService = new Helper\PageViewService(
         $app->commentMapper,
         $app->userMapper
     );

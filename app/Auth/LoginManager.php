@@ -1,11 +1,11 @@
 <?php
-namespace Storage\Auth;
+namespace FileSharing\Auth;
 
-use Storage\Mapper\UserMapper;
-use Storage\Model\User;
-use Storage\Helper\HashGenerator;
-use Storage\Form\LoginForm;
-use Storage\Form\RegisterForm;
+use FileSharing\Mapper\UserMapper;
+use FileSharing\Model\User;
+use FileSharing\Helper\HashGenerator;
+use FileSharing\Form\LoginForm;
+use FileSharing\Form\RegisterForm;
 
 class LoginManager
 {

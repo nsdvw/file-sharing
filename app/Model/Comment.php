@@ -1,7 +1,7 @@
 <?php
-namespace Storage\Model;
+namespace FileSharing\Model;
 
-use Storage\Mapper\CommentMapper;
+use FileSharing\Mapper\CommentMapper;
 
 class Comment
 {

@@ -35,7 +35,7 @@
                             {% endif %}
                             <span class="icon-type glyphicon glyphicon-{{icon}}"></span>
                             <a href="{{ callStaticMethod(
-                                '\\Storage\\Helper\\ViewHelper',
+                                '\\FileSharing\\Helper\\ViewHelper',
                                 'getDetailViewUrl',
                                 [file.id]
                             ) }}">{{ file.name|truncate(30) }}</a>
@@ -43,14 +43,14 @@
                         <td>{{ file.upload_time }}</td>
                         <td>
                             {{ callStaticMethod(
-                                '\\Storage\\Helper\\ViewHelper',
+                                '\\FileSharing\\Helper\\ViewHelper',
                                 'formatSize',
                                 [file.size]
                             ) }}                            
                         </td>
                         <td>
                             <a href="/{{callStaticMethod(
-                            '\\Storage\\Helper\\ViewHelper',
+                            '\\FileSharing\\Helper\\ViewHelper',
                             'getDownLoadUrl',
                             [file.id, file.name])}}"
                             id="dowloadLink">
@@ -74,7 +74,7 @@
             {% else %}
                 <li>
                     <a href="{{ callStaticMethod(
-                        '\\Storage\\Helper\\ViewHelper',
+                        '\\FileSharing\\Helper\\ViewHelper',
                         'getPagerLink',
                         [ pager.getPrevPage() ]
                     ) }}">&laquo;</a>
@@ -87,7 +87,7 @@
                 {% else %}
                     <li>
                         <a href="{{ callStaticMethod(
-                            '\\Storage\\Helper\\ViewHelper',
+                            '\\FileSharing\\Helper\\ViewHelper',
                             'getPagerLink',
                             [ i ]
                         ) }}">{{ i }}</a>
@@ -98,7 +98,7 @@
             {% if pager.currentPage != pager.getLastPage() %}
                 <li>
                     <a href="{{ callStaticMethod(
-                        '\\Storage\\Helper\\ViewHelper',
+                        '\\FileSharing\\Helper\\ViewHelper',
                         'getPagerLink',
                         [ pager.getNextPage() ]
                     ) }}">&raquo;</a>

@@ -1,7 +1,7 @@
 <?php
-namespace Storage\Model;
+namespace FileSharing\Model;
 
-use Storage\Helper\ViewHelper;
+use FileSharing\Helper\ViewHelper;
 
 class File
 {

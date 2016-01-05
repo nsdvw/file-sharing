@@ -1,5 +1,5 @@
 <?php
-namespace Storage\Helper;
+namespace FileSharing\Helper;
 
 class Pager
 {

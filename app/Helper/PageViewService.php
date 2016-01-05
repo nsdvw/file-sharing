@@ -1,8 +1,8 @@
 <?php
-namespace Storage\Helper;
+namespace FileSharing\Helper;
 
-use Storage\Mapper\CommentMapper;
-use Storage\Mapper\UserMapper;
+use FileSharing\Mapper\CommentMapper;
+use FileSharing\Mapper\UserMapper;
 
 class PageViewService
 {

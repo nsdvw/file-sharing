@@ -41,7 +41,7 @@
         <tr>
           <td>Size</td>
           <td>{{ callStaticMethod(
-            '\\Storage\\Helper\\ViewHelper',
+            '\\FileSharing\\Helper\\ViewHelper',
             'formatSize',
             [file.size]) }}
           </td>
@@ -50,7 +50,7 @@
           <td></td>
           <td>
             <a href="/{{callStaticMethod(
-                    '\\Storage\\Helper\\ViewHelper',
+                    '\\FileSharing\\Helper\\ViewHelper',
                     'getDownLoadUrl',
                     [file.id, file.name])}}"
                     id="downloadLink">download
@@ -72,6 +72,10 @@
         <form action="" method="POST" name="comment_form"
         class="comment-form file-description clearfix" id="commentForm">
             <div class="form-group">
+                <div id="reply" class="invisible" data-reply-id>
+                    <span class="reply-container"></span>
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
                 <textarea name="comment_form[contents]" placeholder="Leave a comment..."
                     class="comment-area form-control" rows="3"></textarea>
                 <input type="hidden" class="replyID" name="comment_form[reply_id]"
@@ -80,16 +84,16 @@
             <p class="text-danger">{{ form.errorMessage }}</p>
             {% if not loginManager.islogged() %}
                 <div class="comment-captcha">
-                    <div id="reply" class="invisible" data-reply-id>
-                        <span class="reply-container"></span>
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </div>
                     <img id="captcha-img" src="/image/captcha_generator.php"
                         alt="captcha"><br>
                     <input type="text" name="comment_form[captcha]">
-                    <input type="submit" value="send" class="btn btn-primary">
                 </div>
             {% endif %}
+            <!-- <div id="reply" class="invisible" data-reply-id>
+                <span class="reply-container"></span>
+                <span class="glyphicon glyphicon-remove"></span>
+            </div> -->
+            <input type="submit" value="send" class="btn btn-primary">
         </form>
 
         <script type="text/template" id="commentTemplate">

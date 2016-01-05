@@ -50,7 +50,7 @@ function appendComment(templateSelector, form, comment, author) {
     }
     template = $(template);
     author = author || 'Anonymous';
-    $(".media-heading", template).text(author);
+    $(".media-heading", template).text(author.login);
     $(".comment-text", template).text(comment.contents);
     $(".added", template).text(comment.added);
     $(".reply", template)

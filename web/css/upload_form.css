@@ -24,7 +24,7 @@
     padding: 30px;
 }
 .box label:hover, input[type="file"]:focus + label {
-    color: #616161;
+    color: #555;
 }
 .box label .glyphicon.glyphicon-upload {
     padding-right: 0.6rem;

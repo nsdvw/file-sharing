@@ -30,6 +30,9 @@
 #commentForm input[type="text"] {
     width: 240px;
 }
- #reply {
+#reply {
     float: right;
 } 
+#commentForm .text-danger {
+    margin-bottom: 0;
+}

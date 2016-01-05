@@ -23,9 +23,6 @@ html, body {
 .navbar.navbar-inverse.navbar-static-top {
     margin-bottom: 0;
 }
-.invisible {
-    display: none;
-}
 .navbar-static-top .btn-link {
     margin-top: 8px;
 }

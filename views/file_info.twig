@@ -72,7 +72,7 @@
         <form action="" method="POST" name="comment_form"
         class="comment-form file-description clearfix" id="commentForm">
             <div class="form-group">
-                <div id="reply" class="invisible" data-reply-id>
+                <div id="reply" class="hidden" data-reply-id>
                     <span class="reply-container"></span>
                     <span class="glyphicon glyphicon-remove"></span>
                 </div>
@@ -82,6 +82,7 @@
                     value="{{ reply }}">
             </div>
             <p class="text-danger">{{ form.errorMessage }}</p>
+            <input type="submit" value="send" class="btn btn-primary">
             {% if not loginManager.islogged() %}
                 <div class="comment-captcha">
                     <img id="captcha-img" src="/image/captcha_generator.php"
@@ -89,11 +90,6 @@
                     <input type="text" name="comment_form[captcha]">
                 </div>
             {% endif %}
-            <!-- <div id="reply" class="invisible" data-reply-id>
-                <span class="reply-container"></span>
-                <span class="glyphicon glyphicon-remove"></span>
-            </div> -->
-            <input type="submit" value="send" class="btn btn-primary">
         </form>
 
         <script type="text/template" id="commentTemplate">

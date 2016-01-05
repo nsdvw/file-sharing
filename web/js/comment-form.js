@@ -8,7 +8,7 @@ $(function () {
             $(".media:has(a[data-reply-id=" + replyID + "])")
         );
         var replyButton = $("#reply");
-        replyButton.attr("data-reply-id", replyID).removeClass("invisible");
+        replyButton.attr("data-reply-id", replyID).removeClass("hidden");
         $(".reply-container", replyButton).text("Reply to #" + replyID);
     });
 
@@ -16,7 +16,7 @@ $(function () {
         $("#commentForm").prependTo("#comments");
         $("#commentForm .replyID").attr("value", "");
         var replyButton = $("#reply");
-        replyButton.addClass("invisible");
+        replyButton.addClass("hidden");
     });
 
 });

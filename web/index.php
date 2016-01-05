@@ -104,7 +104,7 @@ $app->map('/login', function () use ($app) {
             $app->response->redirect('/');
         }
     }
-    $app->render('login.tpl', ['loginForm' => $loginForm]);
+    $app->render('login.twig', ['loginForm' => $loginForm]);
 })->via('GET', 'POST');
 
 $app->map('/reg', function () use ($app) {

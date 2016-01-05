@@ -26,14 +26,14 @@ function validateLoginForm() {
         email.parents(".form-group").removeClass("has-error");
         password.parents(".form-group").removeClass("has-error");
         alertBox.text("");
-        alertBox.hide();
+        alertBox.slideUp();
     }
 }
 
 function showErrorMessage(errorMessage) {
     var alertBox = $(".alert.alert-danger");
     alertBox.text(errorMessage);
-    alertBox.show();
+    alertBox.slideDown();
 }
 
 function isEmpty(input) {

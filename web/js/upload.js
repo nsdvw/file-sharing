@@ -1,4 +1,3 @@
-/* i didn't find the jquery onprogress handler, so use native js  */
 function getXmlHttp() {
     var xmlhttp;
     try {
@@ -46,7 +45,6 @@ uploadButton.on("click", function (event) {
         var response = JSON.parse(this.responseText);
         if (response.error !== null) {
             errorBox.text(response.error);
-            console.log(response);
         } else {
             var id = response.text;
             window.location.href = decodeURI('/view/' + id);

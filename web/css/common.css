@@ -13,14 +13,21 @@ html, body {
     padding: 15px 0;
 }
 .navbar-inverse .navbar-nav>li>a,
-.navbar-inverse .navbar-brand {
+.navbar-inverse .navbar-brand,
+.navbar-static-top .btn-link {
     color: #ddd;
+}
+.navbar-static-top .btn-link:hover {
+    text-decoration: none;
 }
 .navbar.navbar-inverse.navbar-static-top {
     margin-bottom: 0;
 }
 .invisible {
     display: none;
+}
+.navbar-static-top .btn-link {
+    margin-top: 8px;
 }
 @media (min-width: 992px) {
     .file-description {

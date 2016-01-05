@@ -45,6 +45,10 @@ $app->container->singleton('loginManager', function () use ($app) {
 });
 
 $token = Token::init();
+$app->view->setData([
+    'loginManager'=>$app->loginManager,
+    'token'=>$token,
+]);
 
 $app->notFound(function () use ($app) {
     $title = 'FileSharing &mdash; page not found';

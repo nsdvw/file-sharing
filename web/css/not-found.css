@@ -1,0 +1,12 @@
+.center-container {
+    max-width: 50%;
+    margin: 40px auto 20px;
+}
+@media (max-width: 768px) {
+    .center-container {
+        max-width: 100%;
+    }
+}
+h1 {
+    text-align: center;
+}

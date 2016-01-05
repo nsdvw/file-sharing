@@ -51,8 +51,7 @@ $app->view->setData([
 ]);
 
 $app->notFound(function () use ($app) {
-    $title = 'FileSharing &mdash; page not found';
-    $app->render('404.tpl', ['title'=>$title] );
+    $app->render('404.twig');
 });
 
 $app->post('/logout', function () use ($app) {
@@ -60,17 +59,6 @@ $app->post('/logout', function () use ($app) {
         $app->loginManager->logout();
     }
     $app->response->redirect('/');
-});
-
-$app->get('/ajax/fileinfo/:id', function ($id) use ($app) {
-    header('Content-Type: application/json');
-    $file = $app->fileMapper->findById($id);
-    ViewHelper::createPreviewChecker($file);
-    if (!$file) {
-        echo json_encode("{\"error\": \"File not found\"}");
-    } else {
-        echo json_encode( $file->toArray() );
-    }
 });
 
 $app->map('/', function () use ($app) {
@@ -81,8 +69,10 @@ $app->map('/', function () use ($app) {
     if ($app->request->isPost()) {
         if ($uploadForm->validate() and $fileUploadService->upload($uploadForm)) {
             if ($isAjax) {
-                header('Content-Type: application/json');
-                echo JsonEncoder::createResponse($uploadForm->getFile()->id);
+                $app->response->headers->set('Content-Type', 'application/json');
+                $app->response->setBody(
+                    JsonEncoder::createResponse($uploadForm->getFile()->id)
+                );
                 $app->stop();
             } else {
                 $app->response->redirect(
@@ -91,8 +81,10 @@ $app->map('/', function () use ($app) {
             }
         } else {
             if ($isAjax) {
-                header('Content-Type: application/json');
-                echo JsonEncoder::createResponse(null, $uploadForm->errorMessage);
+                $app->response->headers->set('Content-Type', 'application/json');
+                $app->response->setBody(
+                    JsonEncoder::createResponse(null, $uploadForm->errorMessage)
+                );
                 $app->stop();
             }
         }
@@ -169,19 +161,22 @@ $app->map('/view/:id', function ($id) use ($app) {
         if ($commentForm->validate()) {
             $app->commentMapper->save($commentForm->getComment());
             if ($isAjax) {
-                header('Content-Type: application/json');
-                echo JsonEncoder::createResponse([
-                    'comment'=>$commentForm->getComment(),
-                    'author'=>$app->loginManager->getLoggedUser(),
-                ]);
+                $app->response->headers->set('Content-Type', 'application/json');
+                $app->response->setBody(
+                    JsonEncoder::createResponse([
+                        'comment'=>$commentForm->getComment(),
+                        'author'=>$app->loginManager->getLoggedUser(),
+                ]));
                 $app->stop();
             } else {
                 $app->redirect($app->request->getResourceUri());
             }
         } else {
             if ($isAjax) {
-                header('Content-Type: application/json');
-                echo JsonEncoder::createResponse(null, $commentForm->errorMessage);
+                $app->response->headers->set('Content-Type', 'application/json');
+                $app->response->setBody(
+                    JsonEncoder::createResponse(null, $commentForm->errorMessage)
+                );
                 $app->stop();
             }
         }

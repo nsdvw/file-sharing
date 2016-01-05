@@ -32,7 +32,7 @@
         {% endif %}
         <tr>
           <td>Downloads</td>
-          <td>{{ file.download_counter }}</td>
+          <td id="downloadCounter">{{ file.download_counter }}</td>
         </tr>
         <tr>
           <td>Uploaded</td>
@@ -53,7 +53,7 @@
                     '\\Storage\\Helper\\ViewHelper',
                     'getDownLoadUrl',
                     [file.id, file.name])}}"
-                    id="dowloadLink">download
+                    id="downloadLink">download
             </a>
           </td>
         </tr>

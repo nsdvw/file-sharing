@@ -32,6 +32,12 @@ $(function () {
             errorBox.text("Server error " + response.status + ", please try again later");
         });
     });
+
+    $("#downloadLink").on("click", function (event) {
+        var oldCounter = $("#downloadCounter").html();
+        $("#downloadCounter").html(++oldCounter);
+    });
+
 });
 
 function appendComment(templateSelector, form, comment, author) {
@@ -54,10 +60,16 @@ function appendComment(templateSelector, form, comment, author) {
     if ( form.is(":first-child") ) {
         $("#comments").append(template);
     } else {
-        var level = form.prev().data("level");
-        template.insertBefore(
-            $("#commentForm ~ .media[data-level=" + level + "]")
-        );
+        var level = +form.prev().data("level");
+        var currentEl = form.next();
+        while (currentEl.length > 0) {
+            if (currentEl.data("level") <= level) {
+                template.insertBefore(currentEl);
+                return;
+            }
+            currentEl = currentEl.next();
+        }
+        $("#comments").append(template);
     }
 }
 

@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS file_sharing;
+CREATE DATABASE file_sharing CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE file_sharing;
+
 CREATE TABLE user (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     login VARCHAR(50) NOT NULL,
@@ -6,6 +10,7 @@ CREATE TABLE user (
     salt VARCHAR(100) NOT NULL,
     registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (email),
+    UNIQUE (login),
     PRIMARY KEY (id)
 );
 
@@ -18,6 +23,8 @@ CREATE TABLE file (
     mime_type VARCHAR(100) NOT NULL,
     download_counter INT UNSIGNED NOT NULL DEFAULT 0,
     mediaInfo TEXT COMMENT 'specific params, packed in json-format string',
+    author_token VARCHAR(100) COMMENT 'to identify unregistered users',
+    best_before TIMESTAMP NOT NULL COMMENT 'expiration time',
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
@@ -30,8 +37,11 @@ CREATE TABLE comment (
     materialized_path VARCHAR(255) NOT NULL,
     parent_id INT UNSIGNED,
     added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (file_id) REFERENCES file (id),
-    FOREIGN KEY (author_id) REFERENCES user (id),
-    FOREIGN KEY (parent_id) REFERENCES comment (id),
+    FOREIGN KEY (file_id) REFERENCES file (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES user (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comment (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)
 );

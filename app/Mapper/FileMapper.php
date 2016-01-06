@@ -12,9 +12,11 @@ class FileMapper extends AbstractMapper
     {
         $sql =
         "INSERT INTO file
-            (name, author_id, size, mime_type, mediaInfo)
+            (name, author_id, size, mime_type,
+            mediaInfo, best_before, author_token)
         VALUES
-            (:name, :author_id, :size, :mime_type, :mediaInfo)";
+            (:name, :author_id, :size, :mime_type,
+            :mediaInfo, :best_before, :author_token)";
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':name', $file->name, \PDO::PARAM_STR);
         $sth->bindValue(':author_id', $file->author_id, \PDO::PARAM_INT);
@@ -22,6 +24,12 @@ class FileMapper extends AbstractMapper
         $sth->bindValue(':mime_type', $file->mime_type, \PDO::PARAM_STR);
         $mediaInfo = JsonEncoder::encode($file->mediaInfo);
         $sth->bindValue(':mediaInfo', $mediaInfo, \PDO::PARAM_STR);
+        $sth->bindValue(
+            ':best_before',
+            $file->best_before,
+            \PDO::PARAM_STR
+        );
+        $sth->bindValue(':author_token', $file->author_token, \PDO::PARAM_STR);
         $sth->execute();
         $file->id = $this->connection->lastInsertId();
     }

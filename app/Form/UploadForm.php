@@ -3,6 +3,7 @@ namespace FileSharing\Form;
 
 use FileSharing\Model\File;
 use FileSharing\Model\MediaInfo;
+use FileSharing\Helper\Token;
 use Slim\Http\Request;
 
 class UploadForm extends AbstractForm
@@ -73,5 +74,7 @@ class UploadForm extends AbstractForm
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $file->mime_type = $finfo->file($this->tempName);
         $file->mediaInfo = MediaInfo::fromFile($this->tempName);
+        $file->best_before = date('Y-m-d H:m:s', time() + 3600*24*7);
+        $file->author_token = Token::getToken();
     }
 }

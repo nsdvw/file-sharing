@@ -104,8 +104,6 @@ $app->map('/login', function () use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/reg', function () use ($app) {
-    $title = 'FileSharing &mdash; registration';
-    $bookmark = 'Sign up';
     $registerForm = new Form\RegisterForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateRegisterForm($registerForm)) {
@@ -114,12 +112,7 @@ $app->map('/reg', function () use ($app) {
             $app->response->redirect('/');
         }
     }
-    $app->render(
-        'register_form.tpl', [
-            'registerForm' => $registerForm,
-            'title' => $title,
-            'bookmark' => $bookmark,
-    ]);
+    $app->render('register_form.twig', ['registerForm' => $registerForm]);
 })->via('GET', 'POST');
 
 $app->get('/view', function () use ($app) {
@@ -189,5 +182,9 @@ $app->map('/view/:id', function ($id) use ($app) {
             'file'=>$file,
     ]);
 })->via('GET', 'POST');
+
+$app->get('/tos', function () use ($app) {
+    $app->render('tos.twig');
+});
 
 $app->run();

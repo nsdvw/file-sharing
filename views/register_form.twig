@@ -1,0 +1,96 @@
+{% extends "main.twig" %}
+
+{% block title %}FileSharing &mdash; registration{% endblock title %}
+{% block head %}
+  {{ parent() }}
+  <link rel="stylesheet" href="/css/login_form.css">
+{% endblock head %}
+
+{% block content %}
+
+  <div class="container">
+    <form action="/reg" method="POST" name="register" class="form-horizontal">
+
+      <div class="form-group">
+        <label for="email" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+          <input type="email" class="form-control" id="email" name="register[email]"
+          value="{{ registerForm.email|default('') }}" placeholder="email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="login" class="col-sm-2 control-label">Login</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="login" name="register[login]"
+          value="{{ registerForm.login|default('') }}" placeholder="login">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="password"
+          name="register[password]" value="{{ registerForm.password|default('') }}"
+          placeholder="password">
+        </div>
+      </div>
+
+      <div class="alert alert-danger
+        col-sm-offset-2 col-sm-10">{{ registerForm.errorMessage }}</div>
+        
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="register[remember]" checked> Remember me
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">Sign up</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+{% endblock content %}
+
+{#
+        <form action="" method="post" name="register" id="registerForm">
+            <div class="register-field-input">
+                <div>
+                    <input type="text" name="register[login]"
+                        value="{$registerForm->login|escape|default:''}">
+                </div>
+                <div class="register-field-error">{$registerForm->errorMessage}</div>
+            </div>
+            <div class="register-field-name">
+                <label for="register[email]">Email:</label>
+            </div>
+            <div class="register-field-input">
+                <div>
+                    <input type="text" name="register[email]"
+                        value="{$registerForm->email|escape|default:''}">
+                </div>
+            </div>
+            <div class="register-field-input">
+                <div>
+                    <input type="password" name="register[password]"
+                        value="{$registerForm->password|escape|default:''}">
+                </div>
+                <div class="register-field-error">
+                    {$registerForm|escape|default:''}
+                </div>
+            </div>
+            <div class="register-field-input">
+                <div>
+                    <input type="submit" value="sign up" class="small-button">
+                </div>
+            </div>
+        </form>
+#}

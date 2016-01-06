@@ -1,10 +1,6 @@
 <?php
 namespace FileSharing;
 
-use FileSharing\Model\Comment;
-use FileSharing\Form\CommentForm;
-use FileSharing\Helper\Pager;
-use FileSharing\Helper\Token;
 use FileSharing\Helper\ViewHelper;
 use FileSharing\Helper\JsonEncoder;
 
@@ -26,6 +22,8 @@ $function = new \Twig_SimpleFunction(
 $app->view()->getInstance()->addFunction($function);
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Text());
 
+Helper\Token::init();
+
 $app->container->singleton('connection', function () use ($config) {
     $dbh = new \PDO( $config['conn'], $config['user'], $config['pass'] );
     $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -44,18 +42,14 @@ $app->container->singleton('loginManager', function () use ($app) {
     return new Auth\LoginManager($app->userMapper);
 });
 
-$token = Token::init();
-$app->view->setData([
-    'loginManager'=>$app->loginManager,
-    'token'=>$token,
-]);
+$app->view->setData(['loginManager'=>$app->loginManager]);
 
 $app->notFound(function () use ($app) {
     $app->render('404.twig');
 });
 
 $app->post('/logout', function () use ($app) {
-    if (Token::checkToken()) {
+    if (Helper\Token::checkToken()) {
         $app->loginManager->logout();
     }
     $app->response->redirect('/');
@@ -117,13 +111,9 @@ $app->map('/reg', function () use ($app) {
 
 $app->get('/view', function () use ($app) {
     $page = $app->request->get('page') ? intval($app->request->get('page')) : 1;
-    $pager = new Pager( $page, $app->fileMapper->getFileCount(), 15 );
+    $pager = new Helper\Pager( $page, $app->fileMapper->getFileCount(), 15 );
     $list = $app->fileMapper->findAll($pager->getOffset(), $pager->perPage);
-    $app->render(
-        'list_info.twig', [
-            'list'=>$list,
-            'pager'=>$pager,
-    ]);
+    $app->render('list_info.twig', ['list'=>$list, 'pager'=>$pager]);
 });
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
@@ -144,11 +134,11 @@ $app->map('/view/:id', function ($id) use ($app) {
         $app->userMapper
     );
     $commentsAndAuthors = $pageViewService->getCommentsAndAuthors($id);
-    $loggedUserID = $app->loginManager->isLogged()
-                ? $app->loginManager->getUserID() : null;
-    $commentForm = new CommentForm($app->request, $file->id, $loggedUserID);
+    $commentForm = new Form\CommentForm(
+        $app->request, $file->id, $app->loginManager->getUserID()
+    );
     if ($app->request->isPost()) {
-        if (!$loggedUserID) {
+        if (!$app->loginManager->isLogged()) {
             $commentForm->setCaptchaRequired();
         }
         if ($commentForm->validate()) {

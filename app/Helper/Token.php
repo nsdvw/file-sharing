@@ -3,16 +3,18 @@ namespace FileSharing\Helper;
 
 class Token
 {
-    public static function init()
+    public static $token;
+
+    public static function init($expire = 604800)
     {
         if (!self::issetToken()) {
             $token = self::generateToken();
         } else {
             $token = self::getToken();
         }
-        $time = time() + 24*3600;
+        $time = time() + $expire;
         self::setToken($token, $time);
-        return $token;
+        self::$token = $token;
     }
 
     public static function generateToken()
@@ -31,7 +33,9 @@ class Token
     }
 
     public static function issetToken() {
-        if (!isset($_COOKIE['csrf_token'])) return false;
+        if (!isset($_COOKIE['csrf_token'])) {
+            return false;
+        }
         return true;
     }
 

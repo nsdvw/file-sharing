@@ -3,6 +3,7 @@ namespace FileSharing\Auth;
 
 use FileSharing\Mapper\UserMapper;
 use FileSharing\Model\User;
+use FileSharing\Helper\Token;
 use FileSharing\Helper\HashGenerator;
 use FileSharing\Form\LoginForm;
 use FileSharing\Form\RegisterForm;
@@ -10,13 +11,15 @@ use FileSharing\Form\RegisterForm;
 class LoginManager
 {
     private $mapper;
+    private $loggedUser = null;
 
-    public $loggedUser = null;
+    public $token;
 
     public function __construct(UserMapper $mapper)
     {
         $this->mapper = $mapper;
         $this->loggedUser = $this->getLoggedUser();
+        $this->token = Token::$token;
     }
 
     public function logout()

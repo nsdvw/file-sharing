@@ -44,7 +44,7 @@
                     <button type="submit" name="logoutForm[logout]"
                       class="btn btn-link">Logout</button>
                     <input type="hidden" name="logoutForm[csrf_token]"
-                      value="{{ token|default('') }}">
+                      value="{{ loginManager.token|default('') }}">
                   </form>
                 </li>
               {% else %}

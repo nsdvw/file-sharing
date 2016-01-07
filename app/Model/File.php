@@ -94,22 +94,4 @@ class File
         ];
         return in_array($this->mime_type, $types);
     }
-
-    public function toArray()
-    {
-        foreach ($this as $propertyName => $propertyValue) {
-            if ($propertyValue instanceof MediaInfo) {
-                foreach ($propertyValue as $key => $value) {
-                    $mediaInfo[$key] = $value;
-                }
-                $array[$propertyName] = $mediaInfo;
-            } else {
-                if ($propertyName === 'size')
-                    $propertyValue = ViewHelper::formatSize($propertyValue);
-                if ( in_array($propertyName, $this->getPublicFields()) )
-                    $array[$propertyName] = $propertyValue;
-            }
-        }
-        return $array;
-    }
 }

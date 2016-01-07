@@ -27,6 +27,7 @@ class LoginManager
     {
         setcookie('id', '');
         setcookie('hash', '');
+        $this->loggedUser = null;
     }
 
     public function getLoggedUser()
@@ -63,6 +64,7 @@ class LoginManager
     {
         setcookie('id', $user->id, time() + 3600*24*7, '/');
         setcookie('hash', $user->hash, time() + 3600*24*7, '/');
+        $this->loggedUser = $user;
     }
 
     public function getUserID()

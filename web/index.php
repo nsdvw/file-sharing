@@ -65,10 +65,7 @@ $app->map('/', function () use ($app) {
     if ($app->request->isPost()) {
         if ($uploadForm->validate() and $fileUploadService->upload($uploadForm)) {
             if ($isAjax) {
-                $app->response->headers->set('Content-Type', 'application/json');
-                $app->response->setBody(
-                    JsonEncoder::createResponse($uploadForm->getFile()->id)
-                );
+                ajaxResponse($app->response, $uploadForm->getFile()->id);
                 $app->stop();
             } else {
                 $app->response->redirect(
@@ -77,10 +74,7 @@ $app->map('/', function () use ($app) {
             }
         } else {
             if ($isAjax) {
-                $app->response->headers->set('Content-Type', 'application/json');
-                $app->response->setBody(
-                    JsonEncoder::createResponse(null, $uploadForm->errorMessage)
-                );
+                ajaxResponse($app->response, null, $uploadForm->errorMessage);
                 $app->stop();
             }
         }
@@ -146,22 +140,17 @@ $app->map('/view/:id', function ($id) use ($app) {
         if ($commentForm->validate()) {
             $app->commentMapper->save($commentForm->getComment());
             if ($isAjax) {
-                $app->response->headers->set('Content-Type', 'application/json');
-                $app->response->setBody(
-                    JsonEncoder::createResponse([
-                        'comment'=>$commentForm->getComment(),
-                        'login'=>$app->loginManager->getUserLogin(),
-                ]));
+                ajaxResponse($app->response, [
+                    'comment'=>$commentForm->getComment(),
+                    'login'=>$app->loginManager->getUserLogin(),
+                ]);
                 $app->stop();
             } else {
                 $app->redirect($app->request->getResourceUri());
             }
         } else {
             if ($isAjax) {
-                $app->response->headers->set('Content-Type', 'application/json');
-                $app->response->setBody(
-                    JsonEncoder::createResponse(null, $commentForm->errorMessage)
-                );
+                ajaxResponse($app->response, null, $commentForm->errorMessage);
                 $app->stop();
             }
         }
@@ -179,10 +168,7 @@ $app->map('/edit/:id', function ($id) use ($app) {
     $isAjax = ($app->request->get('ajax') !== null) ? true : false;
     if (!$file = $app->fileMapper->findById($id)) {
         if ($isAjax) {
-            $app->response->headers->set('Content-Type', 'application/json');
-            $app->response->setBody(
-                JsonEncoder::createResponse(null, 'Page not found')
-            );
+            ajaxResponse($app->response, null, 'Page not found');
             $app->stop();
         } else {
             $app->notFound();
@@ -200,13 +186,10 @@ $app->map('/edit/:id', function ($id) use ($app) {
             }
         }
         if ($isAjax) {
-            $app->response->headers->set('Content-Type', 'application/json');
-            $app->response->setBody(
-                JsonEncoder::createResponse([
-                    'description'=>$form->getFile()->description,
-                    'date'=>$form->getFile()->best_before,
-                ])
-            );
+            ajaxResponse($app->response, [
+                'description' => $form->getFile()->description,
+                'date' => $form->getFile()->best_before,
+            ]);
         } else {
             $app->render('edit_file.twig', [
                 'deleted' => $app->request->post('delete'),
@@ -215,10 +198,7 @@ $app->map('/edit/:id', function ($id) use ($app) {
         }
     } else {
         if ($isAjax) {
-            $app->response->headers->set('Content-Type', 'application/json');
-            $app->response->setBody(
-                JsonEncoder::createResponse(null, 'Access denied')
-            );
+            ajaxResponse($app->response, null, 'Access denied');
         } else {
             $app->render('403.twig', [], 403);
         }
@@ -230,3 +210,8 @@ $app->get('/tos', function () use ($app) {
 });
 
 $app->run();
+
+function ajaxResponse(\Slim\Http\Response $response, $text, $error = null) {
+    $response->headers->set('Content-Type', 'application/json');
+    $response->setBody(JsonEncoder::createResponse($text, $error));
+}

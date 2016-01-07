@@ -64,6 +64,7 @@
         </div><!-- .col-md-9 -->
     </div><!-- .row -->
 
+    {% if pager.linksCount > 1 %}
     <div class="row">
         <nav class="col-md-9 center-block my-pager">
            <ul class="pagination pagination-sm">
@@ -109,6 +110,7 @@
             </ul>
         </nav><!-- pagination -->
     </div><!-- row -->
+    {% endif %}
 
 </div><!-- .container -->
 {% endblock content %}

@@ -18,6 +18,11 @@
 
     <div class="file-description table-responsive panel panel-primary">
       <div class="panel-heading">File description</div>
+      {% if file.description %}
+        <div class="panel-body">
+          <p>{{ file.description }}</p>
+        </div>
+      {% endif %}
       <table class="table">
         <tr>
           <td>Name</td>

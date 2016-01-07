@@ -3,6 +3,7 @@ namespace FileSharing\Auth;
 
 use FileSharing\Mapper\UserMapper;
 use FileSharing\Model\User;
+use FileSharing\Model\File;
 use FileSharing\Helper\Token;
 use FileSharing\Helper\HashGenerator;
 use FileSharing\Form\LoginForm;
@@ -60,8 +61,8 @@ class LoginManager
 
     public function authorizeUser(User $user)
     {
-        setcookie('id', $user->id, time() + 3600*24*7);
-        setcookie('hash', $user->hash, time() + 3600*24*7);
+        setcookie('id', $user->id, time() + 3600*24*7, '/');
+        setcookie('hash', $user->hash, time() + 3600*24*7, '/');
     }
 
     public function getUserID()
@@ -78,5 +79,11 @@ class LoginManager
             return true;
         }
         return false;
+    }
+
+    public function hasRights(File $file)
+    {
+        return ($this->isLogged() and $file->author_id == $this->getUserID())
+            or ($this->token == $file->author_token);
     }
 }

@@ -29,7 +29,7 @@ class Token
     }
     public static function setToken($token, $time)
     {
-        setcookie('csrf_token', $token, $time);
+        setcookie('csrf_token', $token, $time, '/');
     }
 
     public static function issetToken() {

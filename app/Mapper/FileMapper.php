@@ -34,6 +34,19 @@ class FileMapper extends AbstractMapper
         $file->id = $this->connection->lastInsertId();
     }
 
+    public function update(File $file)
+    {
+        $sql = "UPDATE file
+                SET best_before = :best_before,
+                description = :description
+                WHERE id = :id";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindValue(':best_before', $file->best_before, \PDO::PARAM_STR);
+        $sth->bindValue(':description', $file->description, \PDO::PARAM_STR);
+        $sth->bindValue(':id', $file->id, \PDO::PARAM_INT);
+        $sth->execute();
+    }
+
     public function updateCounter($id)
     {
         $sql = "UPDATE file
@@ -67,7 +80,7 @@ class FileMapper extends AbstractMapper
     {
         $sql = "SELECT id, name, upload_time,
                 size, mime_type, download_counter,
-                author_id, mediaInfo
+                author_id, mediaInfo, author_token, best_before, description
                 FROM file WHERE id=:id";
         $sth = $this->connection->prepare($sql);
         $sth->bindValue(':id', $id, \PDO::PARAM_INT);
@@ -81,6 +94,14 @@ class FileMapper extends AbstractMapper
             JsonEncoder::decode($row->mediaInfo)
         );
         return $row;
+    }
+
+    public function delete($id)
+    {
+        $sql = "DELETE FROM file WHERE id=:id";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindValue(':id', $id, \PDO::PARAM_INT);
+        $sth->execute();
     }
 
     public function getFileCount()

@@ -1,6 +1,3 @@
-DROP DATABASE IF EXISTS file_sharing;
-CREATE DATABASE file_sharing CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE file_sharing;
 
 CREATE TABLE user (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -12,7 +9,7 @@ CREATE TABLE user (
     UNIQUE (email),
     UNIQUE (login),
     PRIMARY KEY (id)
-);
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE file (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -29,7 +26,7 @@ CREATE TABLE file (
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
     INDEX ix_token (author_token),
     PRIMARY KEY (id)
-);
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE comment (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -46,4 +43,4 @@ CREATE TABLE comment (
     FOREIGN KEY (parent_id) REFERENCES comment (id)
         ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id)
-);
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_bin;

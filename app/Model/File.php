@@ -8,10 +8,12 @@ class File
     public $id;
     public $name;
     public $author_id;
+    public $author_token;
     public $size;
     public $mime_type;
     public $mediaInfo;
     public $upload_time;
+    public $best_before;
     public $download_counter;
 
     private function getPublicFields()

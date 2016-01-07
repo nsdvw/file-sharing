@@ -1,0 +1,17 @@
+{% extends "main.twig" %}
+
+{% block title %}FileSharing &mdash; edit file{% endblock title %}
+{% block head %}
+  {{ parent() }}
+  <link rel="stylesheet" href="/css/edit-file.css">
+{% endblock head %}
+
+{% block content %}
+<div class="container-center">
+  {% if deleted %}
+    <p class="alert alert-success">The file was successfully deleted</p>
+  {% else %}
+    {% include "file_form.twig" %}
+  {% endif %}
+</div>
+{% endblock content %}

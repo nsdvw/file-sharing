@@ -1,0 +1,41 @@
+<form action="/edit/{{file.id}}" method="POST" name="edit" class="panel panel-default">
+  <div class="panel-body">
+
+    <div class="form-group">
+      <label for="description">File description</label>
+      <textarea class="form-control" id="description" name="edit[description]"
+      placeholder="Add description..." rows="3">{{ file.description }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="best_before">
+        Storage time expires {{ file.best_before|time_diff }}
+      </label>
+      <select name="edit[expiration]" id="expiration" class="form-control">
+        <option value="{{file.best_before}}">Do not prolong</option>
+        <option value="{{file.best_before|date_modify("+1 day")|date('Y-m-d H:i:s')}}">One day</option>
+        <option value="{{file.best_before|date_modify("+7 days")|date('Y-m-d H:i:s')}}">One week</option>
+        <option value="{{file.best_before|date_modify("+14 days")|date('Y-m-d H:i:s')}}">Two weeks</option>
+        <option value="{{file.best_before|date_modify("+30 days")|date('Y-m-d H:i:s')}}">One month</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-warning pull-right">Update</button>
+    </div>
+
+  </div><!-- panel-body -->
+</form>
+
+
+<form action="/edit/{{file.id}}" method="POST" name="delete" class="panel panel-default">
+  <div class="panel-body">
+
+    <div class="form-group">
+      <input type="hidden" name="delete[csrf_token]"
+        value="{{loginManager.token|default('')}}">
+      <button class="btn btn-danger pull-right">Delete</button>
+    </div>
+
+  </div>
+</form>

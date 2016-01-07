@@ -183,6 +183,7 @@ $app->map('/edit/:id', function ($id) use ($app) {
             $app->response->setBody(
                 JsonEncoder::createResponse(null, 'Page not found')
             );
+            $app->stop();
         } else {
             $app->notFound();
         }

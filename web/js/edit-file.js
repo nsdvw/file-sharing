@@ -17,7 +17,7 @@ $(function () {
             "contentType": false
         }).done(function (response) {
             if (response.error) {
-                errorBox.text(response.error).slideDown();
+                errorBox.text(response.error).slideUp();
             } else {
                 var description = response.text.description;
                 var date = new Date(response.text.date);

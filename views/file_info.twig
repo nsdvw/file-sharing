@@ -56,7 +56,7 @@
             loginManager.getUserID() == file.author_id) or
             loginManager.token == file.author_token %}
                 <button class="btn btn-warning pull-right" id="modal-trigger"
-                data-toggle="modal" data-target="#editForm">update</button>
+                data-toggle="modal" data-target="#modalForms">update</button>
             {% endif %}
           </td>
           <td>
@@ -72,7 +72,7 @@
       </table>
     </div><!-- div.table-responsive -->
 
-    <div class="modal fade" id="editForm" tabindex="-1" role="dialog"
+    <div class="modal fade" id="modalForms" tabindex="-1" role="dialog"
       aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">

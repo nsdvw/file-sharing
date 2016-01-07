@@ -17,15 +17,17 @@ CREATE TABLE user (
 CREATE TABLE file (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
+    description TEXT,
     upload_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     author_id INT UNSIGNED,
     size INT UNSIGNED NOT NULL,
     mime_type VARCHAR(100) NOT NULL,
     download_counter INT UNSIGNED NOT NULL DEFAULT 0,
-    mediaInfo TEXT COMMENT 'specific params, packed in json-format string',
+    mediaInfo TEXT COMMENT 'specific params, packed in json string',
     author_token VARCHAR(100) COMMENT 'to identify unregistered users',
     best_before TIMESTAMP NOT NULL COMMENT 'expiration time',
     FOREIGN KEY (author_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    INDEX ix_token (author_token),
     PRIMARY KEY (id)
 );
 

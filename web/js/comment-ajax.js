@@ -23,8 +23,8 @@ $(function () {
                 refreshCaptcha();
             } else {
                 var comment = response.text.comment;
-                var author = response.text.author;
-                appendComment("#commentTemplate", $(form), comment, author);
+                var login = response.text.login;
+                appendComment("#commentTemplate", $(form), comment, login);
                 form.reset();
                 refreshCaptcha();
             }
@@ -40,7 +40,7 @@ $(function () {
 
 });
 
-function appendComment(templateSelector, form, comment, author) {
+function appendComment(templateSelector, form, comment, login) {
     var template = $(templateSelector).html();
     for (var i = 0; i < 2; i++) {
         var indexOfLevel = template.indexOf("{level}");
@@ -49,8 +49,8 @@ function appendComment(templateSelector, form, comment, author) {
                 + template.substring(indexOfLevel + 7);
     }
     template = $(template);
-    author = author || 'Anonymous';
-    $(".media-heading", template).text(author.login);
+    login = login || 'Anonymous';
+    $(".media-heading", template).text(login);
     $(".comment-text", template).text(comment.contents);
     $(".added", template).text(comment.added);
     $(".reply", template)

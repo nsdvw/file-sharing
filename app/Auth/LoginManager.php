@@ -94,4 +94,15 @@ class LoginManager
         return ($this->isLogged() and $file->author_id == $this->getUserID())
             or ($this->token == $file->author_token);
     }
+
+    public function checkToken($formData)
+    {
+        if (!isset($formData['csrf_token'])) {
+            return false;
+        }
+        if ($this->token !== $formData['csrf_token']) {
+            return false;
+        }
+        return true;
+    }
 }

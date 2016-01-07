@@ -38,13 +38,4 @@ class Token
         }
         return true;
     }
-
-    public static function checkToken()
-    {
-        if (!isset($_POST['logoutForm']['csrf_token'])) return false;
-        $postToken = $_POST['logoutForm']['csrf_token'];
-        $cookieToken = self::getToken();
-        if ($postToken !== $cookieToken) return false;
-        return true;
-    }
 }

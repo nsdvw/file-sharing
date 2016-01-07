@@ -51,7 +51,7 @@ $app->notFound(function () use ($app) {
 });
 
 $app->post('/logout', function () use ($app) {
-    if (Helper\Token::checkToken()) {
+    if ( $app->loginManager->checkToken($app->request->post('logoutForm')) ) {
         $app->loginManager->logout();
     }
     $app->response->redirect('/');
@@ -191,9 +191,11 @@ $app->map('/edit/:id', function ($id) use ($app) {
     if ($app->loginManager->hasRights($file)) {
         $form = new Form\EditFileForm($app->request, $id);
         if ($app->request->isPost()) {
-            if ($app->request->post('edit')) {
+            if ( $app->loginManager->checkToken($app->request->post('edit')) ) {
                 $app->fileMapper->update($form->getFile());
-            } elseif ($app->request->post('delete')) {
+            } elseif ($app->loginManager->checkToken(
+                $app->request->post('delete'))
+            ) {
                 $app->fileMapper->delete($id);
             }
         }

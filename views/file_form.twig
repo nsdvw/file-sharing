@@ -1,4 +1,5 @@
-<form action="/edit/{{file.id}}" method="POST" name="edit" class="panel panel-default">
+<form action="/edit/{{file.id}}" method="POST" name="edit"
+class="panel panel-default" id="editForm">
   <div class="panel-body">
 
     <div class="form-group">
@@ -8,7 +9,7 @@
     </div>
 
     <div class="form-group">
-      <label for="best_before">
+      <label for="best_before" id="expireLabel">
         Storage time expires {{ file.best_before|time_diff }}
       </label>
       <select name="edit[expiration]" id="expiration" class="form-control">
@@ -27,8 +28,11 @@
   </div><!-- panel-body -->
 </form>
 
+<p id="errorBox" class="alert alert-danger"></p>
+<p id="successBox" class="alert alert-success"></p>
 
-<form action="/edit/{{file.id}}" method="POST" name="delete" class="panel panel-default">
+<form action="/edit/{{file.id}}" method="POST" name="delete"
+class="panel panel-default" id="deleteForm">
   <div class="panel-body">
 
     <div class="form-group">

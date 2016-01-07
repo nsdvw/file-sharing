@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/css/file-description.css">
   <script src="/js/comment-ajax.js"></script>
   <script src="/js/comment-form.js"></script>
+  <script src="/js/edit-file.js"></script>
 {% endblock head %}
 
 {% block content %}
@@ -54,8 +55,8 @@
             {% if (loginManager.isLogged() and
             loginManager.getUserID() == file.author_id) or
             loginManager.token == file.author_token %}
-                <a class="btn btn-warning pull-right"
-                href="/edit/{{file.id}}">update</a>
+                <button class="btn btn-warning pull-right" id="modal-trigger"
+                data-toggle="modal" data-target="#editForm">update</button>
             {% endif %}
           </td>
           <td>
@@ -70,6 +71,25 @@
         </tr>
       </table>
     </div><!-- div.table-responsive -->
+
+    <div class="modal fade" id="editForm" tabindex="-1" role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+            aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Update file</h4>
+          </div>
+          <div class="modal-body">
+            {% include "file_form.twig" %}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- modal -->
 
     {% if file.isImage() %}
         {% include "image_preview.twig" %}

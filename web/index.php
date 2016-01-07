@@ -176,8 +176,16 @@ $app->map('/view/:id', function ($id) use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/edit/:id', function ($id) use ($app) {
+    $isAjax = ($app->request->get('ajax') !== null) ? true : false;
     if (!$file = $app->fileMapper->findById($id)) {
-        $app->notFound();
+        if ($isAjax) {
+            $app->response->headers->set('Content-Type', 'application/json');
+            $app->response->setBody(
+                JsonEncoder::createResponse(null, 'Page not found')
+            );
+        } else {
+            $app->notFound();
+        }
     }
     if ($app->loginManager->hasRights($file)) {
         $form = new Form\EditFileForm($app->request, $id);
@@ -188,12 +196,29 @@ $app->map('/edit/:id', function ($id) use ($app) {
                 $app->fileMapper->delete($id);
             }
         }
-        $app->render('edit_file.twig', [
-            'deleted' => $app->request->post('delete'),
-            'file' => $file,
-        ]);
+        if ($isAjax) {
+            $app->response->headers->set('Content-Type', 'application/json');
+            $app->response->setBody(
+                JsonEncoder::createResponse([
+                    'description'=>$form->getFile()->description,
+                    'date'=>$form->getFile()->best_before,
+                ])
+            );
+        } else {
+            $app->render('edit_file.twig', [
+                'deleted' => $app->request->post('delete'),
+                'file' => $file,
+            ]);
+        }
     } else {
-        $app->render('403.twig', [], 403);
+        if ($isAjax) {
+            $app->response->headers->set('Content-Type', 'application/json');
+            $app->response->setBody(
+                JsonEncoder::createResponse(null, 'Access denied')
+            );
+        } else {
+            $app->render('403.twig', [], 403);
+        }
     }
 })->via('GET', 'POST');
 

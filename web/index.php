@@ -150,7 +150,7 @@ $app->map('/view/:id', function ($id) use ($app) {
                 $app->response->setBody(
                     JsonEncoder::createResponse([
                         'comment'=>$commentForm->getComment(),
-                        'author'=>$app->loginManager->getLoggedUser(),
+                        'login'=>$app->loginManager->getUserLogin(),
                 ]));
                 $app->stop();
             } else {

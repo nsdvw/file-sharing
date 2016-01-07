@@ -73,6 +73,14 @@ class LoginManager
         return null;
     }
 
+    public function getUserLogin()
+    {
+        if ($this->isLogged()) {
+            return $this->loggedUser->login;
+        }
+        return null;
+    }
+
     public function isLogged()
     {
         if ($this->loggedUser !== null) {

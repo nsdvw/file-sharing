@@ -14,6 +14,7 @@ $app = new \Slim\Slim([
         'templates.path' => '../views',
 ]);
 // $app->view()->parserOptions = ['cache' => '../twig_cache'];
+
 $function = new \Twig_SimpleFunction(
     'callStaticMethod',
     function ($class, $method, array $args) {
@@ -21,6 +22,7 @@ $function = new \Twig_SimpleFunction(
 });
 $app->view()->getInstance()->addFunction($function);
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Text());
+$app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Date());
 
 Helper\Token::init();
 
@@ -171,6 +173,28 @@ $app->map('/view/:id', function ($id) use ($app) {
             'form'=>$commentForm,
             'file'=>$file,
     ]);
+})->via('GET', 'POST');
+
+$app->map('/edit/:id', function ($id) use ($app) {
+    if (!$file = $app->fileMapper->findById($id)) {
+        $app->notFound();
+    }
+    if ($app->loginManager->hasRights($file)) {
+        $form = new Form\EditFileForm($app->request, $id);
+        if ($app->request->isPost()) {
+            if ($app->request->post('edit')) {
+                $app->fileMapper->update($form->getFile());
+            } elseif ($app->request->post('delete')) {
+                $app->fileMapper->delete($id);
+            }
+        }
+        $app->render('edit_file.twig', [
+            'deleted' => $app->request->post('delete'),
+            'file' => $file,
+        ]);
+    } else {
+        $app->render('403.twig', [], 403);
+    }
 })->via('GET', 'POST');
 
 $app->get('/tos', function () use ($app) {

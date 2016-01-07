@@ -25,6 +25,13 @@ class RegisterForm extends AbstractForm
         $this->password = isset($registerData['password'])
                           ? $registerData['password'] : null;
         $this->user = new User;
+        $this->user->login = $this->login;
+        $this->user->email = $this->email;
+        $this->user->salt = HashGenerator::generateSalt();
+        $this->user->hash = HashGenerator::generateHash(
+            $this->user->salt,
+            $this->password
+        );
     }
 
     public function validateUniqueEmail($user = null)
@@ -50,15 +57,6 @@ class RegisterForm extends AbstractForm
 
     public function getUser()
     {
-        if ($this->user->email == null) {
-            $this->user->login = $this->login;
-            $this->user->email = $this->email;
-            $this->user->salt = HashGenerator::generateSalt();
-            $this->user->hash = HashGenerator::generateHash(
-                $this->user->salt,
-                $this->password
-            );
-        }
         return $this->user;
     }
 }

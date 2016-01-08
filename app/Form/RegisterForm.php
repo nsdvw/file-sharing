@@ -7,7 +7,8 @@ use FileSharing\Model\User;
 
 class RegisterForm extends AbstractForm
 {
-    const NOT_UNIQUE = 'User with such email is already exists';
+    const MAIL_NOT_UNIQUE = 'User with such email is already exists';
+    const LOGIN_OCCUPIED = 'This login is already occupied, try another';
 
     public $login;
     public $email;
@@ -39,7 +40,16 @@ class RegisterForm extends AbstractForm
         if (!$user) {
             return true;
         }
-        $this->errorMessage = self::NOT_UNIQUE;
+        $this->errorMessage = self::MAIL_NOT_UNIQUE;
+        return false;
+    }
+
+    public function validateUniqueLogin($id)
+    {
+        if (!$id) {
+            return true;
+        }
+        $this->errorMessage = self::LOGIN_OCCUPIED;
         return false;
     }
 

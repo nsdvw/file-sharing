@@ -57,7 +57,11 @@ class LoginManager
             return false;
         }
         $foundUser = $this->mapper->findByEmail($form->email);
-        return $form->validateUniqueEmail($foundUser);
+        if (!$form->validateUniqueEmail($foundUser)) {
+            return false;
+        }
+        $foundUserID = $this->mapper->findByLogin($form->login);
+        return $form->validateUniqueLogin($foundUserID);
     }
 
     public function authorizeUser(User $user)

@@ -42,6 +42,15 @@ class UserMapper extends AbstractMapper
         return $sth->fetch();
     }
 
+    public function findByLogin($login)
+    {
+        $sql = "SELECT COUNT(id) FROM user WHERE login=:login";
+        $sth = $this->connection->prepare($sql);
+        $sth->bindValue(':login', $login, \PDO::PARAM_STR);
+        $sth->execute();
+        return $sth->fetchColumn();
+    }
+
     public function findAllByID(array $ids)
     {
         $ids = array_filter(array_unique($ids));

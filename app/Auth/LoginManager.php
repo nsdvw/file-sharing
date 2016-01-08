@@ -64,10 +64,11 @@ class LoginManager
         return $form->validateUniqueLogin($foundUserID);
     }
 
-    public function authorizeUser(User $user)
+    public function authorizeUser(User $user, $remember = true)
     {
-        setcookie('id', $user->id, time() + 3600*24*7, '/');
-        setcookie('hash', $user->hash, time() + 3600*24*7, '/');
+        $time = $remember ? time() + 3600*24*7 : 0;
+        setcookie('id', $user->id, $time, '/');
+        setcookie('hash', $user->hash, $time, '/');
         $this->loggedUser = $user;
     }
 

@@ -13,6 +13,7 @@ class LoginForm extends AbstractForm
 
     public $email;
     public $password;
+    public $remember;
 
     public function __construct(Request $request)
     {
@@ -20,6 +21,7 @@ class LoginForm extends AbstractForm
         $this->email = isset($loginData['email']) ? $loginData['email'] : null;
         $this->password =
             isset($loginData['password']) ? $loginData['password'] : null;
+        $this->remember = isset($loginData['remember']);
     }
 
     public function validatePassword($user = null)

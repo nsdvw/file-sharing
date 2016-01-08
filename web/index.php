@@ -86,7 +86,10 @@ $app->map('/login', function () use ($app) {
     $loginForm = new Form\LoginForm($app->request);
     if ($app->request->isPost()) {
         if ($app->loginManager->validateLoginForm($loginForm)) {
-            $app->loginManager->authorizeUser($loginForm->getUser());
+            $app->loginManager->authorizeUser(
+                $loginForm->getUser(),
+                $loginForm->remember
+            );
             $app->response->redirect('/');
         }
     }

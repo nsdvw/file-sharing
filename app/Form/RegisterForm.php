@@ -13,6 +13,7 @@ class RegisterForm extends AbstractForm
     public $login;
     public $email;
     public $password;
+    public $remember;
 
     private $user;
 
@@ -25,6 +26,7 @@ class RegisterForm extends AbstractForm
                        ? $registerData['email'] : null;
         $this->password = isset($registerData['password'])
                           ? $registerData['password'] : null;
+        $this->remember = isset($registerData['remember']);
         $this->user = new User;
         $this->user->login = $this->login;
         $this->user->email = $this->email;

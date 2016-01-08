@@ -58,7 +58,7 @@ class UserMapper extends AbstractMapper
             return $ids;
         }
         $ids = implode(',', array_filter($ids));
-        $sql = "SELECT id, login, email FROM user WHERE id IN ({$ids})";
+        $sql = "SELECT id, login, email FROM user WHERE id find_in_set(cast(id as CHAR), $ids)";
         $sth = $this->connection->prepare($sql);
         $sth->execute();
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\User');

@@ -3,16 +3,15 @@ $(function () {
     if(alertBox.text() == "") {
         alertBox.hide();
     }
-    var email = $("#email");
-    var password = $("#password");
-    email.on("blur", validateLoginForm);
-    password.on("blur", validateLoginForm);
+    $("#email, #password").on("blur", validateLoginForm);
 });
 
 function validateLoginForm() {
     var email = $("#email");
     var password = $("#password");
     var alertBox = $(".alert.alert-danger");
+    $("#loginForm").children().removeClass("has-error");
+    alertBox.hide();
     if (isEmpty( email )) {
         email.parents(".form-group").addClass("has-error");
         showErrorMessage("Email is a required field");
@@ -23,8 +22,7 @@ function validateLoginForm() {
         password.parents(".form-group").addClass("has-error");
         showErrorMessage("Password is a required field");
     } else {
-        email.parents(".form-group").removeClass("has-error");
-        password.parents(".form-group").removeClass("has-error");
+        $("#loginForm").children().removeClass("has-error");
         alertBox.text("");
         alertBox.slideUp();
     }

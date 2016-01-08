@@ -3,14 +3,8 @@ $(function () {
     if(alertBox.text() == "") {
         alertBox.hide();
     }
-    var email = $("#email");
-    var password = $("#password");
-    var login = $("#login");
-    var repeatPassword = $("#repeat-password");
-    email.on("blur", validateRegisterForm);
-    password.on("blur", validateRegisterForm);
-    login.on("blur", validateRegisterForm);
-    repeatPassword.on("blur", validateRegisterForm);
+    $("#email, #password, #login, #repeat-password")
+        .on("blur", validateRegisterForm);
 });
 
 function validateRegisterForm() {
@@ -19,10 +13,7 @@ function validateRegisterForm() {
     var repeatPassword = $("#repeat-password");
     var login = $("#login");
     var alertBox = $(".alert.alert-danger");
-    email.parents(".form-group").removeClass("has-error");
-    password.parents(".form-group").removeClass("has-error");
-    repeatPassword.parents(".form-group").removeClass("has-error");
-    login.parents(".form-group").removeClass("has-error");
+    $("#registerForm").children().removeClass("has-error");
     alertBox.hide();
     if (isEmpty( email )) {
         email.parents(".form-group").addClass("has-error");
@@ -43,10 +34,7 @@ function validateRegisterForm() {
         repeatPassword.parents(".form-group").addClass("has-error");
         showErrorMessage("Passwords doesn't match");
     } else {
-        email.parents(".form-group").removeClass("has-error");
-        password.parents(".form-group").removeClass("has-error");
-        repeatPassword.parents(".form-group").removeClass("has-error");
-        login.parents(".form-group").removeClass("has-error");
+        $("#registerForm").children().removeClass("has-error");
         alertBox.text("");
         alertBox.slideUp();
     }

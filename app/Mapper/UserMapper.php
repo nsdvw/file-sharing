@@ -57,8 +57,8 @@ class UserMapper extends AbstractMapper
         if (!$ids) {
             return $ids;
         }
-        $ids = implode(',', array_filter($ids));
-        $sql = "SELECT id, login, email FROM user WHERE id find_in_set(cast(id as CHAR), $ids)";
+        $ids = $this->quote($ids);
+        $sql = "SELECT id, login, email FROM user WHERE id IN {$ids}";
         $sth = $this->connection->prepare($sql);
         $sth->execute();
         $sth->setFetchMode(\PDO::FETCH_CLASS, '\FileSharing\Model\User');
@@ -73,5 +73,16 @@ class UserMapper extends AbstractMapper
             $indexedArray[$user->id] = $user;
         }
         return $indexedArray;
+    }
+
+    private function quote($value, $type = \PDO::PARAM_STR)
+    {
+        if (! is_array($value)) {
+            return $this->connection->quote($value, $type);
+        }
+        foreach ($value as $k => $v) {
+            $value[$k] = $this->connection->quote($v, $type);
+        }
+        return implode(', ', $value);
     }
 }

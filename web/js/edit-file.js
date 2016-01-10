@@ -31,4 +31,9 @@ $(function () {
         });
     });
 
+    $("#modal-trigger").on("click", function (event) {
+      event.preventDefault();
+      $("#modalForms").modal('toggle');
+    });
+
 });

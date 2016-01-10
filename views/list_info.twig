@@ -70,7 +70,7 @@
            <ul class="pagination pagination-sm">
             {% if pager.currentPage == pager.getFirstPage() %}
                 <li class="disabled">
-                    <a href=".">&laquo;</a>
+                    <span>&laquo;</span>
                 </li>
             {% else %}
                 <li>
@@ -105,7 +105,7 @@
                     ) }}">&raquo;</a>
                 </li>
             {% else %}
-                <li class="disabled"><a href="">&raquo;</a></li>
+                <li class="disabled"><span>&raquo;</span></li>
             {% endif %}
             </ul>
         </nav><!-- pagination -->

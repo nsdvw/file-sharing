@@ -12,6 +12,7 @@ $config = require '../config.php';
 $app = new \Slim\Slim([
         'view' => new \Slim\Views\Twig(),
         'templates.path' => '../views',
+        'debug' => false,
 ]);
 // $app->view()->parserOptions = ['cache' => '../twig_cache'];
 
@@ -48,6 +49,14 @@ $app->view->setData(['loginManager'=>$app->loginManager]);
 
 $app->notFound(function () use ($app) {
     $app->render('404.twig');
+});
+
+$app->error(function (\Exception $e) use ($app) {
+    $logMessage = "Exception '" . get_class($e) . "' with message '" .
+                  $e->getMessage() . "' in " . $e->getFile() . ":" .
+                  $e->getLine() . "\nStack trace:\n" . $e->getTraceAsString();
+    $app->log->info($logMessage);
+    $app->render('500.twig');
 });
 
 $app->post('/logout', function () use ($app) {

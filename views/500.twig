@@ -1,0 +1,16 @@
+{% extends "main.twig" %}
+
+{% block title %}FileSharing &mdash; error{% endblock title %}
+{% block head %}
+  {{ parent() }}
+  <link rel="stylesheet" href="/css/not-found.css">
+{% endblock head %}
+
+{% block content %}
+  <div class="center-container">
+    <h1>Error</h1>
+    <h4>A website error has occurred. The website administrator has been notified of the issue. Sorry for the temporary inconvenience.</h4>
+    <img src="/image/monkey-mechanic.jpg"
+    alt="you shall not pass!" class="img-responsive img-rounded center-block">
+  </div>
+{% endblock content %}

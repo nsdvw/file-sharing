@@ -7,6 +7,7 @@ cp vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff web/fonts/
 cp vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2 web/fonts/glyphicons-halflings-regular.woff2;
 
 cp vendor/components/jquery/jquery.min.js web/vendor-js/jquery.min.js;
+cp vendor/components/handlebars/handlebars.min.js web/vendor-js/handlebars.min.js;
 
 cp vendor/codepo8/CustomFileInputs/css/component.css web/vendor-css/component.css;
 cp vendor/codepo8/CustomFileInputs/css/normalize.css web/vendor-css/normalize.css;

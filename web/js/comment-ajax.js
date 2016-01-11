@@ -41,29 +41,31 @@ $(function () {
 });
 
 function appendComment(templateSelector, form, comment, login) {
-    var template = $( $(templateSelector).html() );
-    template.addClass("level-" + comment.level).attr("data-level", comment.level);
     login = login || 'Anonymous';
-    $(".media-heading", template).text(login);
-    $(".comment-text", template).text(comment.contents);
-    $(".added", template).text(comment.added);
-    $(".reply", template)
-        .attr("href", "/view/" + comment.file_id + "?reply=" + comment.id)
-        .attr("data-reply-id", comment.id)
-        .html("#" + comment.id + " Reply");
+    var source = $(templateSelector).html();
+    var template = Handlebars.compile(source);
+    var context = {
+        "level": comment.level,
+        "login": login,
+        "contents": comment.contents,
+        "added": comment.added,
+        "file_id": comment.file_id,
+        "comment_id": comment.id
+    };
+    var html = template(context);
     if ( form.is(":first-child") ) {
-        $("#comments").append(template);
+        $("#comments").append(html);
     } else {
         var level = +form.prev().data("level");
         var currentEl = form.next();
         while (currentEl.length > 0) {
             if (currentEl.data("level") <= level) {
-                template.insertBefore(currentEl);
+                $(html).insertBefore(currentEl);
                 return;
             }
             currentEl = currentEl.next();
         }
-        $("#comments").append(template);
+        $("#comments").append(html);
     }
 }
 

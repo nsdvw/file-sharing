@@ -41,14 +41,8 @@ $(function () {
 });
 
 function appendComment(templateSelector, form, comment, login) {
-    var template = $(templateSelector).html();
-    for (var i = 0; i < 2; i++) {
-        var indexOfLevel = template.indexOf("{level}");
-        template = template.substring(0, indexOfLevel)
-                + comment.level
-                + template.substring(indexOfLevel + 7);
-    }
-    template = $(template);
+    var template = $( $(templateSelector).html() );
+    template.addClass("level-" + comment.level).attr("data-level", comment.level);
     login = login || 'Anonymous';
     $(".media-heading", template).text(login);
     $(".comment-text", template).text(comment.contents);

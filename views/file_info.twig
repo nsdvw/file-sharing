@@ -118,7 +118,7 @@
                 <input type="hidden" class="replyID" name="comment_form[reply_id]"
                     value="{{ reply }}">
             </div>
-            <p class="text-danger">{{ form.errorMessage }}</p>
+            <p class="text-danger" id="errorMessage">{{ form.errorMessage }}</p>
             <input type="submit" value="send" class="btn btn-primary">
             {% if not loginManager.islogged() %}
                 <div class="comment-captcha">
@@ -127,6 +127,9 @@
                     <input type="text" name="comment_form[captcha]">
                 </div>
             {% endif %}
+            <script type="text/javascript">
+              var fileID = {{ file.id }};
+            </script>
         </form>
 
         {% verbatim %}

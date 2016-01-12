@@ -1,36 +1,41 @@
 $(function () {
-    $("#commentForm").on("submit", function (event) {
+    var form = $("#commentForm");
+
+    form.on("submit", function (event) {
         event.preventDefault();
-        var errorBox = $("#commentForm .text-danger");
+        $(":submit", form).prop("disabled", true);
+        var errorBox = $("#errorMessage");
         if (!validateCommentForm()) {
             return;
         }
-        var form = document.forms.comment_form;
-        var formData = new FormData(form);
-        var replyID = form.querySelector(".replyID").value;
-        errorBox.text("");
+        var replyID = $("[name='comment_form[reply_id]']", form).val();
+        var formData = {
+            "comment_form[contents]": $("[name='comment_form[contents]']", form).val(),
+            "comment_form[reply_id]": replyID,
+        };
+        showError("", errorBox);
         $.ajax({
             "method": "POST",
-            "url": "/view/" + window.location.pathname.split("/").pop() +
+            "url": "/view/" + fileID +
                 "?ajax&reply=" + replyID,
             "data": formData,
-            "dataType": "json",
-            "processData": false,
-            "contentType": false
+            "dataType": "json"
         }).done(function (response) {
             if (response.error) {
-                errorBox.text(response.error);
+                showError(response.error, errorBox);
                 refreshCaptcha();
             } else {
                 var comment = response.text.comment;
                 var login = response.text.login;
-                appendComment("#commentTemplate", $(form), comment, login);
-                form.reset();
+                appendComment("#commentTemplate", form, comment, login);
+                form.trigger("reset");
                 refreshCaptcha();
             }
         }).fail(function (response) {
-            errorBox.text("Server error " + response.status + ", please try again later");
+            var msg = "Server error " + response.status + ", please try again later";
+            showError(msg, errorBox);
         });
+        $(":submit", form).prop("disabled", false);
     });
 
     $("#downloadLink").on("click", function (event) {
@@ -70,17 +75,17 @@ function appendComment(templateSelector, form, comment, login) {
 }
 
 function validateCommentForm() {
-    var errorBox = $("#commentForm .text-danger");
-    var textarea = $("#commentForm .comment-area").val();
-    var captcha = $("#commentForm input[type=text]").val();
+    var errorBox = $("#errorMessage");
+    var textarea = $(".comment-area", form).val();
+    var captcha = $(":text", form).val();
     if (textarea == "") {
-        errorBox.text("Message is empty!");
+        showError("Message is empty!", errorBox);
         return false;
     } else if (captcha == "") {
-        errorBox.text("Captcha required");
+        showError("Captcha required", errorBox);
         return false;
     } else if (textarea.length > 10000) {
-        errorBox.text("Message is too long");
+        showError("Message is too long", errorBox);
         return false;
     }
     return true;
@@ -88,4 +93,9 @@ function validateCommentForm() {
 
 function refreshCaptcha() {
     $("#captcha-img").attr("src", "/image/captcha_generator.php");
+}
+
+function showError(msg, msgBox) {
+    msgBox = msgBox || $("#errorMessage");
+    msgBox.text(msg);
 }

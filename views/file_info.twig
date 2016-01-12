@@ -128,7 +128,7 @@
                 </div>
             {% endif %}
             <script type="text/javascript">
-              var fileID = {{ file.id }};
+              var fileID = {{ file.id|json_encode|raw }};
             </script>
         </form>
 

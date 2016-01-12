@@ -75,6 +75,7 @@ function appendComment(templateSelector, form, comment, login) {
 }
 
 function validateCommentForm() {
+    var form = $("#commentForm");
     var errorBox = $("#errorMessage");
     var textarea = $(".comment-area", form).val();
     var captcha = $(":text", form).val();

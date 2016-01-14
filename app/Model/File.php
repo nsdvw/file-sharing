@@ -30,30 +30,36 @@ class File
         ];
     }
 
-    public static $videoTypes = [
-        'webmv'=>'video/webm',
-        'm4v'=>'video/mp4',
-        'ogv'=>'video/ogg',
-        'flv'=>'video/x-flv',
-    ];
-
-    public static $audioTypes = [
-        'mp3'=>'audio/mpeg',
-        'm4a'=>'audio/mp4',
-        'wav'=>'audio/x-wav',
-        'fla'=>'audio/x-flv',
-        'webma'=>'audio/webm',
-        'oga'=>'audio/ogg',
-    ];
-
-    public static function jPlayerTypes()
+    private function getVideoTypes()
     {
-        return array_merge(self::$audioTypes, self::$videoTypes);
+        return [
+            'webmv'=>'video/webm',
+            'm4v'=>'video/mp4',
+            'ogv'=>'video/ogg',
+            'flv'=>'video/x-flv',
+        ];
     }
 
-    public static function jPlayerMediaType($fileType)
+    private function getAudioTypes()
     {
-        return array_search( $fileType, self::jPlayerTypes() );
+        return [
+            'mp3'=>'audio/mpeg',
+            'm4a'=>'audio/mp4',
+            'wav'=>'audio/x-wav',
+            'fla'=>'audio/x-flv',
+            'webma'=>'audio/webm',
+            'oga'=>'audio/ogg',
+        ];
+    }
+
+    private function jPlayerTypes()
+    {
+        return array_merge( $this->getAudioTypes(), $this->getVideoTypes() );
+    }
+
+    public function jPlayerMediaType($fileType)
+    {
+        return array_search( $fileType, $this->jPlayerTypes() );
     }
 
     public function isImage()
@@ -64,12 +70,12 @@ class File
 
     public function isVideo()
     {
-        return in_array($this->mime_type, self::$videoTypes);
+        return in_array($this->mime_type, $this->getVideoTypes());
     }
 
     public function isAudio()
     {
-        return in_array($this->mime_type, self::$audioTypes);
+        return in_array($this->mime_type, $this->getAudioTypes());
     }
 
     public function isText()

@@ -8,10 +8,12 @@ use FileSharing\Form\UploadForm;
 class FileUploadService
 {
     private $mapper;
+    private $viewHelper;
 
     public function __construct(FileMapper $mapper)
     {
         $this->mapper = $mapper;
+        $this->viewHelper = new ViewHelper;
     }
 
     public function upload(UploadForm $form)
@@ -21,7 +23,7 @@ class FileUploadService
         $this->mapper->save($file);
         if (move_uploaded_file(
             $form->getTempFileName(),
-            ViewHelper::getUploadPath($file->id, $file->name)
+            $this->viewHelper->getUploadPath($file->id, $file->name)
         )) {
             $this->mapper->commit();
             return true;

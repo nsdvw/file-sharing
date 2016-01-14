@@ -50,11 +50,7 @@
         </tr>
         <tr>
           <td>Size</td>
-          <td>{{ callStaticMethod(
-            '\\FileSharing\\Helper\\ViewHelper',
-            'formatSize',
-            [file.size]) }}
-          </td>
+          <td>{{ viewHelper.formatSize(file.size) }}</td>
         </tr>
         <tr>
           <td>
@@ -67,11 +63,8 @@
           </td>
           <td>
             <a class="btn btn-success"
-                    href="/{{callStaticMethod(
-                    '\\FileSharing\\Helper\\ViewHelper',
-                    'getDownLoadUrl',
-                    [file.id, file.name])}}"
-                    id="downloadLink">download
+              href="/{{ viewHelper.getDownloadUrl(file.id, file.name) }}"
+              id="downloadLink">download
             </a>
           </td>
         </tr>

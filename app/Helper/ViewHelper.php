@@ -5,17 +5,17 @@ use FileSharing\Model\File;
 
 class ViewHelper
 {
-    public static function getUploadName($id, $name)
+    public function getUploadName($id, $name)
     {
         return "{$id}_{$name}.txt";
     }
 
-    public static function getPreviewName($id)
+    public function getPreviewName($id)
     {
         return "{$id}.txt";
     }
 
-    public static function formatSize($size)
+    public function formatSize($size)
     {
         if ($size > pow(1024, 3)) {
             $size = round($size / pow(1024, 3), 2) . ' Gb';
@@ -29,32 +29,32 @@ class ViewHelper
         return $size;
     }
 
-    public static function getDownloadUrl($id, $name)
+    public function getDownloadUrl($id, $name)
     {
         return "download/{$id}/{$name}";
     }
 
-    public static function getUploadPath($id, $name)
+    public function getUploadPath($id, $name)
     {
         return 'upload/' . self::getUploadName($id, $name);
     }
 
-    public static function getPreviewPath($id)
+    public function getPreviewPath($id)
     {
         return 'preview/' . self::getPreviewName($id);
     }
 
-    public static function getDetailViewUrl($id)
+    public function getDetailViewUrl($id)
     {
         return "/view/{$id}";
     }
 
-    public static function getPagerLink($number)
+    public function getPagerLink($number)
     {
         return "/view?page={$number}";
     }
 
-    public static function createPreviewChecker(File $file)
+    public function createPreviewChecker(File $file)
     {
         if ($file->isImage()) {
             $path = self::getPreviewPath($file->id);

@@ -16,12 +16,6 @@ $app = new \Slim\Slim([
 ]);
 // $app->view()->parserOptions = ['cache' => '../twig_cache'];
 
-$function = new \Twig_SimpleFunction(
-    'callStaticMethod',
-    function ($class, $method, array $args) {
-        return call_user_func_array("{$class}::{$method}", $args);
-});
-$app->view()->getInstance()->addFunction($function);
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Text());
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Date());
 
@@ -44,18 +38,21 @@ $app->container->singleton('commentMapper', function () use ($app) {
 $app->container->singleton('loginManager', function () use ($app) {
     return new Auth\LoginManager($app->userMapper);
 });
+$app->container->singleton('viewHelper', function () {
+    return new ViewHelper;
+});
 
-$app->view->setData(['loginManager'=>$app->loginManager]);
+$app->view->setData([
+    'loginManager'=>$app->loginManager,
+    'viewHelper'=>$app->viewHelper,
+]);
 
 $app->notFound(function () use ($app) {
     $app->render('404.twig');
 });
 
 $app->error(function (\Exception $e) use ($app) {
-    $logMessage = "Exception '" . get_class($e) . "' with message '" .
-                  $e->getMessage() . "' in " . $e->getFile() . ":" .
-                  $e->getLine() . "\nStack trace:\n" . $e->getTraceAsString();
-    $app->log->info($logMessage);
+    $app->log->info($e);
     $app->render('500.twig');
 });
 
@@ -78,7 +75,7 @@ $app->map('/', function () use ($app) {
                 $app->stop();
             } else {
                 $app->response->redirect(
-                    ViewHelper::getDetailViewUrl($uploadForm->getFile()->id)
+                    $app->viewHelper->getDetailViewUrl($uploadForm->getFile()->id)
                 );
             }
         } else {
@@ -126,7 +123,7 @@ $app->get('/view', function () use ($app) {
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
-    header('X-SendFile: ../'.ViewHelper::getUploadPath($id, $name));
+    header('X-SendFile: ../'.$app->viewHelper->getUploadPath($id, $name));
     header('Content-Disposition: attachment');
 });
 
@@ -136,7 +133,7 @@ $app->map('/view/:id', function ($id) use ($app) {
     if (!$file = $app->fileMapper->findById($id)) {
         $app->notFound();
     }
-    ViewHelper::createPreviewChecker($file);
+    $app->viewHelper->createPreviewChecker($file);
     $pageViewService = new Helper\PageViewService(
         $app->commentMapper,
         $app->userMapper

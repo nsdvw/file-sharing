@@ -1,27 +1,34 @@
 <script type="text/javascript">
+
 $(document).ready(function(){
   $("#jquery_jplayer_1").jPlayer({
+
     ready: function () {
       $(this).jPlayer("setMedia", {
-        "{{ callStaticMethod(
-            '\\FileSharing\\Model\\File',
-            'jPlayerMediaType',
-            [file.mime_type] ) }}":
-        "/{{ callStaticMethod('\\FileSharing\\Helper\\ViewHelper', 'getUploadPath', [file.id, file.name]) }}"
+        "{{ file.jPlayerMediaType(file.mime_type) }}":
+        "/{{ viewHelper.getUploadPath(file.id, file.name) }}"
       });
     },
+
     cssSelectorAncestor: "#jp_container_1",
+
     swfPath: "/vendor-js",
-    supplied: "{{ callStaticMethod(
-              '\\FileSharing\\Model\\File',
-              'jPlayerMediaType',
-              [file.mime_type] ) }}",
+
+    supplied: "{{ file.jPlayerMediaType(file.mime_type) }}",
+
     useStateClassSkin: true,
+
     autoBlur: false,
+
     smoothPlayBar: true,
+
     keyEnabled: true,
+
     remainingDuration: true,
+
     toggleDuration: true
+
   });
 });
+
 </script>

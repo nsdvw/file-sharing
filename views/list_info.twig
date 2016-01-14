@@ -34,25 +34,14 @@
                                 {% set icon = 'file' %}
                             {% endif %}
                             <span class="icon-type glyphicon glyphicon-{{icon}}"></span>
-                            <a href="{{ callStaticMethod(
-                                '\\FileSharing\\Helper\\ViewHelper',
-                                'getDetailViewUrl',
-                                [file.id]
-                            ) }}">{{ file.name|truncate(30) }}</a>
+                            <a href="{{ viewHelper.getDetailViewUrl(file.id) }}">
+                                {{ file.name|truncate(30) }}
+                            </a>
                         </td>
                         <td>{{ file.upload_time }}</td>
+                        <td>{{ viewHelper.formatSize(file.size) }}</td>
                         <td>
-                            {{ callStaticMethod(
-                                '\\FileSharing\\Helper\\ViewHelper',
-                                'formatSize',
-                                [file.size]
-                            ) }}                            
-                        </td>
-                        <td>
-                            <a href="/{{callStaticMethod(
-                            '\\FileSharing\\Helper\\ViewHelper',
-                            'getDownLoadUrl',
-                            [file.id, file.name])}}"
+                            <a href="/{{ viewHelper.getDownLoadUrl(file.id, file.name) }}"
                             id="dowloadLink">
                             <span class="glyphicon glyphicon-floppy-disk"></span>
                             </a>
@@ -74,11 +63,7 @@
                 </li>
             {% else %}
                 <li>
-                    <a href="{{ callStaticMethod(
-                        '\\FileSharing\\Helper\\ViewHelper',
-                        'getPagerLink',
-                        [ pager.getPrevPage() ]
-                    ) }}">&laquo;</a>
+                    <a href="{{ viewHelper.getPagerLink(pager.getPrevPage()) }}">&laquo;</a>
                 </li>
             {% endif %}
             
@@ -87,22 +72,14 @@
                     <li class="active"><a href="">{{ i }}</a></li>
                 {% else %}
                     <li>
-                        <a href="{{ callStaticMethod(
-                            '\\FileSharing\\Helper\\ViewHelper',
-                            'getPagerLink',
-                            [ i ]
-                        ) }}">{{ i }}</a>
+                        <a href="{{ viewHelper.getPagerLink(i) }}">{{ i }}</a>
                     </li>
                 {% endif %}
             {% endfor %}
 
             {% if pager.currentPage != pager.getLastPage() %}
                 <li>
-                    <a href="{{ callStaticMethod(
-                        '\\FileSharing\\Helper\\ViewHelper',
-                        'getPagerLink',
-                        [ pager.getNextPage() ]
-                    ) }}">&raquo;</a>
+                    <a href="{{ viewHelper.getPagerLink(pager.getNextPage()) }}">&raquo;</a>
                 </li>
             {% else %}
                 <li class="disabled"><span>&raquo;</span></li>

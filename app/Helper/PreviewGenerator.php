@@ -12,6 +12,7 @@ class PreviewGenerator
 
     public static function createPreview(File $file, $preview_width = 300)
     {
+        $viewHelper = new ViewHelper;
         $original_width = $file->mediaInfo->resolution_x;
         $original_height = $file->mediaInfo->resolution_y;
         if ($original_width <= $preview_width) {
@@ -21,13 +22,13 @@ class PreviewGenerator
         $preview_height = round($original_height / $ratio);
         $content = imagecreatetruecolor($preview_width, $preview_height);
 
-        $uploadedFile = ViewHelper::getUploadPath($file->id, $file->name);
+        $uploadedFile = $viewHelper->getUploadPath($file->id, $file->name);
         switch ($file->mime_type) {
         case 'image/jpeg':
             $fullSize = imagecreatefromjpeg($uploadedFile);
             imagecopyresampled($content, $fullSize, 0, 0, 0, 0,
             $preview_width, $preview_height, $original_width, $original_height);
-            imagejpeg($content, ViewHelper::getPreviewPath($file->id));
+            imagejpeg($content, $viewHelper->getPreviewPath($file->id));
             break;
         case 'image/gif':
             $fullSize = imagecreatefromgif($uploadedFile);
@@ -37,7 +38,7 @@ class PreviewGenerator
             imagesavealpha($content, true);
             imagecopyresampled($content, $fullSize, 0, 0, 0, 0,
             $preview_width, $preview_height, $original_width, $original_height);
-            imagegif($content, ViewHelper::getPreviewPath($file->id));
+            imagegif($content, $viewHelper->getPreviewPath($file->id));
             break;
         case 'image/png':
             $fullSize = imagecreatefrompng($uploadedFile);
@@ -47,7 +48,7 @@ class PreviewGenerator
             imagesavealpha($content, true);
             imagecopyresampled($content, $fullSize, 0, 0, 0, 0,
             $preview_width, $preview_height, $original_width, $original_height);
-            imagepng($content, ViewHelper::getPreviewPath($file->id));
+            imagepng($content, $viewHelper->getPreviewPath($file->id));
             break;
         }
     }

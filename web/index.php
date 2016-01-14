@@ -36,7 +36,7 @@ $app->container->singleton('commentMapper', function () use ($app) {
     return new Mapper\CommentMapper($app->connection);
 });
 $app->container->singleton('loginManager', function () use ($app) {
-    return new Auth\LoginManager($app->userMapper);
+    return new Auth\LoginManager($app->userMapper, $app->response, $app->request);
 });
 $app->container->singleton('viewHelper', function () {
     return new ViewHelper;

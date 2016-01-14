@@ -8,37 +8,48 @@ use FileSharing\Helper\Token;
 use FileSharing\Helper\HashGenerator;
 use FileSharing\Form\LoginForm;
 use FileSharing\Form\RegisterForm;
+use Slim\Http\Response;
+use Slim\Http\Request;
 
 class LoginManager
 {
     private $mapper;
     private $loggedUser = null;
+    private $response;
+    private $request;
 
     public $token;
 
-    public function __construct(UserMapper $mapper)
-    {
+    public function __construct(
+        UserMapper $mapper,
+        Response $response,
+        Request $request
+    ) {
         $this->mapper = $mapper;
+        $this->response = $response;
+        $this->request = $request;
         $this->loggedUser = $this->getLoggedUser();
         $this->token = Token::$token;
     }
 
     public function logout()
     {
-        setcookie('id', '');
-        setcookie('hash', '');
+        $this->response->deleteCookie('id');
+        $this->response->deleteCookie('hash');
         $this->loggedUser = null;
     }
 
     public function getLoggedUser()
     {
-        if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+        $id = intval($this->request->cookies->get('id'));
+        $hash = intval($this->request->cookies->get('hash'));
+        if (!$id or !$hash) {
             return null;
         }
-        $id = intval($_COOKIE['id']);
-        $hash = strval($_COOKIE['hash']);
         $user = $this->mapper->findById($id);
-        if ($user->hash != $hash) return null;
+        if ($user->hash != $hash) {
+            return null;
+        }
         return $user;
     }
 
@@ -64,11 +75,17 @@ class LoginManager
         return $form->validateUniqueLogin($foundUserID);
     }
 
-    public function authorizeUser(User $user, $remember = true)
+    public function authorizeUser(User $user, $remember = true, $time = 604800)
     {
-        $time = $remember ? time() + 3600*24*7 : 0;
-        setcookie('id', $user->id, $time, '/');
-        setcookie('hash', $user->hash, $time, '/');
+        $expires = $remember ? time() + $time : 0;
+        $this->response->setCookie(
+            'id',
+            ['value' => $user->id, 'path' => '/', 'expires' => $expires]
+        );
+        $this->response->setCookie(
+            'hash',
+            ['value' => $user->hash, 'path' => '/', 'expires' => $expires]
+        );
         $this->loggedUser = $user;
     }
 

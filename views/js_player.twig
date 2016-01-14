@@ -6,7 +6,7 @@ $(document).ready(function(){
     ready: function () {
       $(this).jPlayer("setMedia", {
         "{{ file.jPlayerMediaType(file.mime_type) }}":
-        "/{{ viewHelper.getUploadPath(file.id, file.name) }}"
+        "{{ viewHelper.getUploadUrl(file.id, file.name) }}"
       });
     },
 

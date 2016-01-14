@@ -31,17 +31,27 @@ class ViewHelper
 
     public function getDownloadUrl($id, $name)
     {
-        return "download/{$id}/{$name}";
+        return "/download/{$id}/{$name}";
     }
 
     public function getUploadPath($id, $name)
     {
-        return 'upload/' . self::getUploadName($id, $name);
+        return 'upload/' . $this->getUploadName($id, $name);
+    }
+
+    public function getUploadUrl($id, $name)
+    {
+        return '/' . $this->getUploadPath($id, $name);
     }
 
     public function getPreviewPath($id)
     {
-        return 'preview/' . self::getPreviewName($id);
+        return 'preview/' . $this->getPreviewName($id);
+    }
+
+    public function getPreviewUrl($id)
+    {
+        return '/' . $this->getPreviewPath($id);
     }
 
     public function getDetailViewUrl($id)
@@ -57,7 +67,7 @@ class ViewHelper
     public function createPreviewChecker(File $file)
     {
         if ($file->isImage()) {
-            $path = self::getPreviewPath($file->id);
+            $path = $this->getPreviewPath($file->id);
             if (!PreviewGenerator::hasPreview($path)) {
                 PreviewGenerator::createPreview($file);
             }

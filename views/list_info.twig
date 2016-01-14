@@ -41,7 +41,7 @@
                         <td>{{ file.upload_time }}</td>
                         <td>{{ viewHelper.formatSize(file.size) }}</td>
                         <td>
-                            <a href="/{{ viewHelper.getDownLoadUrl(file.id, file.name) }}"
+                            <a href="{{ viewHelper.getDownLoadUrl(file.id, file.name) }}"
                             id="dowloadLink">
                             <span class="glyphicon glyphicon-floppy-disk"></span>
                             </a>

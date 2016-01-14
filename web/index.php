@@ -123,7 +123,7 @@ $app->get('/view', function () use ($app) {
 
 $app->get('/download/:id/:name', function ($id, $name) use ($app){
     $app->fileMapper->updateCounter($id);
-    header('X-SendFile: ../'.$app->viewHelper->getUploadPath($id, $name));
+    header('X-SendFile: ..'.$app->viewHelper->getUploadUrl($id, $name));
     header('Content-Disposition: attachment');
 });
 

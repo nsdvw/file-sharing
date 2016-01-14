@@ -19,7 +19,7 @@ $app = new \Slim\Slim([
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Text());
 $app->view()->getInstance()->addExtension(new \Twig_Extensions_Extension_Date());
 
-Helper\Token::init();
+Helper\Token::init($app->response, $app->request);
 
 $app->container->singleton('connection', function () use ($config) {
     $dbh = new \PDO( $config['conn'], $config['user'], $config['pass'] );

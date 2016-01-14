@@ -1,12 +1,23 @@
 <?php
 namespace FileSharing\Helper;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+
 class Token
 {
     public static $token;
 
-    public static function init($expire = 604800)
-    {
+    private static $response;
+    private static $request;
+
+    public static function init(
+        Response $response,
+        Request $request,
+        $expire = 604800
+    ) {
+        self::$response = $response;
+        self::$request = $request;
         if (!self::issetToken()) {
             $token = self::generateToken();
         } else {
@@ -25,17 +36,20 @@ class Token
 
     public static function getToken()
     {
-        return (self::issetToken()) ? $_COOKIE['csrf_token'] : false;
+        return self::$request->cookies->get('csrf_token');
     }
     public static function setToken($token, $time)
     {
-        setcookie('csrf_token', $token, $time, '/');
+        self::$response->setCookie(
+            'csrf_token',
+            ['value' => $token, 'path' => '/', 'expires' => $time]
+        );
     }
 
     public static function issetToken() {
-        if (!isset($_COOKIE['csrf_token'])) {
-            return false;
+        if (self::$request->cookies->get('csrf_token')) {
+            return true;
         }
-        return true;
+        return false;
     }
 }

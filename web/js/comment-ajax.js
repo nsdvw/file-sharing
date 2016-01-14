@@ -12,6 +12,7 @@ $(function () {
         var formData = {
             "comment_form[contents]": $("[name='comment_form[contents]']", form).val(),
             "comment_form[reply_id]": replyID,
+            "comment_form[captcha]": $("[name='comment_form[captcha]']", form).val()
         };
         showError("", errorBox);
         $.ajax({
